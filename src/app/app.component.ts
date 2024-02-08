@@ -3,7 +3,6 @@ import { Component, OnInit} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { HttpClientModule } from '@angular/common/http'
 
 //ionic & capacitor
 //import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
@@ -16,6 +15,8 @@ import { SQLiteDBConnection } from '@capacitor-community/sqlite';
 import { WebSQLiteService } from './services/sqlite/web-sqlite.service';
 import { OperationsSQLiteService } from './services/sqlite/operations-sqlite.service';
 import { NativeSQLiteService } from './services/sqlite/native-sqlite.service';
+import { AuthService } from './services/auth.service';
+
 
 //componentes
 import { HeaderComponent } from './components/header/header.component';
@@ -25,8 +26,8 @@ import { FooterComponent } from './components/footer/footer.component';
   selector: 'app-root',
   templateUrl: 'app.component.html',
   standalone: true,
-  imports: [RouterOutlet, CommonModule, HttpClientModule, HeaderComponent, FooterComponent],
-  providers: [NativeSQLiteService, WebSQLiteService],
+  imports: [RouterOutlet, CommonModule, HeaderComponent, FooterComponent],
+  providers: [],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class AppComponent implements OnInit{
@@ -38,7 +39,7 @@ export class AppComponent implements OnInit{
   constructor(public nativeSQLiteService: NativeSQLiteService, 
               public webSQLiteService: WebSQLiteService, 
               public operationsSQLiteService: OperationsSQLiteService, 
-              public platform: Platform) {
+              public platform: Platform, authService: AuthService) {
 
     /**
      * Si es nativo (android o ios, hay que usar la librería estándar).
@@ -46,6 +47,12 @@ export class AppComponent implements OnInit{
      *  
      * Si es web, hay que usar web.sqlite.service para obtener la conexión.
      */
+    authService.cargarUrlyTokenDelAlmacen().then((value) => {
+      authService.checkAuthorizationToken();//comprueba que el token es válido
+          //y establece el usuario, el token y los grupos en authService.
+          //el componente header hace uso de auth service para obtener estos datos
+    });
+
     var native:boolean;
     var sistemaOperativo = Capacitor.getPlatform();
     if(sistemaOperativo === 'ios' || sistemaOperativo === 'android'){

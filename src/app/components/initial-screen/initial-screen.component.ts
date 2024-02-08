@@ -9,9 +9,9 @@ import {RouterLink} from "@angular/router";
     MatButtonModule,
     RouterLink
   ],
-  templateUrl: './pantalla-inicial.component.html',
-  styleUrl: './pantalla-inicial.component.css'
+  templateUrl: './initial-screen.component.html',
+  styleUrl: './initial-screen.component.css'
 })
-export class PantallaInicialComponent {
+export class InitalScreenComponent {
 
 }

@@ -11,7 +11,7 @@ import { MatIconModule } from '@angular/material/icon';
     styleUrl: './header.component.css',
     standalone: true,
     imports: [MatIconModule, MessagesComponent],
-    providers: [AuthService, NetStatusService, AppGlobalVarsService],
+    providers: [],
 })
 export class HeaderComponent {
   showMessages = false;

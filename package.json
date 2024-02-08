@@ -42,6 +42,7 @@
     "ionicons": "^7.2.1",
     "jeep-sqlite": "^2.5.8",
     "rxjs": "~7.8.0",
+    "sweetalert2": "^11.10.5",
     "tslib": "^2.3.0",
     "zone.js": "~0.14.2"
   },

@@ -1,8 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {Component, OnInit} from '@angular/core';
+import {CommonModule} from '@angular/common';
 import {FormControl} from '@angular/forms';
 import {FormGroup, Validators, FormsModule, ReactiveFormsModule} from '@angular/forms';
-
 import {MatOptionModule} from "@angular/material/core";
 import {MatSelectModule} from "@angular/material/select";
 import {MatFormFieldModule} from "@angular/material/form-field";
@@ -11,19 +10,20 @@ import {RouterLink} from "@angular/router";
 import {MatButtonModule} from "@angular/material/button";
 import {MatSnackBar} from "@angular/material/snack-bar";
 
-import { JWTTokenService } from "../../services/jwtTokenService";
+//services
 import { AppGlobalVarsService } from 'src/app/services/app-global-vars.service';
-import { ApiService } from "../../services/ApiService";
 import { ServerService } from 'src/app/services/server.service';
 import { MessageService } from 'src/app/services/message.service';
 import { AuthService } from 'src/app/services/auth.service';
 
-import { manageServerErrors, sendMessages } from '../../utilities/manageMessages'
-
+//models
 import { Message } from 'src/app/models/message';
 
+//functions
+import { manageServerErrors, sendMessages } from '../../../utilities/manageMessages'
+
 @Component({
-  selector: 'app-iniciar-servidor',
+  selector: 'app-set-conexion',
   standalone: true,
   imports: [
     CommonModule,
@@ -36,10 +36,10 @@ import { Message } from 'src/app/models/message';
     RouterLink,
     MatButtonModule
   ],
-  templateUrl: './establecer-conexion.component.html',
-  styleUrl: './establecer-conexion.component.css'
+  templateUrl: './set-conexion.component.html',
+  styleUrl: './set-conexion.component.css'
 })
-export class EstablecerConexionComponent implements OnInit{
+export class SetConexionComponent implements OnInit{
   
   urlDjangoApi = new FormControl('', [Validators.required, Validators.minLength(10)]);//to show on insert;
   username = new FormControl('', [Validators.required, Validators.minLength(4)]);//to show on insert;
@@ -48,11 +48,11 @@ export class EstablecerConexionComponent implements OnInit{
   controlsGroup = new FormGroup({
     urlDjangoApi: this.urlDjangoApi,
     username: this.username,
-    password: this.password,
+    password: this.password
   })
 
-  constructor(private apiService: ApiService, private snackBar: MatSnackBar, 
-    private tokenService: JWTTokenService, public appGlobalVarsService:AppGlobalVarsService,
+  constructor(private snackBar: MatSnackBar, 
+    public appGlobalVarsService:AppGlobalVarsService,
     public serverService: ServerService, public messageService: MessageService,
     public authService:AuthService) {
       this.urlDjangoApi.setValue(authService.urlDjangoApi);
@@ -69,6 +69,7 @@ export class EstablecerConexionComponent implements OnInit{
     }
     this.authService.urlDjangoApi = this.urlDjangoApi.value || '';//lo que hay en el formulario
         //serverservice usa authService.urlDjangoApi
+    sendMessages('Solicitudes enviadas a ' + this.authService.urlDjangoApi, this.messageService);
     this.serverService.post('core/knox/login/', {'username':this.username.value, 'password': this.password.value},false).subscribe(
       {
         next: ((data)=>{
@@ -88,15 +89,15 @@ export class EstablecerConexionComponent implements OnInit{
       });
   }
 
-  pruebaGet(){
-    this.serverService.get('core/hello_world/ ').subscribe(
-      {
-        next: ((data)=>{
-          console.log(data);
-        }),
-        error: ((error)=>{
-          console.log(error);
-        })
-      });
-  }
+  // pruebaGet(){
+  //   this.serverService.get('core/hello_world/ ').subscribe(
+  //     {
+  //       next: ((data)=>{
+  //         console.log(data);
+  //       }),
+  //       error: ((error)=>{
+  //         console.log(error);
+  //       })
+  //     });
+  // }
 }
