@@ -1,0 +1,23 @@
+<header>
+    <div class="header-content">
+      <div class="align-left"><mat-icon (click)="changeShowMessages()">mail_outline</mat-icon></div>
+      <div class="align-right"> 
+          @if (authService.username!=''){
+            <span class="margin-right">{{authService.username}}</span>
+            <span class="margin-right">{{authService.groups}}</span>
+          } @else {
+            <span class="margin-right">No autenticado</span>
+          }
+          @if (netStatusService.available){
+            <mat-icon class="margin-right">signal_wifi_4_bar</mat-icon>
+          } @else {
+            <mat-icon class="margin-right">signal_wifi_off</mat-icon>
+          }
+      </div>
+    </div>
+</header>
+@if(showMessages || appGlobalVarsService.appMode==1){
+  <button (click)="netStatusService.getNetworkStatus()">Comprobar conexion</button>
+  <button (click)="netStatusService.available=false">Poner a false</button>
+  <app-messages></app-messages>
+}

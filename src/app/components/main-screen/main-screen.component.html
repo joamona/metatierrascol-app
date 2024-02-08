@@ -1,0 +1,12 @@
+<div class="container">
+  <div class="list">
+    <p class="list-item">Predios Medidos: {{ prediosMedidos }}</p>
+    <p class="list-item">Predios Enviado: {{ prediosEnviados }}/{{ prediosMedidos }}</p>
+  </div>
+  <button mat-raised-button (click)="nuevoPredio()">Nuevo Predio</button>
+  <button mat-raised-button [disabled]="true">Editar Predio desde el Mapa</button>
+  <button mat-raised-button routerLink="/editar-predio-lista">Editar Predio desde Lista</button>
+  <button mat-raised-button routerLink="/avanzado">Avanzado</button>
+  <button mat-raised-button routerLink="../">Atrás</button>
+  <button mat-raised-button (click)="borrarTodo()">Borrar Todo</button>
+</div>
