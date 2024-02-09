@@ -17,9 +17,9 @@ import { MessageService } from './app/services/message.service';
 import { ServerService } from './app/services/server.service';
 import { AppGlobalVarsService } from './app/services/app-global-vars.service';
 import { NetStatusService } from './app/services/net-status.service';
-import { WebSQLiteService } from './app/services/sqlite/web-sqlite.service';
-import { NativeSQLiteService } from './app/services/sqlite/native-sqlite.service';
-import { OperationsSQLiteService } from './app/services/sqlite/operations-sqlite.service';
+import { WebSqliteService } from './app/services/sqlite/web-sqlite.service';
+import { NativeSqliteService } from './app/services/sqlite/native-sqlite.service';
+import { SqliteService } from './app/services/sqlite/sqlite.service';
 
 jeepSqlite(window);
 //fin
@@ -36,6 +36,7 @@ bootstrapApplication(AppComponent, {
     importProvidersFrom(HttpClientModule),
     NetStatusService,
     AppGlobalVarsService, ServerService,
-    MessageService, AuthService, WebSQLiteService, NativeSQLiteService, OperationsSQLiteService
+    MessageService, AuthService, WebSqliteService, NativeSqliteService, 
+    SqliteService
   ],
 });

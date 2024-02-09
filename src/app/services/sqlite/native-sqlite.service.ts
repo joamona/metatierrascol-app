@@ -14,7 +14,7 @@ import { CapacitorSQLite, SQLiteConnection, SQLiteDBConnection} from '@capacitor
 @Injectable({
   providedIn: 'root'
 })
-export class NativeSQLiteService {
+export class NativeSqliteService {
   public databaseName: string='metatierrascol';
   public sqliteConnection: SQLiteConnection;
   public db!: SQLiteDBConnection;

@@ -18,7 +18,7 @@ import { CapacitorSQLite, SQLiteDBConnection, SQLiteConnection, capSQLiteSet,
 
 @Injectable()
 
-export class WebSQLiteService {
+export class WebSqliteService {
     sqlite!: SQLiteConnection;
     isService: boolean = false;
     platform!: string;

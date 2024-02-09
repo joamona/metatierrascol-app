@@ -12,6 +12,6 @@ import {RouterLink} from "@angular/router";
   templateUrl: './initial-screen.component.html',
   styleUrl: './initial-screen.component.css'
 })
-export class InitalScreenComponent {
+export class InitialScreenComponent {
 
 }

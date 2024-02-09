@@ -12,15 +12,25 @@ import { Capacitor } from '@capacitor/core';
 import { SQLiteDBConnection } from '@capacitor-community/sqlite';
 
 //Servicios
-import { WebSQLiteService } from './services/sqlite/web-sqlite.service';
-import { OperationsSQLiteService } from './services/sqlite/operations-sqlite.service';
-import { NativeSQLiteService } from './services/sqlite/native-sqlite.service';
+import { WebSqliteService } from './services/sqlite/web-sqlite.service';
+import { SqliteService } from './services/sqlite/sqlite.service';
+import { NativeSqliteService } from './services/sqlite/native-sqlite.service';
 import { AuthService } from './services/auth.service';
+import { MessageService } from './services/message.service';
 
 
 //componentes
 import { HeaderComponent } from './components/header/header.component';
 import { FooterComponent } from './components/footer/footer.component';
+
+//models
+import { Baunit } from './models/baunit';
+import { SectorPredio } from './enumerations/sector-predio';
+import { LC_PredioTipo } from './enumerations/lc_predio-tipo';
+
+//funciones
+import { createDummybaunitFromId } from './models/baunit';
+import { sendMessages } from './utilities/manageMessages';
 
 @Component({
   selector: 'app-root',
@@ -36,10 +46,11 @@ export class AppComponent implements OnInit{
    public databaseName = 'metatierrascol';
    public sqliteDBConnection!: SQLiteDBConnection;//la conexión a la base de datos
 
-  constructor(public nativeSQLiteService: NativeSQLiteService, 
-              public webSQLiteService: WebSQLiteService, 
-              public operationsSQLiteService: OperationsSQLiteService, 
-              public platform: Platform, authService: AuthService) {
+  constructor(public nativeSqliteService: NativeSqliteService, 
+              public webSqliteService: WebSqliteService, 
+              public sqliteService: SqliteService, 
+              public platform: Platform, authService: AuthService,
+              public messageService:MessageService) {
 
     /**
      * Si es nativo (android o ios, hay que usar la librería estándar).
@@ -53,6 +64,49 @@ export class AppComponent implements OnInit{
           //el componente header hace uso de auth service para obtener estos datos
     });
 
+    this.initSqliteService()
+
+  }
+
+  ngOnInit(): void {
+
+  }
+
+  async initSqliteService(){
+    await this.setSqliteServiceDb();
+    //await this.realizaConsultas();
+    await this.sqliteService.createTables();
+    var a:Baunit = createDummybaunitFromId(this.sqliteService, this.messageService);
+    await a.insert();
+    console.log(a.id)
+    var b: Baunit = createDummybaunitFromId(this.sqliteService,this.messageService)
+    await b.insert();
+    console.log(b.id)
+    b.latitud='5555'
+    b.enviado_servidor=true;
+    await b.update();
+    var b2 = this.sqliteService.baunitList[1];
+    b2.longitud = '6666'
+    b2.complemento='complemento 2'
+    b2.departamento="departamento 2"
+    b2.enviado_servidor=true
+    b2.latitud='lat 2'
+    b2.longitud='lon2'
+    b2.municipio='mun2'
+    b2.nombre='nom2'
+    b2.numero_catastral='num_cat2'
+    b2.numero_predial='num_pred 2'
+    b2.provincia='prov'
+    b2.sector_predio=SectorPredio.Sur
+    b2.tipo=LC_PredioTipo.Privado
+    b2.vereda='ver2'
+    await b2.update();
+    await b2.delete();
+    await b2.setDataFromId(1);
+    console.log(b2);
+  }
+
+  async setSqliteServiceDb(){
     var native:boolean;
     var sistemaOperativo = Capacitor.getPlatform();
     if(sistemaOperativo === 'ios' || sistemaOperativo === 'android'){
@@ -61,83 +115,63 @@ export class AppComponent implements OnInit{
       native = false;
     }
     if (native){
-      this.initializeNativeDb();//solo funciona en nativo no en web
+      await this.initializeNativeDb();//solo funciona en nativo no en web
     }else{
-      this.initializeWebDb();
-    }   
-  }
-
-  ngOnInit(): void {
-
+      await this.initializeWebDb();
+    }
   }
 
   //para native
   async initializeNativeDb(){
-    this.sqliteDBConnection = await this.nativeSQLiteService.initializeDb();
+    this.sqliteDBConnection = await this.nativeSqliteService.initializeDb();
     SplashScreen.hide()//truco para que se quede atascado un poco
-    this.operationsSQLiteService.setDb(this.sqliteDBConnection)
-    console.log('Conexión sqlite nativa creada')
-    this.realizaConsultas();
+    await this.sqliteService.setAndOpenDb(this.sqliteDBConnection);
   }
 
   //para web
   async initializeWebDb() {
     await this.platform.ready();
-    this.initPlugin = await this.webSQLiteService.initializePlugin();
-    if(this.webSQLiteService.platform === "web") {
+    this.initPlugin = await this.webSqliteService.initializePlugin();
+    if(this.webSqliteService.platform === "web") {
       this.isWeb = true;
     }
 
     await customElements.whenDefined('jeep-sqlite');
     const jeepSqliteEl = document.querySelector('jeep-sqlite');
     if(jeepSqliteEl != null) {
-      this.webSQLiteService.initWebStore();
+      this.webSqliteService.initWebStore();
       console.log(`>>>> isStoreOpen ${await jeepSqliteEl.isStoreOpen()}`);
-      this.sqliteDBConnection = await this.webSQLiteService.createConnection(this.databaseName,false,'no-encryption',1);
-      this.realizaConsultas();
+      this.sqliteDBConnection = await this.webSqliteService.createConnection(this.databaseName,false,'no-encryption',1);
+      await this.sqliteService.setAndOpenDb(this.sqliteDBConnection)
     } else {
       console.log('jeepSqliteEl es null');
     }
   }
 
-  async realizaConsultas(){
-      await this.operationsSQLiteService.setDb(this.sqliteDBConnection)
-      .then( 
-        r =>{console.log('Conexión creada',r);
-        this.operationsSQLiteService.messages.push('Conexión creada')
-    })
-      .catch( err => {console.log(err.message)});
-
-    await this.operationsSQLiteService.createTables()        
-      .then( 
-        r =>{console.log('Tablas creadas',r)
-        this.operationsSQLiteService.messages.push('Tablas creadas');
-      })
-      .catch( err => {console.log(err.message)});
     
-    await this.operationsSQLiteService.addUser('joamona')
-      .then( 
-        r =>{console.log('Usuario añadido',r);
-        this.operationsSQLiteService.messages.push('Usuario añadido')
-    })
-      .catch( err => {console.log(err.message)});
+    // await this.sqliteService.addUser('joamona')
+    //   .then( 
+    //     r =>{console.log('Usuario añadido',r);
+    //     this.sqliteService.messages.push('Usuario añadido')
+    // })
+    //   .catch( err => {console.log(err.message)});
 
-    await this.operationsSQLiteService.selectUser('joamona')
-      .then( (r: any) => {
-          if (r.values.length > 0){
-            console.log('Usuarios seleccionado',r.values);
-            this.operationsSQLiteService.messages.push('Usuarios seleccionados');
-            r.values.forEach( ( row: any ) =>{
-              console.log(row)
-              this.operationsSQLiteService.messages.push(row.name);
-            });
-          }else{
-            console.log('No hay usuarios')
-          }            
-        }
-      )
-      .catch( err => {console.log(err.message)});
-  }
+  //   await this.sqliteService.selectUser('joamona')
+  //     .then( (r: any) => {
+  //         if (r.values.length > 0){
+  //           console.log('Usuarios seleccionado',r.values);
+  //           this.sqliteService.messages.push('Usuarios seleccionados');
+  //           r.values.forEach( ( row: any ) =>{
+  //             console.log(row)
+  //             this.sqliteService.messages.push(row.name);
+  //           });
+  //         }else{
+  //           console.log('No hay usuarios')
+  //         }            
+  //       }
+  //     )
+  //     .catch( err => {console.log(err.message)});
+  // }
 }
 
 //'INSERT INTO users (name,country,age) VALUES (?,?,?)',['Ricardo','Portugal','24']

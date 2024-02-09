@@ -32,7 +32,7 @@ export class GenerateOlGeoms{
             this.geoJsonElementLineString = new GeoJsonElement({"Peor_precision":this.worstAccuracy},lg1);
         }
         if (this.geoJsonPointElementList.length > 2){
-            var lg1=new GeoJsonGeometry(this.gt.polygon,this.pointsList);
+            var lg1=new GeoJsonGeometry(this.gt.polygon,[this.pointsList]);
             this.geoJsonElementPolygon = new GeoJsonElement({"Peor_precision":this.worstAccuracy},lg1);
         }
     }
@@ -45,7 +45,7 @@ export class GenerateOlGeoms{
         //añadir a la bbdd el último polígono
     }   
 
-    private getGeoJsonFeatureCollectionPoint(){
+    public getGeoJsonFeatureCollectionPoint(){
         return new GeoJsonFeatureCollection(this.geoJsonCRS,this.geoJsonPointElementList);
     }
     private getGeoJsonFeatureCollectionLineString(){
