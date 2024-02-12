@@ -1,0 +1,21 @@
+<table>
+  <tr>
+    <th>Nombre</th>
+    <th>Dueños</th>
+    <th>GPS</th>
+    <th>Imagenes</th>
+    <th>Documentos</th>
+    <th>Enviados</th>
+  </tr>
+  @for (baunit of sqliteService.baunitList; track baunit) {
+    <tr (click) = "editBaunit(baunit.id)">
+      <td>{{baunit.nombre}}</td>
+      <td>Num dueños</td>
+      <td>Num GPS</td>
+      <td>Num img</td>
+      <td>Num docs</td>
+      <td>{{baunit.enviado_servidor | changeBooleanByYesNoPipe:true}}</td>
+    </tr>
+  }
+
+</table>

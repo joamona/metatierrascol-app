@@ -106,20 +106,21 @@ export class BaunitComponent  implements OnInit {
         //console.log('Baunit. Mode añadir')
       } else {
         this.mode=='editar'
-       this.id = params.get('id') || '';   
-       console.log('Baunit. Mode editar',this.id )
-    
+        this.id = params.get('id') || '';   
+        //console.log('Baunit. Mode editar',this.id );
+        this.setFromId();
       }//mode edit
     });//route.queryparams
    }
 
   ngOnInit() {
-    if (this.mode=='editar' && this.id !=''){
-      var baunit = new Baunit(this.sqliteService,this.messageService);
-      baunit.setFromId(this.id);
-      this.setFormControlValuesFromModel(baunit);
-    }
   }
+  async setFromId(){
+    var baunit = new Baunit(this.sqliteService,this.messageService);
+    await baunit.setFromId(this.id);
+    this.setFormControlValuesFromModel(baunit);
+  }
+
   setFormControlValuesFromModel(baunit: Baunit){
     this.nombre.setValue(baunit.nombre);
     this.departamento.setValue(baunit.departamento);
