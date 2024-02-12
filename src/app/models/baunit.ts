@@ -14,20 +14,20 @@ export function createDummyBaunit(sqliteService: SqliteService, messageService: 
     //     'longitud','latitud',false,id);
 
     var baunit = new Baunit(sqliteService, messageService);
-    baunit.nombre = '';
-    baunit.departamento = '';
-    baunit.provincia = '';
-    baunit.sector_predio = SectorPredio.Este;
-    baunit.municipio = '';
-    baunit.vereda = '';
+    baunit.nombre = 'Dummy nombre';
     baunit.tipo = LC_PredioTipo.Baldio;
-    baunit.complemento = '';
+    baunit.departamento = 'Amazonas';
+    baunit.provincia = 'Amazonas';
+    baunit.municipio = 'El Encanto';
+    baunit.sector_predio = SectorPredio.Este;
+    baunit.vereda = 'Dummy vereda';
+    baunit.complemento = 'Dummy complemento';
 
     //opcionales. Se inicializan a '', si es undefined;
-    baunit.numero_predial = '';
-    baunit.numero_catastral = '';
-    baunit.longitud = '';;
-    baunit.latitud = '';;
+    baunit.numero_predial = 'Dummy número predial';
+    baunit.numero_catastral = 'Dummy número catastral';
+    baunit.longitud = 'Dummy longitud';;
+    baunit.latitud = 'Dummy latitud';;
     baunit.enviado_servidor = false;
     return baunit;
 }
@@ -35,12 +35,12 @@ export function createDummyBaunit(sqliteService: SqliteService, messageService: 
 export class Baunit {
     //obligatorios
     nombre: string = '';
+    tipo: LC_PredioTipo = LC_PredioTipo.Baldio;
     departamento: string = '';
     provincia: string = '';
-    sector_predio: SectorPredio = SectorPredio.Este;
     municipio: string = '';
+    sector_predio: SectorPredio = SectorPredio.Este;
     vereda: string = '';
-    tipo: LC_PredioTipo = LC_PredioTipo.Baldio;
     complemento: string = '';
 
     //opcionales. Se inicializan a '', si es undefined;
@@ -66,12 +66,12 @@ export class Baunit {
     setFromModel(baunit: Baunit){
         //obligatorios
         this.nombre = baunit.nombre;
+        this.tipo = baunit.tipo;
         this.departamento = baunit.departamento;
         this.provincia = baunit.provincia;
-        this.sector_predio = baunit.sector_predio;
         this.municipio = baunit.municipio;
+        this.sector_predio = baunit.sector_predio;
         this.vereda = baunit.vereda;
-        this.tipo = baunit.tipo;
         this.complemento=baunit.complemento;
         
         //opcionales
@@ -94,12 +94,12 @@ export class Baunit {
                 }else{
                     var row: Baunit = r.values[0];
                     this.nombre=row.nombre
+                    this.tipo=row.tipo
                     this.departamento=row.departamento
                     this.provincia=row.provincia
-                    this.sector_predio=row.sector_predio
                     this.municipio=row.municipio
+                    this.sector_predio=row.sector_predio
                     this.vereda=row.vereda
-                    this.tipo=row.tipo
                     this.complemento=row.complemento
                     this.numero_predial=row.numero_predial
                     this.numero_catastral=row.numero_catastral
@@ -119,16 +119,16 @@ export class Baunit {
     }
 
     asListOfValues():any[]{
-        return [this.nombre,this.departamento, this.provincia, this.sector_predio,
-            this.municipio, this.vereda, this.tipo, this.complemento,
+        return [this.nombre,this.tipo,this.departamento, this.provincia, this.municipio,this.sector_predio,
+             this.vereda, this.complemento,
             this.numero_predial, this.numero_catastral, 
             this.longitud, this.latitud,
             this.enviado_servidor]
     }
     async insert(){
         var q=`insert into baunit (
-            nombre, departamento, provincia, sector_predio,
-            municipio, vereda, tipo, complemento,
+            nombre, tipo, departamento, provincia,
+            municipio, sector_predio, vereda, complemento,
             numero_predial, numero_catastral, 
             longitud, latitud, enviado_servidor
         ) values (?,?,?,?,?,?,?,?,?,?,?,?,?) returning id`;
@@ -145,8 +145,8 @@ export class Baunit {
     }
     async update(){
         var q=`update baunit set (
-            nombre, departamento, provincia, sector_predio,
-            municipio, vereda, tipo, complemento,
+            nombre, tipo, departamento, provincia, 
+            municipio, sector_predio, vereda, complemento,
             numero_predial, numero_catastral, 
             longitud, latitud, enviado_servidor
         ) = (?,?,?,?,?,?,?,?,?,?,?,?,?) where id = ?`;

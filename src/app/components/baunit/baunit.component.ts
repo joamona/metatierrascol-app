@@ -79,6 +79,7 @@ export class BaunitComponent  implements OnInit {
   enviado_servidor=new FormControl(false);
   id: string ='';//el id de sqlite
 
+  mode!:string | null;//el modo de usar el componente: editar, añadir
   controlsGroup = new FormGroup({
     nombre: this.nombre,
     departamento: this.departamento,
@@ -96,7 +97,6 @@ export class BaunitComponent  implements OnInit {
     enviado_servidor: this.enviado_servidor,
   })
 
-  mode!:string | null;
   constructor(public router:Router, public route: ActivatedRoute, 
         public messageService: MessageService, public sqliteService: SqliteService,
         public snackBar: MatSnackBar, public appGlobalVarsService: AppGlobalVarsService) {
@@ -143,10 +143,8 @@ export class BaunitComponent  implements OnInit {
       console.log('baunit',baunit, baunit.id)
       this.id = baunit.id;
       this.router.navigate(['/main-screen/baunit'], {queryParams: {mode: 'editar', id: this.id}});
-      //this.router.navigate(['/add_patient'], { queryParams: { mode: 'edit'} });
     }else{
-      //baunit.id=this.id;
-      baunit.update();
+      await baunit.update();
     }
   }
   onDepartamentoChange(){
@@ -161,7 +159,7 @@ export class BaunitComponent  implements OnInit {
       //console.log(this.todosMunicipiosDelDepartamento);
       //Elimina los municipios que tienen la misma provincia, para obtener un listado de provincias únicas
       this.municipiosDelDepartamentoProvinciaUnique = [...new Map(this.todosMunicipiosDelDepartamento.map( (municipio: Municipio) => [municipio.provincia, municipio])).values()]
-      console.log(this.municipiosDelDepartamentoProvinciaUnique);     
+      //console.log(this.municipiosDelDepartamentoProvinciaUnique);     
   }
 
   onProvinciaChange(){

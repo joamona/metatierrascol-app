@@ -76,34 +76,34 @@ export class AppComponent implements OnInit{
     await this.setSqliteServiceDb();
     //await this.realizaConsultas();
     await this.sqliteService.createTables();
-    var a:Baunit = createDummyBaunit(this.sqliteService, this.messageService);
-    await a.insert();
-    console.log(a.id)
-    var b: Baunit = createDummyBaunit(this.sqliteService,this.messageService)
-    await b.insert();
-    console.log(b.id)
-    b.latitud='5555'
-    b.enviado_servidor=true;
-    await b.update();
-    var b2 = this.sqliteService.baunitList[1];
-    b2.longitud = '6666'
-    b2.complemento='complemento 2'
-    b2.departamento="departamento 2"
-    b2.enviado_servidor=true
-    b2.latitud='lat 2'
-    b2.longitud='lon2'
-    b2.municipio='mun2'
-    b2.nombre='nom2'
-    b2.numero_catastral='num_cat2'
-    b2.numero_predial='num_pred 2'
-    b2.provincia='prov'
-    b2.sector_predio=SectorPredio.Sur
-    b2.tipo=LC_PredioTipo.Privado
-    b2.vereda='ver2'
-    await b2.update();
-    await b2.delete();
-    await b2.setFromId(1);
-    console.log(b2);
+    // var a:Baunit = createDummyBaunit(this.sqliteService, this.messageService);
+    // await a.insert();
+    // console.log(a.id)
+    // var b: Baunit = createDummyBaunit(this.sqliteService,this.messageService)
+    // await b.insert();
+    // console.log(b.id)
+    // b.latitud='5555'
+    // b.enviado_servidor=true;
+    // await b.update();
+    // var b2 = this.sqliteService.baunitList[1];
+    // b2.longitud = '6666'
+    // b2.complemento='complemento 2'
+    // b2.departamento="departamento 2"
+    // b2.enviado_servidor=true
+    // b2.latitud='lat 2'
+    // b2.longitud='lon2'
+    // b2.municipio='mun2'
+    // b2.nombre='nom2'
+    // b2.numero_catastral='num_cat2'
+    // b2.numero_predial='num_pred 2'
+    // b2.provincia='prov'
+    // b2.sector_predio=SectorPredio.Sur
+    // b2.tipo=LC_PredioTipo.Privado
+    // b2.vereda='ver2'
+    // await b2.update();
+    // await b2.delete();
+    // await b2.setFromId(1);
+    // console.log(b2);
   }
 
   async setSqliteServiceDb(){
