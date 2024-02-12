@@ -29,8 +29,8 @@ import { SectorPredio } from './enumerations/sector-predio';
 import { LC_PredioTipo } from './enumerations/lc_predio-tipo';
 
 //funciones
-import { createDummybaunitFromId } from './models/baunit';
 import { sendMessages } from './utilities/manageMessages';
+import { createDummyBaunit } from './models/baunit';
 
 @Component({
   selector: 'app-root',
@@ -76,10 +76,10 @@ export class AppComponent implements OnInit{
     await this.setSqliteServiceDb();
     //await this.realizaConsultas();
     await this.sqliteService.createTables();
-    var a:Baunit = createDummybaunitFromId(this.sqliteService, this.messageService);
+    var a:Baunit = createDummyBaunit(this.sqliteService, this.messageService);
     await a.insert();
     console.log(a.id)
-    var b: Baunit = createDummybaunitFromId(this.sqliteService,this.messageService)
+    var b: Baunit = createDummyBaunit(this.sqliteService,this.messageService)
     await b.insert();
     console.log(b.id)
     b.latitud='5555'
@@ -102,7 +102,7 @@ export class AppComponent implements OnInit{
     b2.vereda='ver2'
     await b2.update();
     await b2.delete();
-    await b2.setDataFromId(1);
+    await b2.setFromId(1);
     console.log(b2);
   }
 

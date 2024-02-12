@@ -3,7 +3,7 @@
     <p class="list-item">Predios Medidos: {{ prediosMedidos }}</p>
     <p class="list-item">Predios Enviado: {{ prediosEnviados }}/{{ prediosMedidos }}</p>
   </div> -->
-  <button mat-raised-button [routerLink]="['./baunit']" [queryParams]="{mode: 'insert'}">Nuevo Predio</button>
+  <button mat-raised-button [routerLink]="['./baunit']" [queryParams]="{mode: 'añadir'}">Nuevo Predio</button>
   <!-- <button mat-raised-button [disabled]="true">Editar Predio desde el Mapa</button> -->
   <button mat-raised-button routerLink="./editar-predio-lista">Lista de predios</button>
   <button mat-raised-button routerLink="./advanced">Avanzado</button>
