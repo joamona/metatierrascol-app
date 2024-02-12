@@ -84,7 +84,7 @@ export class SqliteService {
           if (r==undefined){
             this.baunitList=[]
           }else{
-            if (r.values.length > 0){
+            if (r.values.length >= 0){
               this.baunitList=[];
               r.values.forEach( ( row: Baunit ) =>{
                 var ba: Baunit = new Baunit(this, this.messageService)

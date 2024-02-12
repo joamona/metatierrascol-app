@@ -84,8 +84,8 @@ export class BaunitComponent  implements OnInit {
     nombre: this.nombre,
     departamento: this.departamento,
     provincia: this.provincia,
-    sector_predio: this.sector_predio,
     municipio: this.municipio,
+    sector_predio: this.sector_predio,
     vereda: this.vereda,
     tipo: this.tipo,
     complemento: this.complemento,
@@ -103,11 +103,12 @@ export class BaunitComponent  implements OnInit {
     this.route.queryParamMap.subscribe(params => {
       this.mode = params.get("mode");
       if (this.mode=='añadir'){
-        console.log('Baunit. Mode añadir')
+        //console.log('Baunit. Mode añadir')
       } else {
         this.mode=='editar'
-        console.log('Baunit. Mode editar')
-        this.id = params.get('id') || '';      
+       this.id = params.get('id') || '';   
+       console.log('Baunit. Mode editar',this.id )
+    
       }//mode edit
     });//route.queryparams
    }
@@ -123,8 +124,8 @@ export class BaunitComponent  implements OnInit {
     this.nombre.setValue(baunit.nombre);
     this.departamento.setValue(baunit.departamento);
     this.provincia.setValue(baunit.provincia);
-    this.sector_predio.setValue(baunit.sector_predio);
     this.municipio.setValue(baunit.municipio);
+    this.sector_predio.setValue(baunit.sector_predio);
     this.vereda.setValue(baunit.vereda);
     this.tipo.setValue(baunit.tipo);
     this.complemento.setValue(baunit.complemento);
@@ -140,10 +141,12 @@ export class BaunitComponent  implements OnInit {
     baunit.setFromModel(this.controlsGroup.value as Baunit);
     if (this.mode == 'añadir'){
       await baunit.insert();
-      console.log('baunit',baunit, baunit.id)
       this.id = baunit.id;
       this.router.navigate(['/main-screen/baunit'], {queryParams: {mode: 'editar', id: this.id}});
     }else{
+      //baunit al ser creado no tiene id.
+      //para poder actualizar el existente hay que establecer el id
+      baunit.id = this.id;
       await baunit.update();
     }
   }
