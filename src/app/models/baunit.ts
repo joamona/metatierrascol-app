@@ -135,7 +135,7 @@ export class Baunit {
         await this.sqliteService.db.run(q, this.asListOfValues(),undefined,'one')
         .then( (r:any) => {
             this.id =r.changes.values[0].id;
-            sendMessages('Predio ' + r.changes.values[0].id.toString() + ' guardado',
+            sendMessages('Predio ' + this.id.toString() + ' guardado',
                 this.messageService, this.sqliteService.snackBar);
         })
         .catch( (err) =>{

@@ -87,10 +87,12 @@ export class SqliteService {
             if (r.values.length > 0){
               this.baunitList=[];
               r.values.forEach( ( row: Baunit ) =>{
-                var ba: Baunit = new Baunit(this, this.messageService,row.nombre,row.departamento,
-                  row.provincia,row.sector_predio,row.municipio, row.vereda, row.tipo,
-                  row.complemento,row.numero_predial,row.numero_catastral, row.longitud,
-                  row.latitud,row.enviado_servidor,row.id)
+                var ba: Baunit = new Baunit(this, this.messageService)
+                  //,row.nombre,row.departamento,
+                  //row.provincia,row.sector_predio,row.municipio, row.vereda, row.tipo,
+                  //row.complemento,row.numero_predial,row.numero_catastral, row.longitud,
+                  //row.latitud,row.enviado_servidor,row.id
+                  ba.setFromModel(row as Baunit);
                   this.baunitList.push(ba);
               });
               console.log('baunitlist', this.baunitList);

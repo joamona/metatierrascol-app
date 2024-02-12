@@ -15,19 +15,21 @@ import { FormControl } from '@angular/forms';
 
 import { SqliteService } from 'src/app/services/sqlite/sqlite.service';
 import { MessageService } from 'src/app/services/message.service';
+import { AppGlobalVarsService } from 'src/app/services/app-global-vars.service';
 
 import { Message } from 'src/app/models/message';
 import { Baunit } from 'src/app/models/baunit';
 import { Departamento } from 'src/app/interfaces/departamento';
-import { Provincia } from 'src/app/interfaces/provincia';
 import { Municipio } from 'src/app/interfaces/municipio';
 
 import { sendMessages } from 'src/app/utilities/manageMessages';
 
 import { municipios } from 'src/app/interfaces/listas/listaMunicipios';
-import { provincias } from 'src/app/interfaces/listas/listaProvincias';
 import { departamentos } from 'src/app/interfaces/listas/listaDepartamentos';
 import { AlphabeticalOrderPipe } from 'src/app/pipes/alphabetical-order.pipe';
+import { ChangeBooleanByYesNoPipe } from 'src/app/pipes/change-boolean-by-yes-no.pipe';
+import { LC_PredioTipo } from 'src/app/enumerations/lc_predio-tipo';
+import { createDummyBaunit } from 'src/app/models/baunit';
 
 @Component({
   selector: 'app-baunit',
@@ -40,20 +42,24 @@ import { AlphabeticalOrderPipe } from 'src/app/pipes/alphabetical-order.pipe';
     MatFormFieldModule,
     MatInputModule,
     RouterLink,
-    MatButtonModule
+    MatButtonModule,
+    AlphabeticalOrderPipe,
+    ChangeBooleanByYesNoPipe
   ],
   templateUrl: './baunit.component.html',
   styleUrls: ['./baunit.component.scss'],
 })
 export class BaunitComponent  implements OnInit {
+
+  array_LC_PredioTipo = Object.values(LC_PredioTipo);
   departamentos: Departamento[] = departamentos;
-  provincias: Provincia[] = provincias;
-  municipios: Municipio[]  = municipios;
-  municipiosFiltrados: Municipio[] = [];
-  provinciasFiltradas: Provincia[] = [];
-  departamentoSeleccionado: string = '';
-  provinciaSeleccionada: string = '';
-  municipioSeleccionado: string = '';
+  todosLosMunicipios: Municipio[] = municipios;
+  todosMunicipiosDelDepartamento: Municipio[] = [];//Todos los municipios del departamento seleccionado. 
+  municipiosDelDepartamentoProvinciaUnique: Municipio[] = [];//Lista de provincias del departamento.
+                              //Contiene los municipios que coinciden con el departamento,
+                              //eliminando los municipios que tienen la misma provincia.
+  municipiosDeLaProvincia: Municipio[]  = [];//Municipios que coinciden con departamento y provincia
+                              //seleccionados
 
   //obligatorios
   nombre=new FormControl('', [Validators.required]);
@@ -93,14 +99,14 @@ export class BaunitComponent  implements OnInit {
   mode!:string | null;
   constructor(public router:Router, public route: ActivatedRoute, 
         public messageService: MessageService, public sqliteService: SqliteService,
-        public snackBar: MatSnackBar) {
+        public snackBar: MatSnackBar, public appGlobalVarsService: AppGlobalVarsService) {
     this.route.queryParamMap.subscribe(params => {
       this.mode = params.get("mode");
       if (this.mode=='añadir'){
-        alert('Mode añadir')
+        console.log('Baunit. Mode añadir')
       } else {
         this.mode=='editar'
-        alert('Mode editar')
+        console.log('Baunit. Mode editar')
         this.id = params.get('id') || '';      
       }//mode edit
     });//route.queryparams
@@ -129,16 +135,50 @@ export class BaunitComponent  implements OnInit {
     this.latitud.setValue(baunit.latitud);
     this.enviado_servidor.setValue(baunit.enviado_servidor);
   }
-  save(){
+  async save(){
     var baunit = new Baunit(this.sqliteService,this.messageService);
     baunit.setFromModel(this.controlsGroup.value as Baunit);
     if (this.mode == 'añadir'){
-      baunit.insert();
+      await baunit.insert();
+      console.log('baunit',baunit, baunit.id)
       this.id = baunit.id;
-      this.router.navigate(['/heroes', { mode: 'editar', id: this.id }]);
+      this.router.navigate(['/main-screen/baunit'], {queryParams: {mode: 'editar', id: this.id}});
+      //this.router.navigate(['/add_patient'], { queryParams: { mode: 'edit'} });
     }else{
-      baunit.id=this.id;
+      //baunit.id=this.id;
       baunit.update();
     }
   }
+  onDepartamentoChange(){
+      this.provincia.setValue(null);
+      this.municipio.setValue(null);
+      this.municipiosDeLaProvincia=[];
+      
+      var departamento = this.departamento.value;
+      //console.log(departamento);
+      //Saca los municipios del departamento
+      this.todosMunicipiosDelDepartamento = this.todosLosMunicipios.filter(m => m.departamento === departamento);
+      //console.log(this.todosMunicipiosDelDepartamento);
+      //Elimina los municipios que tienen la misma provincia, para obtener un listado de provincias únicas
+      this.municipiosDelDepartamentoProvinciaUnique = [...new Map(this.todosMunicipiosDelDepartamento.map( (municipio: Municipio) => [municipio.provincia, municipio])).values()]
+      console.log(this.municipiosDelDepartamentoProvinciaUnique);     
+  }
+
+  onProvinciaChange(){
+    this.municipio.setValue(null);
+    var provincia = this.provincia.value;
+    this.municipiosDeLaProvincia = this.todosMunicipiosDelDepartamento.filter(m => m.provincia === provincia);
+    //console.log(this.municipiosDeLaProvincia);
+
+  }
+
+  fillAutomatically(){
+    var baunit: Baunit = createDummyBaunit(this.sqliteService,this.messageService);
+    this.setFormControlValuesFromModel(baunit);
+  }
+
+  onlyUnique(value: object, index: number, array: object[]) {
+    return array.indexOf(value) === index;
+  }
+
 }
