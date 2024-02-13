@@ -140,6 +140,7 @@ export class BaunitComponent  implements OnInit {
     this.enviado_servidor.setValue(baunit.enviado_servidor);
   }
   async save(){
+    sendMessages('Salvando datos en Sqllite', this.messageService, this.snackBar)
     var baunit = new Baunit(this.sqliteService,this.messageService);
     baunit.setFromModel(this.controlsGroup.value as Baunit);
     if (this.mode == 'añadir'){

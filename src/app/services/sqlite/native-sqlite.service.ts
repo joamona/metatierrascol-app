@@ -10,6 +10,8 @@
 
 import { Injectable } from '@angular/core';
 import { CapacitorSQLite, SQLiteConnection, SQLiteDBConnection} from '@capacitor-community/sqlite';
+import { MessageService } from '../message.service';
+import { sendMessages } from 'src/app/utilities/manageMessages';
 
 @Injectable({
   providedIn: 'root'
@@ -21,27 +23,30 @@ export class NativeSqliteService {
   public  isConnection: boolean | undefined = false;
   public messages:string[]=[];//solo para hacer las primeras pruebas
 
-  constructor(){ 
+  constructor(public messageService:MessageService){ 
     this.sqliteConnection = new SQLiteConnection(CapacitorSQLite);
   }
 
   async initializeDb(){
     //esto no vale para nada. Siempre da false
-    const ret = (await this.sqliteConnection.checkConnectionsConsistency()).result;
-    console.log('checkConnectionsConsistency 2', ret)
-    this.messages.push('checkConnectionsConsistency')
-    this.messages.push(String(ret))
+    // const ret = (await this.sqliteConnection.checkConnectionsConsistency()).result;
+    // console.log('checkConnectionsConsistency 2', ret)
+    // this.messages.push('checkConnectionsConsistency')
+    // this.messages.push(String(ret))
 
-    //esto no vale para nada. Siempre da false
-    const isConn = (await this.sqliteConnection.isConnection("test_db",false)).result;
-    console.log('isConnection', isConn)
-    this.messages.push('isConnection')
-    this.messages.push(String(isConn))
+    // //esto no vale para nada. Siempre da false
+    // const isConn = (await this.sqliteConnection.isConnection("test_db",false)).result;
+    // console.log('isConnection', isConn)
+    // this.messages.push('isConnection')
+    // this.messages.push(String(isConn))
 
     //Si no existe la crea y la abre. Si existe la recupera y la abre, sin error
-    console.log('Creando la conexion');
-    this.messages.push('Creando la conexion')
+
+    sendMessages('Creando la conexión nativa Sqlite', this.messageService);
     this.db = await this.sqliteConnection.createConnection(this.databaseName,false,'no-encryption',1,false);
+    sendMessages('Conexión Sqlite nativa creada', this.messageService);
+   
+
     return this.db;
     // this.db = await this.sqliteConnection.retrieveConnection(this.databaseName,false)
     // console.log('retrieveConnection 888',this.db)
