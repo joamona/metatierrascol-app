@@ -3,12 +3,15 @@
     <p class="list-item">Predios Medidos: {{ prediosMedidos }}</p>
     <p class="list-item">Predios Enviado: {{ prediosEnviados }}/{{ prediosMedidos }}</p>
   </div> -->
-  <h3>Lista de predios (click para editar)</h3>
+  @if (sqliteService.baunitList.length > 0){
+    <h2>Número de predios: {{sqliteService.baunitList.length}} (click para editar)</h2>
+    <app-baunit-list></app-baunit-list>
+  }@else {
+    <h2>No existen predios en el dispositivo</h2>
+  }
 
-  <app-baunit-list></app-baunit-list>
   <button mat-raised-button [routerLink]="['./baunit']" [queryParams]="{mode: 'añadir'}">Nuevo Predio</button>
   <!-- <button mat-raised-button [disabled]="true">Editar Predio desde el Mapa</button> -->
-  <button mat-raised-button routerLink="./editar-predio-lista">Lista de predios</button>
   <button mat-raised-button routerLink="./advanced">Avanzado</button>
   <button mat-raised-button routerLink="../">Atrás</button>
 </div>

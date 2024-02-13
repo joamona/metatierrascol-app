@@ -23,14 +23,14 @@ import { MessageService } from './services/message.service';
 import { HeaderComponent } from './components/header/header.component';
 import { FooterComponent } from './components/footer/footer.component';
 
-//models
-import { Baunit } from './models/baunit';
-import { SectorPredio } from './enumerations/sector-predio';
-import { LC_PredioTipo } from './enumerations/lc_predio-tipo';
+// //models
+// import { Baunit } from './models/baunit';
+// import { SectorPredio } from './enumerations/sector-predio';
+// import { LC_PredioTipo } from './enumerations/lc_predio-tipo';
 
-//funciones
-import { sendMessages } from './utilities/manageMessages';
-import { createDummyBaunit } from './models/baunit';
+// //funciones
+// import { sendMessages } from './utilities/manageMessages';
+// import { createDummyBaunit } from './models/baunit';
 
 @Component({
   selector: 'app-root',
@@ -74,8 +74,8 @@ export class AppComponent implements OnInit{
 
   async initSqliteService(){
     await this.setSqliteServiceDb();
-    //await this.realizaConsultas();
     await this.sqliteService.createTables();
+    await this.sqliteService.updateBaunitList();
     // var a:Baunit = createDummyBaunit(this.sqliteService, this.messageService);
     // await a.insert();
     // console.log(a.id)
@@ -148,37 +148,6 @@ export class AppComponent implements OnInit{
       console.log('jeepSqliteEl es null');
     }
   }
-
-    
-    // await this.sqliteService.addUser('joamona')
-    //   .then( 
-    //     r =>{console.log('Usuario añadido',r);
-    //     this.sqliteService.messages.push('Usuario añadido')
-    // })
-    //   .catch( err => {console.log(err.message)});
-
-  //   await this.sqliteService.selectUser('joamona')
-  //     .then( (r: any) => {
-  //         if (r.values.length > 0){
-  //           console.log('Usuarios seleccionado',r.values);
-  //           this.sqliteService.messages.push('Usuarios seleccionados');
-  //           r.values.forEach( ( row: any ) =>{
-  //             console.log(row)
-  //             this.sqliteService.messages.push(row.name);
-  //           });
-  //         }else{
-  //           console.log('No hay usuarios')
-  //         }            
-  //       }
-  //     )
-  //     .catch( err => {console.log(err.message)});
-  // }
 }
-
-//'INSERT INTO users (name,country,age) VALUES (?,?,?)',['Ricardo','Portugal','24']
-
-
-// SELECT * FROM Userdata WHERE (LATITUDE >= ? AND LATITUDE <= ?) 
-// AND (LONGITUDE >= ? AND LONGITUDE <= ?)
-// AND acos(sin(?) * sin(LATITUDE) + cos(?) * cos(LATITUDE) * 
-// cos(LONGITUDE-(-?))) <=?
+    
+    

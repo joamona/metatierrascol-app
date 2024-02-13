@@ -50,7 +50,7 @@
       <mat-label>Municipio</mat-label>
       <mat-select formControlName="municipio">
         @for (municip of municipiosDeLaProvincia | alphabeticalOrder:'nombre_municipio'; track municip) {
-          <mat-option [value]="municip.nombre_municipio">
+          <mat-option [value]="municip.codigo_municipio">
             {{ municip.nombre_municipio }}
           </mat-option>
         }

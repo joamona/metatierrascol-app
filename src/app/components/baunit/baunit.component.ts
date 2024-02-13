@@ -106,14 +106,13 @@ export class BaunitComponent  implements OnInit {
         //console.log('Baunit. Mode añadir')
       } else {
         this.mode=='editar'
-        this.id = params.get('id') || '';   
-        //console.log('Baunit. Mode editar',this.id );
-        this.setFromId();
+        this.id = params.get('id') || '';         
       }//mode edit
     });//route.queryparams
    }
 
   ngOnInit() {
+    this.setFromId();
   }
   async setFromId(){
     var baunit = new Baunit(this.sqliteService,this.messageService);
@@ -124,7 +123,10 @@ export class BaunitComponent  implements OnInit {
   setFormControlValuesFromModel(baunit: Baunit){
     this.nombre.setValue(baunit.nombre);
     this.departamento.setValue(baunit.departamento);
+    this.onDepartamentoChange();
     this.provincia.setValue(baunit.provincia);
+    this.onProvinciaChange();
+    console.log(baunit.municipio)
     this.municipio.setValue(baunit.municipio);
     this.sector_predio.setValue(baunit.sector_predio);
     this.vereda.setValue(baunit.vereda);
@@ -179,8 +181,8 @@ export class BaunitComponent  implements OnInit {
     this.setFormControlValuesFromModel(baunit);
   }
 
-  onlyUnique(value: object, index: number, array: object[]) {
-    return array.indexOf(value) === index;
-  }
+  // onlyUnique(value: object, index: number, array: object[]) {
+  //   return array.indexOf(value) === index;
+  // }
 
 }

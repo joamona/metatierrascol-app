@@ -4,6 +4,7 @@
     overflow-y: scroll;
     font-weight: bold;
     text-align: left;
+    color: white;
 }
 
 .alert {

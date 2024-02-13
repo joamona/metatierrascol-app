@@ -11,18 +11,15 @@ export class NetStatusService {
   available = false;
   constructor(public messageService:MessageService){
     Network.addListener('networkStatusChange', status => {
-      console.log('Network status changed', status);
-      const logCurrentNetworkStatus = async () => {
-        const status = await Network.getStatus();
-        this.available=status.connected;
-        var m:string;
-        if (this.available){
-          m='DISPONIBLE'
-        }else{
-          m="NO disponible"
-        }
-        sendMessages('Cambio en la conexion: ' + m,this.messageService);
-      };
+      //console.log('Network status changed', status);
+      this.available=status.connected;
+      var m:string;
+      if (this.available){
+        m='DISPONIBLE'
+      }else{
+        m="NO disponible"
+      }
+      sendMessages('Cambio en la conexion: ' + m, this.messageService);
     });
     this.getNetworkStatus();
   }

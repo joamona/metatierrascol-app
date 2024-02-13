@@ -15,12 +15,12 @@ export class AppGlobalVarsService {
   
   constructor() { 
     console.log('Is devmode',isDevMode())
-    if (isDevMode()){
-      this.appMode=1;
+    // if (isDevMode()){
+    //   this.appMode=1;
       
-    }else{
-      this.appMode=2
-    }
+    // }else{
+    //   this.appMode=2
+    // }
     switch (appMode) {
       case 1: {
        this.urlDjangoApi="http://localhost:8000/";

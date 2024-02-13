@@ -16,9 +16,9 @@ export function createDummyBaunit(sqliteService: SqliteService, messageService: 
     var baunit = new Baunit(sqliteService, messageService);
     baunit.nombre = 'Dummy nombre';
     baunit.tipo = LC_PredioTipo.Baldio;
-    baunit.departamento = 'Amazonas';
-    baunit.provincia = 'Amazonas';
-    baunit.municipio = 'El Encanto';
+    baunit.departamento = 'Antioquia';
+    baunit.provincia = 'Norte';
+    baunit.municipio = '5086';
     baunit.sector_predio = SectorPredio.Este;
     baunit.vereda = 'Dummy vereda';
     baunit.complemento = 'Dummy complemento';

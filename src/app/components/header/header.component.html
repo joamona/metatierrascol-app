@@ -9,15 +9,13 @@
             <span class="margin-right">No autenticado</span>
           }
           @if (netStatusService.available){
-            <mat-icon class="margin-right">signal_wifi_4_bar</mat-icon>
+            <mat-icon class="margin-right" (click)="netStatusService.getNetworkStatus()">signal_wifi_4_bar</mat-icon>
           } @else {
-            <mat-icon class="margin-right">signal_wifi_off</mat-icon>
+            <mat-icon class="margin-right" (click)="netStatusService.getNetworkStatus()">signal_wifi_off</mat-icon>
           }
       </div>
     </div>
 </header>
 @if(showMessages || appGlobalVarsService.appMode==1){
-  <button (click)="netStatusService.getNetworkStatus()">Comprobar conexion</button>
-  <button (click)="netStatusService.available=false">Poner a false</button>
   <app-messages></app-messages>
 }
