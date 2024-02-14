@@ -2,7 +2,7 @@
     <p>Mensajes:</p>
     <div *ngFor='let message of messageService.messages'>
         <div class="{{message.class}}">
-            <strong>{{message.time}} {{message.state}}</strong> {{message.message}}
+            <strong>{{message.time}}</strong> {{message.message}}
         </div>
     </div>
 </div>
