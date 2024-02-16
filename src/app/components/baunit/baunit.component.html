@@ -104,7 +104,8 @@
     <button mat-raised-button *ngIf="appGlobalVarsService.appMode==1" (click)="fillAutomatically()">Fill automatically</button>
     <button mat-raised-button *ngIf="mode=='añadir'" [disabled]="!controlsGroup.valid" (click)="save()">Cuardar</button>
     <button mat-raised-button *ngIf="mode=='editar'" [disabled]="!controlsGroup.valid" (click)="save()">Cuardar cambios</button>
-    <button mat-raised-button routerLink="../">Atrás</button>
+    <!--<button mat-raised-button routerLink="../">Atrás</button>-->
+    <button mat-raised-button (click)="navigateToMenu()">Atrás</button>
     </div>
   </form>
 </div>

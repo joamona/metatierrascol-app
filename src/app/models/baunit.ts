@@ -46,10 +46,10 @@ export class Baunit {
     //opcionales. Se inicializan a '', si es undefined;
     numero_predial: string = '';
     numero_catastral: string = '';
-    longitud: string = '';;
-    latitud: string = '';;
+    longitud: string = '';
+    latitud: string = '';
     enviado_servidor: boolean = false;
-    id: string = '';;//el id de sqlite
+    id: string = '';//el id de sqlite
 
     // constructor(public sqliteService: SqliteService, public messageService: MessageService, nombre: string, departamento:string, 
     //             provincia:string, sector_predio:SectorPredio,

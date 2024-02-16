@@ -1,0 +1,243 @@
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormGroup, Validators, FormControl } from '@angular/forms';
+import { Router, ActivatedRoute } from '@angular/router';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { ReactiveFormsModule } from '@angular/forms';
+
+import { MatOptionModule } from "@angular/material/core";
+import { MatSelectModule } from "@angular/material/select";
+import { MatFormFieldModule } from "@angular/material/form-field";
+import { MatInputModule } from "@angular/material/input";
+import { RouterLink } from "@angular/router";
+import { MatButtonModule } from "@angular/material/button";
+
+import { SqliteService } from 'src/app/services/sqlite/sqlite.service';
+import { MessageService } from 'src/app/services/message.service';
+import { AppGlobalVarsService } from 'src/app/services/app-global-vars.service';
+
+import { Interesado } from 'src/app/models/interesado';
+import {AlphabeticalOrderPipe} from "../../pipes/alphabetical-order.pipe";
+import {ChangeBooleanByYesNoPipe} from "../../pipes/change-boolean-by-yes-no.pipe";
+import {sendMessages} from "../../utilities/manageMessages";
+import {Municipio} from "../../interfaces/municipio";
+import {LC_PredioTipo} from "../../enumerations/lc_predio-tipo";
+import { Departamento } from 'src/app/interfaces/departamento';
+import { departamentos } from 'src/app/interfaces/listas/listaDepartamentos';
+import {municipios} from "../../interfaces/listas/listaMunicipios";
+import {MatCheckbox} from "@angular/material/checkbox";
+import {CR_DocumentoTipo} from "../../enumerations/cr_documento-tipo";
+import {CR_SexoTipo} from "../../enumerations/cr_sexo-tipo";
+import {CR_InteresadoTipo} from "../../enumerations/cr_interesado-tipo";
+import {Grupo_Etnico} from "../../enumerations/grupo_etnico";
+import {Estado} from "../../enumerations/estado";
+import { createDummyInteresado } from 'src/app/models/interesado';
+
+
+@Component({
+  selector: 'app-interesado',
+  standalone: true,
+  imports: [
+    CommonModule,
+    MatOptionModule,
+    ReactiveFormsModule,
+    MatSelectModule,
+    MatFormFieldModule,
+    MatInputModule,
+    RouterLink,
+    MatButtonModule,
+    AlphabeticalOrderPipe,
+    ChangeBooleanByYesNoPipe,
+    MatCheckbox
+  ],
+  templateUrl: './interesado.component.html',
+  styleUrls: ['./interesado.component.scss'],
+})
+export class InteresadoComponent  implements OnInit {
+
+  array_LC_PredioTipo = Object.values(LC_PredioTipo);
+  array_CR_DocumentoTipo = Object.values(CR_DocumentoTipo);
+  array_CR_SexoTipo = Object.values(CR_SexoTipo);
+  array_CR_InteresadoTipo = Object.values(CR_InteresadoTipo);
+  array_Grupo_Etnico = Object.values(Grupo_Etnico);
+  array_Estados = Object.values(Estado);
+
+  departamentos: Departamento[] = departamentos;
+  todosLosMunicipios: Municipio[] = municipios;
+  todosMunicipiosDelDepartamento: Municipio[] = [];//Todos los municipios del departamento seleccionado.
+
+
+  //obligatorios
+  tipo_documento = new FormControl('', [Validators.required]);
+  documento_identidad = new FormControl('', [Validators.required]);
+  tipo = new FormControl('', [Validators.required]);
+  primer_nombre = new FormControl('', [Validators.required]);
+  primer_apellido = new FormControl('', [Validators.required]);
+  correo_electronico = new FormControl('', [Validators.email]);
+  departamento = new FormControl('', [Validators.required]);
+  municipio = new FormControl('', [Validators.required]);
+  sexo = new FormControl('', [Validators.required]);
+  autoriza_notificacion_correo = new FormControl(false, [Validators.required]);
+  autoriza_procesamiento_datos_personales = new FormControl(false, [Validators.required]);
+  baunit_id = new FormControl('', [Validators.required]);
+
+  //opcionales
+  porcentaje_propiedad = new FormControl(0);
+  telefono_1 = new FormControl('');
+  telefono_2 = new FormControl('');
+  notas = new FormControl('');
+  segundo_nombre = new FormControl('');
+  segundo_apellido = new FormControl('');
+  grupo_etnico = new FormControl('');
+  estado = new FormControl('');
+
+  // El grupo de controles para el formulario
+  controlsGroup = new FormGroup({
+    tipo_documento: this.tipo_documento,
+    documento_identidad: this.documento_identidad,
+    tipo: this.tipo,
+    primer_nombre: this.primer_nombre,
+    primer_apellido: this.primer_apellido,
+    correo_electronico: this.correo_electronico,
+    departamento: this.departamento,
+    municipio: this.municipio,
+    autoriza_notificacion_correo: this.autoriza_notificacion_correo,
+    autoriza_procesamiento_datos_personales: this.autoriza_procesamiento_datos_personales,
+    baunit_id: this.baunit_id,
+    sexo: this.sexo,
+
+    porcentaje_propiedad: this.porcentaje_propiedad,
+    telefono_1: this.telefono_1,
+    telefono_2: this.telefono_2,
+    notas: this.notas,
+    segundo_nombre: this.segundo_nombre,
+    segundo_apellido: this.segundo_apellido,
+    grupo_etnico: this.grupo_etnico,
+    estado: this.estado,
+
+  });
+
+
+  mode!: string | null; // Modo del componente: 'añadir' o 'editar'
+  id: string = ''; // El ID del interesado, si está en modo 'editar'
+  paramBaunitId: string = '-1';
+  constructor(
+      public router: Router,
+      public route: ActivatedRoute,
+      public messageService: MessageService,
+      public sqliteService: SqliteService,
+      public snackBar: MatSnackBar,
+      public appGlobalVarsService: AppGlobalVarsService
+  ) {
+    this.route.queryParamMap.subscribe(params => {
+      this.mode = params.get("mode");
+      if (this.mode == 'añadir') {
+
+      } else if (this.mode == 'editar'){
+        this.id = params.get('id') || '';
+      }
+    });
+  }
+
+  ngOnInit() {
+
+    this.route.queryParamMap.subscribe(params => {
+      this.paramBaunitId = params.get('baunit_id') || '-1';
+      if (this.paramBaunitId) {
+        this.baunit_id.setValue(this.paramBaunitId);
+      }
+    });
+
+    if (this.mode === 'editar' && this.id) {
+      this.setFromId();
+    }
+  }
+
+  async setFromId() {
+    var interesado = new Interesado(this.sqliteService, this.messageService);
+    await interesado.setFromId(this.id);
+    this.setFormControlValuesFromModel(interesado);
+  }
+
+  setFormControlValuesFromModel(interesado: Interesado) {
+    this.tipo_documento.setValue(interesado.tipo_documento);
+    this.documento_identidad.setValue(interesado.documento_identidad);
+    this.tipo.setValue(interesado.tipo);
+
+    this.primer_nombre.setValue(interesado.primer_nombre);
+    this.primer_apellido.setValue(interesado.primer_apellido);
+    this.correo_electronico.setValue(interesado.correo_electronico);
+
+    this.departamento.setValue(interesado.departamento);
+    this.onDepartamentoChange();
+    this.municipio.setValue(interesado.municipio);
+
+    this.sexo.setValue(interesado.sexo);
+    this.telefono_1.setValue(interesado.telefono_1);
+    this.telefono_2.setValue(interesado.telefono_2);
+    this.notas.setValue(interesado.notas);
+    this.porcentaje_propiedad.setValue(interesado.porcentaje_propiedad);
+
+    this.segundo_nombre.setValue(interesado.segundo_nombre);
+    this.segundo_apellido.setValue(interesado.segundo_apellido);
+    this.grupo_etnico.setValue(interesado.grupo_etnico);
+    this.estado.setValue(interesado.estado);
+
+    this.autoriza_notificacion_correo.setValue(interesado.autoriza_notificacion_correo);
+    this.autoriza_procesamiento_datos_personales.setValue(interesado.autoriza_procesamiento_datos_personales);
+
+    this.baunit_id.setValue(interesado.baunit_id);
+
+
+  }
+
+
+  async save() {
+    sendMessages('Salvando datos en SQLite', this.messageService, this.snackBar);
+    var interesado = new Interesado(this.sqliteService, this.messageService);
+    interesado.setFromModel(this.controlsGroup.value as Interesado);
+    //const baunitId = this.controlsGroup.get('baunit_id')!.value;
+    if (this.mode == 'añadir') {
+      await interesado.insert();
+      this.id = interesado.id;
+      this.router.navigate(['/main-screen/menu-predio/interesado'], {queryParams: {mode: 'editar', baunit_id:this.paramBaunitId, id: this.id}});
+    } else {
+      interesado.id = this.id;
+      await interesado.update();
+    }
+  }
+
+  fillAutomatically(){
+    var interesado: Interesado = createDummyInteresado(this.sqliteService, this.messageService);
+    //const baunitId = this.controlsGroup.get('baunit_id')!.value;
+
+    interesado.baunit_id = this.paramBaunitId;
+
+    this.setFormControlValuesFromModel(interesado);
+
+    console.log(this.controlsGroup.value); // Muestra los valores actuales del formulario
+    console.log(this.controlsGroup.valid); // Muestra si el formulario es válido o no
+    console.log(this.controlsGroup.errors); // Muestra los errores de validación del formulario
+
+  }
+
+  onDepartamentoChange(){
+    //this.provincia.setValue(null);
+    this.municipio.setValue(null);
+    //this.municipiosDeLaProvincia=[];
+
+    var departamento = this.departamento.value;
+    //console.log(departamento);
+    //Saca los municipios del departamento
+    this.todosMunicipiosDelDepartamento = this.todosLosMunicipios.filter(m => m.departamento === departamento);
+    //console.log(this.todosMunicipiosDelDepartamento);
+    //Elimina los municipios que tienen la misma provincia, para obtener un listado de provincias únicas
+    //this.municipiosDelDepartamentoProvinciaUnique = [...new Map(this.todosMunicipiosDelDepartamento.map( (municipio: Municipio) => [municipio.provincia, municipio])).values()]
+    //console.log(this.municipiosDelDepartamentoProvinciaUnique);
+  }
+
+  navigateToMenu() {
+    //let baunit_id = this.controlsGroup.get('baunit_id')!.value;
+    this.router.navigate(['/main-screen/menu-predio'], { queryParams: { baunit_id: this.paramBaunitId } });
+  }
+}
