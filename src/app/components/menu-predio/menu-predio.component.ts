@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {MatButtonModule} from "@angular/material/button";
 import {ActivatedRoute, RouterLink} from "@angular/router";
 import {BaunitListComponent} from "../baunit-list/baunit-list.component";
+import {SqliteService} from "../../services/sqlite/sqlite.service";
 
 @Component({
   selector: 'app-menu-predio',
@@ -14,7 +15,7 @@ export class MenuPredioComponent  implements OnInit {
 
   baunitId: string | null = null;
   isInteresadosButtonEnabled: boolean = false;
-  constructor(private activatedRoute: ActivatedRoute) { }
+  constructor(private activatedRoute: ActivatedRoute, public sqliteService:SqliteService) { }
 
   ngOnInit(): void {
     this.activatedRoute.queryParamMap.subscribe(params => {

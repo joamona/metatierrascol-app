@@ -162,6 +162,7 @@
             <button mat-raised-button *ngIf="appGlobalVarsService.appMode==1" (click)="fillAutomatically()">Fill automatically</button>
             <button mat-raised-button *ngIf="mode=='añadir'" [disabled]="!controlsGroup.valid" (click)="save()">Guardar</button>
             <button mat-raised-button *ngIf="mode=='editar'" [disabled]="!controlsGroup.valid" (click)="save()">Guardar cambios</button>
+            <button mat-raised-button color="warn" *ngIf="mode === 'editar'" (click)="confirmDelete()">Eliminar</button>
             <button mat-raised-button (click)="navigateToMenu()">Atrás</button>
         </div>
     </form>

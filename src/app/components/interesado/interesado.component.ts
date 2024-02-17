@@ -32,7 +32,8 @@ import {CR_InteresadoTipo} from "../../enumerations/cr_interesado-tipo";
 import {Grupo_Etnico} from "../../enumerations/grupo_etnico";
 import {Estado} from "../../enumerations/estado";
 import { createDummyInteresado } from 'src/app/models/interesado';
-
+import {MatDialog, MatDialogModule} from '@angular/material/dialog';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-interesado',
@@ -48,7 +49,8 @@ import { createDummyInteresado } from 'src/app/models/interesado';
     MatButtonModule,
     AlphabeticalOrderPipe,
     ChangeBooleanByYesNoPipe,
-    MatCheckbox
+    MatCheckbox,
+    MatDialogModule
   ],
   templateUrl: './interesado.component.html',
   styleUrls: ['./interesado.component.scss'],
@@ -132,7 +134,8 @@ export class InteresadoComponent  implements OnInit {
       public messageService: MessageService,
       public sqliteService: SqliteService,
       public snackBar: MatSnackBar,
-      public appGlobalVarsService: AppGlobalVarsService
+      public appGlobalVarsService: AppGlobalVarsService,
+      private dialog: MatDialog
   ) {
     this.route.queryParamMap.subscribe(params => {
       this.mode = params.get("mode");
@@ -213,7 +216,7 @@ export class InteresadoComponent  implements OnInit {
     if (this.mode == 'añadir') {
       await interesado.insert();
       this.id = interesado.id;
-      this.router.navigate(['/main-screen/menu-predio/interesado'], {queryParams: {mode: 'editar', baunit_id:this.paramBaunitId, id: this.id}});
+      this.router.navigate(['/main-screen/menu-predio/list-interesados/interesado'], {queryParams: {mode: 'editar', baunit_id:this.paramBaunitId, id: this.id}});
     } else {
       interesado.id = this.id;
       await interesado.update();
@@ -262,6 +265,42 @@ export class InteresadoComponent  implements OnInit {
     //console.log(this.municipiosDeLaProvincia);
 
   }
+
+  async confirmDelete(): Promise<void> {
+    const result = await Swal.fire({
+      title: '¿Estás seguro?',
+      text: "No podrás revertir esta acción",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Eliminar',
+      cancelButtonText: 'Cancelar'
+    });
+
+    if (result.isConfirmed) {
+      try {
+        var interesado = new Interesado(this.sqliteService, this.messageService);
+        interesado.id = this.id;
+        await interesado.delete();
+        await Swal.fire(
+            'Eliminado!',
+            'El interesado ha sido eliminado.',
+            'success'
+        );
+
+        this.router.navigate(['/main-screen/menu-predio/list-interesados'], { queryParams: { mode: 'añadir', baunit_id: this.paramBaunitId } });
+      } catch (err) {
+        const errorMessage = (err instanceof Error) ? err.message : 'Ocurrió un error desconocido';
+        await Swal.fire(
+            'Error!',
+            'No se pudo eliminar el interesado: ' + errorMessage,
+            'error'
+        );
+      }
+    }
+  }
+
 
   navigateToMenu() {
     //let baunit_id = this.controlsGroup.get('baunit_id')!.value;
