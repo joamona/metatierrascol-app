@@ -67,11 +67,23 @@
             </mat-select>
         </mat-form-field>
 
+        <!-- Provincia -->
+        <mat-form-field class="custom-input">
+            <mat-label>Provincia</mat-label>
+            <mat-select formControlName="provincia" (selectionChange)="onProvinciaChange()">
+                @for (municip of municipiosDelDepartamentoProvinciaUnique | alphabeticalOrder:'provincia'; track municip) {
+                    <mat-option [value]="municip.provincia">
+                        {{ municip.provincia }}
+                    </mat-option>
+                }
+            </mat-select>
+        </mat-form-field>
+
         <!-- Municipio -->
         <mat-form-field class="custom-input">
             <mat-label>Municipio</mat-label>
             <mat-select formControlName="municipio">
-                @for (municip of todosMunicipiosDelDepartamento | alphabeticalOrder:'nombre_municipio'; track municip) {
+                @for (municip of municipiosDeLaProvincia | alphabeticalOrder:'nombre_municipio'; track municip) {
                     <mat-option [value]="municip.codigo_municipio">
                         {{ municip.nombre_municipio }}
                     </mat-option>

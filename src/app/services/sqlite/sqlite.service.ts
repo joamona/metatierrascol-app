@@ -83,6 +83,7 @@ export class SqliteService {
             correo_electronico TEXT,
             sexo TEXT NOT NULL,
             departamento TEXT NOT NULL,
+            provincia TEXT NOT NULL,
             municipio TEXT NOT NULL,
             porcentaje_propiedad REAL,
             segundo_nombre TEXT,

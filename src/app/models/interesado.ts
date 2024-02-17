@@ -21,8 +21,9 @@ export function createDummyInteresado(sqliteService: SqliteService, messageServi
     interesado.tipo = CR_InteresadoTipo.Persona_Natural
     interesado.sexo = CR_SexoTipo.Sin_Determinar
     interesado.autoriza_notificacion_correo = true;
-    interesado.departamento = departamentos[1].departamento;
-    interesado.municipio = municipios[0].nombre_municipio;
+    interesado.departamento = 'Antioquia';
+    interesado.provincia = 'Norte';
+    interesado.municipio = '5086';
     interesado.porcentaje_propiedad = 100;
     interesado.segundo_nombre = 'SegundoNombre';
     interesado.segundo_apellido = 'SegundoApellido';
@@ -44,6 +45,7 @@ export class Interesado {
     correo_electronico: string = '';
     autoriza_notificacion_correo: boolean = false;
     departamento: string = '';
+    provincia: string = '';
     municipio: string = '';
     porcentaje_propiedad: number = 0;
     baunit_id: string = '';
@@ -72,6 +74,7 @@ export class Interesado {
         this.correo_electronico = interesado.correo_electronico;
         this.autoriza_notificacion_correo = interesado.autoriza_notificacion_correo;
         this.departamento = interesado.departamento;
+        this.provincia = interesado.provincia;
         this.municipio = interesado.municipio;
         this.porcentaje_propiedad = interesado.porcentaje_propiedad;
         this.baunit_id = interesado.baunit_id;
@@ -104,19 +107,20 @@ export class Interesado {
                     this.correo_electronico = row.correo_electronico;
                     this.autoriza_notificacion_correo = row.autoriza_notificacion_correo;
                     this.departamento = row.departamento;
+                    this.provincia=row.provincia;
                     this.municipio = row.municipio;
                     this.porcentaje_propiedad = row.porcentaje_propiedad;
                     this.baunit_id = row.baunit_id;
 
                     // Opcionales
-                    this.id = row.id ?? '';
-                    this.segundo_nombre = row.segundo_nombre ?? '';
-                    this.segundo_apellido = row.segundo_apellido ?? '';
-                    this.grupo_etnico = row.grupo_etnico ?? undefined;
-                    this.telefono_1 = row.telefono_1 ?? '';
-                    this.telefono_2 = row.telefono_2 ?? '';
-                    this.notas = row.notas ?? '';
-                    this.estado = row.estado ?? undefined;
+                    this.id = row.id;
+                    this.segundo_nombre = row.segundo_nombre;
+                    this.segundo_apellido = row.segundo_apellido;
+                    this.grupo_etnico = row.grupo_etnico;
+                    this.telefono_1 = row.telefono_1;
+                    this.telefono_2 = row.telefono_2;
+                    this.notas = row.notas;
+                    this.estado = row.estado;
 
                     sendMessages(`Interesado id ${this.id} recuperado con éxito`, this.messageService, this.sqliteService.snackBar);
                 } else {
@@ -133,7 +137,7 @@ export class Interesado {
         return [
             this.baunit_id,
             this.tipo_documento, this.documento_identidad, this.tipo, this.primer_nombre, this.primer_apellido,
-            this.correo_electronico, this.sexo, this.departamento, this.municipio, this.porcentaje_propiedad,
+            this.correo_electronico, this.sexo, this.departamento, this.provincia, this.municipio, this.porcentaje_propiedad,
             this.segundo_nombre, this.segundo_apellido, this.grupo_etnico, this.telefono_1, this.telefono_2,
             this.notas, this.estado, this.autoriza_notificacion_correo,
             this.autoriza_procesamiento_datos_personales
@@ -142,15 +146,16 @@ export class Interesado {
 
     async insert() {
         const q = `INSERT INTO interesado (
-    tipo_documento, documento_identidad, tipo, primer_nombre, primer_apellido, 
-    correo_electronico, sexo, departamento, municipio, porcentaje_propiedad, 
+    baunit_id, tipo_documento, documento_identidad, tipo, primer_nombre, primer_apellido, 
+    correo_electronico, sexo, departamento, provincia, municipio, porcentaje_propiedad, 
     segundo_nombre, segundo_apellido, grupo_etnico, telefono_1, telefono_2, 
     notas, estado, autoriza_notificacion_correo, 
-    autoriza_procesamiento_datos_personales, baunit_id
-  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id`;
+    autoriza_procesamiento_datos_personales
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id`;
+
         await this.sqliteService.db.run(q, this.asListOfValues(), undefined, 'one')
             .then((r: any) => {
-                this.id = r.changes.values[0].id; // Asegúrate de que esto es correcto según tu implementación de SQLite
+                this.id = r.changes.values[0].id;
                 sendMessages(`Interesado ${this.id} guardado`, this.messageService, this.sqliteService.snackBar);
             })
             .catch((err) => {
@@ -163,11 +168,12 @@ export class Interesado {
     async update() {
         const q = `UPDATE interesado SET (
         baunit_id, tipo_documento, documento_identidad, tipo, primer_nombre, primer_apellido, 
-        correo_electronico, sexo, departamento, municipio, porcentaje_propiedad, segundo_nombre, 
-        segundo_apellido, grupo_etnico, telefono_1, telefono_2, notas, 
-        estado, autoriza_notificacion_correo, autoriza_procesamiento_datos_personales) = (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) WHERE id = ?`;
+        correo_electronico, sexo, departamento, provincia, municipio, porcentaje_propiedad, 
+        segundo_nombre, segundo_apellido, grupo_etnico, telefono_1, telefono_2, 
+        notas, estado, autoriza_notificacion_correo, 
+        autoriza_procesamiento_datos_personales) = (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) WHERE id = ?`;
         const values = this.asListOfValues();
-        values.push(this.id); // Asegúrate de que el ID es el último valor empujado al array para el WHERE id = ?
+        values.push(this.id);
         await this.sqliteService.db.run(q, values, undefined, 'one')
             .then(() => {
                 sendMessages(`Interesado ${this.id} actualizado`, this.messageService, this.sqliteService.snackBar);

@@ -65,7 +65,11 @@ export class InteresadoComponent  implements OnInit {
   departamentos: Departamento[] = departamentos;
   todosLosMunicipios: Municipio[] = municipios;
   todosMunicipiosDelDepartamento: Municipio[] = [];//Todos los municipios del departamento seleccionado.
-
+  municipiosDelDepartamentoProvinciaUnique: Municipio[] = [];//Lista de provincias del departamento.
+  //Contiene los municipios que coinciden con el departamento,
+  //eliminando los municipios que tienen la misma provincia.
+  municipiosDeLaProvincia: Municipio[]  = [];//Municipios que coinciden con departamento y provincia
+  //seleccionados
 
   //obligatorios
   tipo_documento = new FormControl('', [Validators.required]);
@@ -75,6 +79,7 @@ export class InteresadoComponent  implements OnInit {
   primer_apellido = new FormControl('', [Validators.required]);
   correo_electronico = new FormControl('', [Validators.email]);
   departamento = new FormControl('', [Validators.required]);
+  provincia=new FormControl('', [Validators.required]);
   municipio = new FormControl('', [Validators.required]);
   sexo = new FormControl('', [Validators.required]);
   autoriza_notificacion_correo = new FormControl(false, [Validators.required]);
@@ -91,7 +96,6 @@ export class InteresadoComponent  implements OnInit {
   grupo_etnico = new FormControl('');
   estado = new FormControl('');
 
-  // El grupo de controles para el formulario
   controlsGroup = new FormGroup({
     tipo_documento: this.tipo_documento,
     documento_identidad: this.documento_identidad,
@@ -100,6 +104,7 @@ export class InteresadoComponent  implements OnInit {
     primer_apellido: this.primer_apellido,
     correo_electronico: this.correo_electronico,
     departamento: this.departamento,
+    provincia: this.provincia,
     municipio: this.municipio,
     autoriza_notificacion_correo: this.autoriza_notificacion_correo,
     autoriza_procesamiento_datos_personales: this.autoriza_procesamiento_datos_personales,
@@ -157,20 +162,28 @@ export class InteresadoComponent  implements OnInit {
     var interesado = new Interesado(this.sqliteService, this.messageService);
     await interesado.setFromId(this.id);
     this.setFormControlValuesFromModel(interesado);
+    console.log("el itneresado es: ",interesado);
   }
 
   setFormControlValuesFromModel(interesado: Interesado) {
     this.tipo_documento.setValue(interesado.tipo_documento);
+    console.log("tipo docummento: ", interesado.tipo_documento);
     this.documento_identidad.setValue(interesado.documento_identidad);
     this.tipo.setValue(interesado.tipo);
+    console.log("tipo interesado: ", interesado.tipo);
 
     this.primer_nombre.setValue(interesado.primer_nombre);
     this.primer_apellido.setValue(interesado.primer_apellido);
     this.correo_electronico.setValue(interesado.correo_electronico);
 
     this.departamento.setValue(interesado.departamento);
+    console.log("departamento: ", interesado.departamento);
     this.onDepartamentoChange();
+    this.provincia.setValue(interesado.provincia);
+    console.log("provincia: ", interesado.provincia);
+    this.onProvinciaChange();
     this.municipio.setValue(interesado.municipio);
+    console.log("municipio: ", interesado.municipio);
 
     this.sexo.setValue(interesado.sexo);
     this.telefono_1.setValue(interesado.telefono_1);
@@ -215,16 +228,22 @@ export class InteresadoComponent  implements OnInit {
 
     this.setFormControlValuesFromModel(interesado);
 
-    console.log(this.controlsGroup.value); // Muestra los valores actuales del formulario
-    console.log(this.controlsGroup.valid); // Muestra si el formulario es válido o no
-    console.log(this.controlsGroup.errors); // Muestra los errores de validación del formulario
+    console.log(this.controlsGroup.value);
+    console.log(this.controlsGroup.valid);
+    console.log(this.controlsGroup.errors);
 
   }
 
-  onDepartamentoChange(){
-    //this.provincia.setValue(null);
+  /*onDepartamentoChange(){
     this.municipio.setValue(null);
-    //this.municipiosDeLaProvincia=[];
+    var departamento = this.departamento.value;
+    this.todosMunicipiosDelDepartamento = this.todosLosMunicipios.filter(m => m.departamento === departamento);
+  }*/
+
+  onDepartamentoChange(){
+    this.provincia.setValue(null);
+    this.municipio.setValue(null);
+    this.municipiosDeLaProvincia=[];
 
     var departamento = this.departamento.value;
     //console.log(departamento);
@@ -232,8 +251,16 @@ export class InteresadoComponent  implements OnInit {
     this.todosMunicipiosDelDepartamento = this.todosLosMunicipios.filter(m => m.departamento === departamento);
     //console.log(this.todosMunicipiosDelDepartamento);
     //Elimina los municipios que tienen la misma provincia, para obtener un listado de provincias únicas
-    //this.municipiosDelDepartamentoProvinciaUnique = [...new Map(this.todosMunicipiosDelDepartamento.map( (municipio: Municipio) => [municipio.provincia, municipio])).values()]
+    this.municipiosDelDepartamentoProvinciaUnique = [...new Map(this.todosMunicipiosDelDepartamento.map( (municipio: Municipio) => [municipio.provincia, municipio])).values()]
     //console.log(this.municipiosDelDepartamentoProvinciaUnique);
+  }
+
+  onProvinciaChange(){
+    this.municipio.setValue(null);
+    var provincia = this.provincia.value;
+    this.municipiosDeLaProvincia = this.todosMunicipiosDelDepartamento.filter(m => m.provincia === provincia);
+    //console.log(this.municipiosDeLaProvincia);
+
   }
 
   navigateToMenu() {
