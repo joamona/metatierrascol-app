@@ -13,3 +13,6 @@ Hacer un pull de main en local.
 cambiar a la rama manin
 
 Borrar la rama temporal en local
+
+git branch --delete <branchname>
+
