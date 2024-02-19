@@ -1,52 +1,55 @@
-/**Este servicio, NativeSQLiteService, funciona en android o ios, 
- * y el servicio web, WebSQLiteService, no funciona en web 
+/**Este servicio, NativeSQLiteService, funciona en android o ios,
+ * y el servicio web, WebSQLiteService, no funciona en web
  * */
 
-import { Injectable } from '@angular/core';
-import { SQLiteDBConnection } from '@capacitor-community/sqlite'
-import { MatSnackBar } from '@angular/material/snack-bar';
+import {Injectable} from '@angular/core';
+import {SQLiteDBConnection} from '@capacitor-community/sqlite'
+import {MatSnackBar} from '@angular/material/snack-bar';
 
-import { MessageService } from '../message.service';
+import {MessageService} from '../message.service';
 
-import { Baunit } from 'src/app/models/baunit';
+import {Baunit} from 'src/app/models/baunit';
 
-import { sendMessages } from 'src/app/utilities/manageMessages';
+import {sendMessages} from 'src/app/utilities/manageMessages';
+import {Interesado} from "../../models/interesado";
 
 @Injectable({
-  providedIn: 'root'
+    providedIn: 'root'
 })
 export class SqliteService {
-  public db!: SQLiteDBConnection;
-  public messages:string[]=[];
-  public isDbConexionOk = false;
+    public db!: SQLiteDBConnection;
+    public messages: string[] = [];
+    public isDbConexionOk = false;
 
-  //listas de objetos de la base de datos
-  //todo el contenido de la base de datos debe reflejarse
-  //aquí para que se muestre en los componentes
-  baunitList: Baunit[]= [];
+    //listas de objetos de la base de datos
+    //todo el contenido de la base de datos debe reflejarse
+    //aquí para que se muestre en los componentes
+    baunitList: Baunit[] = [];
+    interesadoList: Interesado[] = [];
 
-  constructor(public messageService:MessageService, public snackBar:MatSnackBar){ 
-  }
-  async setAndOpenDb(sqLiteDBConnection:SQLiteDBConnection){
-    this.db=sqLiteDBConnection;
-    var r = await this.db.open()
-    .then( (r) => { 
-            this.isDbConexionOk=true;
-            sendMessages('Conexion a la base de datos abierta',this.messageService, this.snackBar);
-    })
-    .catch( (err) => {
-      sendMessages('Conexion a la base de datos abierta',this.messageService, this.snackBar);
-    });
-  }
+    constructor(public messageService: MessageService, public snackBar: MatSnackBar) {
+    }
 
-  async createTables(){
-    //const q = 'create table if not exists users (id integer primary key autoincrement, name text not null, active integer default 1);'
-    // nombre, departamento, provincia, sector_predio,
-    //         municipio, vereda, lc_prediotipo,tipo, complemento,
-    //         numero_predial, numero_catastral, 
-    //         longitud, latitud, enviado_servidor
-    
-    var baunit=`create table if not exists baunit (
+    async setAndOpenDb(sqLiteDBConnection: SQLiteDBConnection) {
+        this.db = sqLiteDBConnection;
+        var r = await this.db.open()
+            .then((r) => {
+                this.isDbConexionOk = true;
+                sendMessages('Conexion a la base de datos abierta', this.messageService, this.snackBar);
+            })
+            .catch((err) => {
+                sendMessages('Conexion a la base de datos abierta', this.messageService, this.snackBar);
+            });
+    }
+
+    async createTables() {
+        //const q = 'create table if not exists users (id integer primary key autoincrement, name text not null, active integer default 1);'
+        // nombre, departamento, provincia, sector_predio,
+        //         municipio, vereda, lc_prediotipo,tipo, complemento,
+        //         numero_predial, numero_catastral,
+        //         longitud, latitud, enviado_servidor
+
+        var baunit = `create table if not exists baunit (
       id integer primary key autoincrement,
       nombre text not null,
       departamento text not null,
@@ -62,65 +65,138 @@ export class SqliteService {
       latitud text,
       enviado_servidor boolean default false);
       `
-    await this.db.query(baunit)
-      .then((r) =>{
-        sendMessages('Tabla baunit creada',this.messageService, this.snackBar);
-      })
-      .catch((err) => {
-        sendMessages(err.message,this.messageService,this.snackBar);
-      });
+        await this.db.query(baunit)
+            .then((r) => {
+                sendMessages('Tabla baunit creada', this.messageService, this.snackBar);
+            })
+            .catch((err) => {
+                sendMessages(err.message, this.messageService, this.snackBar);
+            });
 
-  }
+        var interesado = `CREATE TABLE IF NOT EXISTS interesado (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            tipo_documento TEXT NOT NULL,
+            documento_identidad TEXT NOT NULL,
+            tipo TEXT NOT NULL,
+            primer_nombre TEXT NOT NULL,
+            primer_apellido TEXT NOT NULL,
+            correo_electronico TEXT,
+            sexo TEXT NOT NULL,
+            departamento TEXT NOT NULL,
+            provincia TEXT NOT NULL,
+            municipio TEXT NOT NULL,
+            porcentaje_propiedad REAL,
+            segundo_nombre TEXT,
+            segundo_apellido TEXT,
+            grupo_etnico TEXT,
+            telefono_1 TEXT,
+            telefono_2 TEXT,
+            notas TEXT,
+            estado TEXT,
+            autoriza_notificacion_correo BOOLEAN,
+            autoriza_procesamiento_datos_personales BOOLEAN,
+            baunit_id INTEGER,
+            FOREIGN KEY(baunit_id) REFERENCES baunit(id) ON DELETE CASCADE
+        );`;
+        await this.db.query(interesado)
+            .then(() => {
+                sendMessages('Tabla interesado creada con clave ajena', this.messageService, this.snackBar);
+            })
+            .catch((err) => {
+                sendMessages(err.message, this.messageService, this.snackBar);
+            });
+    }
 
-  async dropTables(){
-    const q = 'drop table if exists baunit;'
-    return await this.db.query(q);
-  }
+    async dropTables() {
+        /*const q = 'drop table if exists baunit;'
+        return await this.db.query(q);*/
 
-  async updateBaunitList(){
-      const q='select * from baunit';
-      await this.db.query('select * from baunit')
-      .then( (r: any) => {
-          if (r==undefined){
-            this.baunitList=[]
-          }else{
-            if (r.values.length >= 0){
-              this.baunitList=[];
-              r.values.forEach( ( row: Baunit ) =>{
-                var ba: Baunit = new Baunit(this, this.messageService)
-                  //,row.nombre,row.departamento,
-                  //row.provincia,row.sector_predio,row.municipio, row.vereda, row.tipo,
-                  //row.complemento,row.numero_predial,row.numero_catastral, row.longitud,
-                  //row.latitud,row.enviado_servidor,row.id
-                  ba.setFromModel(row as Baunit);
-                  this.baunitList.push(ba);
-              });
-              console.log('baunitlist', this.baunitList);
-              sendMessages('Baunits recuperadas: ' + this.baunitList.length.toString(), this.messageService, this.snackBar);
-              // console.log('Usuarios seleccionado',r.values);
-              // this.sqliteService.messages.push('Usuarios seleccionados');
-              // r.values.forEach( ( row: any ) =>{
-              //   console.log(row)
-              //   this.sqliteService.messages.push(row.name);
-            }else{
-              sendMessages('Baunits recuperadas: 0', this.messageService, this.snackBar);              
-            } 
-          }           
-      })
-      .catch( err => {
-        sendMessages(err.message, this.messageService, this.snackBar);                    
-      });
-  }
+        await this.db.query('DROP TABLE IF EXISTS interesado;')
+            .then(() => {
+                sendMessages('Tabla interesado eliminada', this.messageService, this.snackBar);
+            })
+            .catch((err) => {
+                sendMessages('Error al eliminar la tabla interesado: ' + err.message, this.messageService, this.snackBar);
+            });
 
-  async addUser(username: string){
-    const q='insert into users (name) values (?)';
-    return await this.db.run(q,[username],true,'all')
-  }
 
-  async selectUser(username: string){
-    const q='select * from users where name = ?';
-    return await this.db.query(q,[username]);
-  }
+        return await this.db.query('DROP TABLE IF EXISTS baunit;')
+            .then(() => {
+                sendMessages('Tabla baunit eliminada', this.messageService, this.snackBar);
+            })
+            .catch((err) => {
+                sendMessages('Error al eliminar la tabla baunit: ' + err.message, this.messageService, this.snackBar);
+            });
+    }
+
+    async updateBaunitList() {
+        const q = 'select * from baunit';
+        await this.db.query('select * from baunit')
+            .then((r: any) => {
+                if (r == undefined) {
+                    this.baunitList = []
+                } else {
+                    if (r.values.length >= 0) {
+                        this.baunitList = [];
+                        r.values.forEach((row: Baunit) => {
+                            var ba: Baunit = new Baunit(this, this.messageService)
+                            //,row.nombre,row.departamento,
+                            //row.provincia,row.sector_predio,row.municipio, row.vereda, row.tipo,
+                            //row.complemento,row.numero_predial,row.numero_catastral, row.longitud,
+                            //row.latitud,row.enviado_servidor,row.id
+                            ba.setFromModel(row as Baunit);
+                            this.baunitList.push(ba);
+                        });
+                        console.log('baunitlist', this.baunitList);
+                        sendMessages('Baunits recuperadas: ' + this.baunitList.length.toString(), this.messageService, this.snackBar);
+                        // console.log('Usuarios seleccionado',r.values);
+                        // this.sqliteService.messages.push('Usuarios seleccionados');
+                        // r.values.forEach( ( row: any ) =>{
+                        //   console.log(row)
+                        //   this.sqliteService.messages.push(row.name);
+                    } else {
+                        sendMessages('Baunits recuperadas: 0', this.messageService, this.snackBar);
+                    }
+                }
+            })
+            .catch(err => {
+                sendMessages(err.message, this.messageService, this.snackBar);
+            });
+    }
+
+    async updateInteresadosList() {
+        await this.db.query('SELECT * FROM interesado')
+            .then((r: any) => {
+                if (r.values.length > 0) {
+
+                    this.interesadoList = [];
+                    r.values.forEach((row: Interesado) => {
+                        var interesado = new Interesado(this, this.messageService);
+                        interesado.setFromModel(row as Interesado);
+                        this.interesadoList.push(interesado);
+                    });
+                    console.log('interesadosList', this.interesadoList);
+                    sendMessages(`Interesados recuperados: ${this.interesadoList.length}`, this.messageService, this.snackBar);
+                } else {
+                    this.interesadoList = [];
+                    sendMessages('No se encontraron interesados', this.messageService, this.snackBar);
+                }
+            })
+            .catch((err) => {
+                sendMessages(err.message, this.messageService, this.snackBar);
+            });
+    }
+
+
+    async addUser(username: string) {
+        const q = 'insert into users (name) values (?)';
+        return await this.db.run(q, [username], true, 'all')
+    }
+
+    async selectUser(username: string) {
+        const q = 'select * from users where name = ?';
+        return await this.db.query(q, [username]);
+    }
 }
 
 
