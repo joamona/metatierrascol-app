@@ -1,0 +1,18 @@
+Crear rama temporal
+
+después de subir rama, en github
+
+selecciono rama y compare & pull request
+
+Confirmo, y borro la rama.
+
+En local
+
+Hacer un pull de main en local.
+
+cambiar a la rama manin
+
+Borrar la rama temporal en local
+
+git branch --delete <branchname>
+
