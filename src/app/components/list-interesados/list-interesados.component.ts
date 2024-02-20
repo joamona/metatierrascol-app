@@ -27,6 +27,6 @@ export class ListInteresadosComponent implements OnInit {
   }
 
   navigateToMenu() {
-    this.router.navigate(['/main-screen/menu-predio'], { queryParams: { baunit_id: this.baunitId } });
+    this.router.navigate(['/main-screen/menu-predio'], { queryParams: { mode: 'editar', baunit_id: this.baunitId } });
   }
 }
