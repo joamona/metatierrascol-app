@@ -304,6 +304,6 @@ export class InteresadoComponent  implements OnInit {
 
   navigateToMenu() {
     //let baunit_id = this.controlsGroup.get('baunit_id')!.value;
-    this.router.navigate(['/main-screen/menu-predio'], { queryParams: { baunit_id: this.paramBaunitId } });
+    this.router.navigate(['/main-screen/menu-predio'], { queryParams: {mode: 'editar', baunit_id: this.paramBaunitId}});
   }
 }

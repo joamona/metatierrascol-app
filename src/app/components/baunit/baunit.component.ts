@@ -106,7 +106,7 @@ export class BaunitComponent  implements OnInit {
         //console.log('Baunit. Mode añadir')
       } else {
         this.mode=='editar'
-        this.id = params.get('id') || '';         
+        this.id = params.get('baunit_id') || '';
       }//mode edit
     });//route.queryparams
    }
@@ -146,7 +146,7 @@ export class BaunitComponent  implements OnInit {
     if (this.mode == 'añadir'){
       await baunit.insert();
       this.id = baunit.id;
-      this.router.navigate(['/main-screen/menu-predio/baunit'], {queryParams: {mode: 'editar', id: this.id}});
+      this.router.navigate(['/main-screen/menu-predio/baunit'], {queryParams: {mode: 'editar', baunit_id: this.id}});
     }else{
       //baunit al ser creado no tiene id.
       //para poder actualizar el existente hay que establecer el id
@@ -187,6 +187,6 @@ export class BaunitComponent  implements OnInit {
   // }
 
   navigateToMenu() {
-    this.router.navigate(['/main-screen/menu-predio'], { queryParams: { baunit_id: this.id } });
+    this.router.navigate(['/main-screen/menu-predio'], { queryParams: {mode: 'editar', baunit_id: this.id} });
   }
 }

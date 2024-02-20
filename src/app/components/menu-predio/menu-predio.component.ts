@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {MatButtonModule} from "@angular/material/button";
-import {ActivatedRoute, RouterLink} from "@angular/router";
+import {ActivatedRoute, Router, RouterLink} from "@angular/router";
 import {BaunitListComponent} from "../baunit-list/baunit-list.component";
 import {SqliteService} from "../../services/sqlite/sqlite.service";
 
@@ -13,16 +13,25 @@ import {SqliteService} from "../../services/sqlite/sqlite.service";
 })
 export class MenuPredioComponent  implements OnInit {
 
-  baunitId: string | null = null;
+  baunitId!: string | null;
+  mode!:string | null;
   isInteresadosButtonEnabled: boolean = false;
-  constructor(private activatedRoute: ActivatedRoute, public sqliteService:SqliteService) { }
+  constructor(private activatedRoute: ActivatedRoute, private router: Router, public sqliteService:SqliteService) { }
 
   ngOnInit(): void {
     this.activatedRoute.queryParamMap.subscribe(params => {
       this.baunitId = params.get('baunit_id');
-      console.log("el baunit_id es: ", this.baunitId);
+      this.mode = params.get("mode");
       this.isInteresadosButtonEnabled = !!this.baunitId;
     });
+  }
+
+  goToDatosPredio(){
+    if (this.mode=='añadir'){
+      this.router.navigate(['/main-screen/menu-predio/baunit'], {queryParams: {mode: 'añadir'}});
+    } else {
+      this.router.navigate(['/main-screen/menu-predio/baunit'], {queryParams: {mode: 'editar', baunit_id: this.baunitId}});
+    }
   }
 
 }
