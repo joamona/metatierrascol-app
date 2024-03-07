@@ -1,0 +1,35 @@
+<div id="container">
+    <div id="cabecera">
+        <h1>Medir con GPS</h1>
+
+        <p>Sitúese sobre el punto del lindero a medir</p>
+    </div>
+
+    <div class="list">
+        <p class="list-item">Puntos medidos: {{ generateOlGeoms.pointsList.length }}</p>
+        <p class="list-item">Precisión del último punto: {{peorPrecision}} metros</p>
+    </div>
+
+    <div class="button-container">
+        <button mat-raised-button  (click)="centerMapToMyPosition()">Centrar mapa a mi posición</button>
+        <button mat-raised-button  (click)="medirPunto()">Medir punto</button>
+        <button mat-raised-button  (click)="medirPuntoPruebas()">Medir punto prueba</button>
+        <button mat-raised-button  (click)="deleteLastPoint()">Borrar último punto</button>
+        <!--<button mat-raised-button  >Tomar foto del terreno</button>-->
+    </div>
+
+    <!--<div class="image-container" *ngIf="imagenCapturada">
+        <img [src]="imagenCapturada" alt="Foto del terreno" />
+    </div>-->
+
+    <div id="contenedorMapa">
+        <app-mapa>
+        </app-mapa>
+    </div>
+
+
+    <div class="button-container">
+        <button mat-raised-button  class="rojo" (click)="deleteUnidadEspacial()">Borrar geometría</button>
+        <button mat-raised-button (click)="navigateToMenu()">Atrás</button>
+    </div>
+</div>

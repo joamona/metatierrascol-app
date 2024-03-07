@@ -1,4 +1,4 @@
-import {CONFIG_OPENLAYERS} from "../../configuracion-openlayers";
+import {CONFIG_OPENLAYERS} from "../configuracion-openlayers";
 import Draw from "ol/interaction/Draw";
 import Feature from "ol/Feature.js";
 import Polygon from "ol/geom/Polygon.js";
@@ -65,10 +65,8 @@ export class mapDraw {
         console.log("las coordenadas que entran a la función addPolygonToLayer son:")
         console.log(coordinates)
 
-        // Crea la geometría del polígono
         let polygonGeometry = new Polygon([coordinates]);
 
-        // Crea la feature del polígono
         let polygonFeature = new Feature({
             geometry: polygonGeometry,
         });

@@ -4,5 +4,8 @@
     <button mat-raised-button [routerLink]="['./list-interesados']" [queryParams]="{mode: 'añadir', baunit_id: this.baunitId}" [disabled]="!isInteresadosButtonEnabled">Datos Interesado
         <span class="badge">{{ sqliteService.interesadoList.length }}</span>
     </button>
+    <button mat-raised-button [routerLink]="['./medir-gps-list']" [queryParams]="{mode: 'añadir', baunit_id: this.baunitId}" [disabled]="!isInteresadosButtonEnabled">Medir con GPS
+        <span class="badge">{{ sqliteService.unidadEspacialList.length }}</span>
+    </button>
     <button mat-raised-button routerLink="../">Atrás</button>
 </div>
