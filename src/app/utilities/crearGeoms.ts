@@ -36,6 +36,34 @@ export class GenerateOlGeoms{
             this.geoJsonElementPolygon = new GeoJsonElement({"Peor_precision":this.worstAccuracy},lg1);
         }
     }
+
+    deletePoint() {
+        if (this.pointsList.length === 0) {
+            console.warn("No hay puntos para eliminar.");
+            return;
+        }
+
+        this.pointsList.pop();
+        this.geoJsonPointElementList.pop();
+
+
+        if (this.pointsList.length > 0) {
+            this.worstAccuracy = Math.max(...this.geoJsonPointElementList.map(element => (element.properties as any).Precision));
+        } else {
+            this.worstAccuracy = -1;
+        }
+
+
+        if (this.pointsList.length >= 2) {
+            var lg1 = new GeoJsonGeometry(this.gt.lineString, this.pointsList);
+            this.geoJsonElementLineString = new GeoJsonElement({"Peor_precision": this.worstAccuracy}, lg1);
+        }
+
+        if (this.pointsList.length > 2) {
+            var pg1 = new GeoJsonGeometry(this.gt.polygon, [this.pointsList]);
+            this.geoJsonElementPolygon = new GeoJsonElement({"Peor_precision": this.worstAccuracy}, pg1);
+        }
+    }
     addGeoJsonPointElementToDatabase(){
         //añadir a la bbdd el punto añadido cada vez
         //this.geoJsonElementPoint
@@ -55,10 +83,23 @@ export class GenerateOlGeoms{
         return new GeoJsonFeatureCollection(this.geoJsonCRS,[this.geoJsonElementPolygon]);
     }
 
-    getFeatureCollectionToDraw(){
+    /*getFeatureCollectionToDraw(){
         if (this.pointsList.length==0){return}
         if (this.pointsList.length==1){return this.getGeoJsonFeatureCollectionPoint()}
         if (this.pointsList.length==2){return this.getGeoJsonFeatureCollectionLineString()}
         if (this.pointsList.length>=2){return this.getGeoJsonFeatureCollectionPolygon()}
+    }*/
+
+    getFeatureCollectionToDraw(){
+        if (this.pointsList.length === 0) {
+            return null;
+        }
+        if (this.pointsList.length === 1) {
+            return this.getGeoJsonFeatureCollectionPoint();
+        }
+        if (this.pointsList.length === 2) {
+            return this.getGeoJsonFeatureCollectionLineString();
+        }
+        return this.getGeoJsonFeatureCollectionPolygon();
     }
 }

@@ -12,6 +12,8 @@ import {Baunit} from 'src/app/models/baunit';
 
 import {sendMessages} from 'src/app/utilities/manageMessages';
 import {Interesado} from "../../models/interesado";
+import {UnidadEspacial} from "../../models/unidadEspacial";
+import {CrPuntoLindero} from "../../models/crPuntoLindero";
 
 @Injectable({
     providedIn: 'root'
@@ -26,6 +28,8 @@ export class SqliteService {
     //aquí para que se muestre en los componentes
     baunitList: Baunit[] = [];
     interesadoList: Interesado[] = [];
+    unidadEspacialList: UnidadEspacial[] = [];
+    crPuntoLinderoList: CrPuntoLindero[] = [];
 
     constructor(public messageService: MessageService, public snackBar: MatSnackBar) {
     }
@@ -104,6 +108,42 @@ export class SqliteService {
             })
             .catch((err) => {
                 sendMessages(err.message, this.messageService, this.snackBar);
+            });
+
+        var unidadEspacial = `CREATE TABLE IF NOT EXISTS unidad_espacial (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        baunit_id INTEGER,
+        tipo TEXT CHECK(tipo IN ('gps', 'digitalizado', 'archivo_cargado')) NOT NULL DEFAULT 'gps',
+        geom TEXT, 
+        FOREIGN KEY(baunit_id) REFERENCES baunit(id) ON DELETE CASCADE
+        );`;
+        await this.db.query(unidadEspacial)
+            .then(() => {
+                sendMessages('Tabla unidad_espacial creada con éxito', this.messageService, this.snackBar);
+            })
+            .catch((err) => {
+                sendMessages('Error al crear la tabla unidad_espacial: ' + err.message, this.messageService, this.snackBar);
+            });
+
+        var crPuntolindero = `CREATE TABLE IF NOT EXISTS cr_puntolindero (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        baunit_id INTEGER,
+        unidad_espacial_id INTEGER,
+        tipo TEXT CHECK(tipo = 'GPS') NOT NULL,
+        geom TEXT, 
+        lon REAL,
+        lat REAL,
+        exactitud_horizontal REAL,
+        descripcion TEXT,
+        FOREIGN KEY(baunit_id) REFERENCES baunit(id) ON DELETE CASCADE,
+        FOREIGN KEY(unidad_espacial_id) REFERENCES unidad_espacial(id) ON DELETE CASCADE
+        );`;
+        await this.db.query(crPuntolindero)
+            .then(() => {
+                sendMessages('Tabla cr_puntolindero creada con éxito', this.messageService, this.snackBar);
+            })
+            .catch((err) => {
+                sendMessages('Error al crear la tabla cr_puntolindero: ' + err.message, this.messageService, this.snackBar);
             });
     }
 
@@ -184,6 +224,50 @@ export class SqliteService {
             })
             .catch((err) => {
                 sendMessages(err.message, this.messageService, this.snackBar);
+            });
+    }
+
+    async updateUnidadEspacialList() {
+        await this.db.query('SELECT * FROM unidad_espacial')
+            .then((r: any) => {
+                if (r.values.length > 0) {
+                    this.unidadEspacialList = [];
+                    r.values.forEach((row: any) => {
+                        const unidadEspacial = new UnidadEspacial(this, this.messageService);
+                        unidadEspacial.setFromModel(row);
+                        this.unidadEspacialList.push(unidadEspacial);
+                    });
+                    console.log('unidadEspacialList', this.unidadEspacialList);
+                    sendMessages(`Unidades espaciales recuperadas: ${this.unidadEspacialList.length}`, this.messageService, this.snackBar);
+                } else {
+                    this.unidadEspacialList = [];
+                    sendMessages('No se encontraron unidades espaciales', this.messageService, this.snackBar);
+                }
+            })
+            .catch((err) => {
+                sendMessages(`Error al recuperar unidades espaciales: ${err.message}`, this.messageService, this.snackBar);
+            });
+    }
+
+    async updateCrPuntoLinderoList() {
+        await this.db.query('SELECT * FROM cr_puntolindero')
+            .then((r: any) => {
+                if (r.values.length > 0) {
+                    this.crPuntoLinderoList = [];
+                    r.values.forEach((row: any) => {
+                        const crPuntoLindero = new CrPuntoLindero(this, this.messageService);
+                        crPuntoLindero.setFromModel(row);
+                        this.crPuntoLinderoList.push(crPuntoLindero);
+                    });
+                    console.log('CrPuntoLinderoList', this.crPuntoLinderoList)
+                    sendMessages(`Puntos linderos recuperados: ${this.crPuntoLinderoList.length}`, this.messageService, this.snackBar);
+                } else {
+                    this.crPuntoLinderoList = [];
+                    sendMessages('No se encontraron puntos linderos', this.messageService, this.snackBar);
+                }
+            })
+            .catch((err) => {
+                sendMessages(`Error al recuperar puntos linderos: ${err.message}`, this.messageService, this.snackBar);
             });
     }
 
