@@ -45,44 +45,18 @@ export class MenuPredioComponent  implements OnInit {
   }
 
 
-  goToDatosPredio(){
-    if (this.mode=='añadir'){
+  goToDatosPredio() {
+    if (this.mode == 'añadir') {
       this.router.navigate(['/main-screen/menu-predio/baunit'], {queryParams: {mode: 'añadir'}});
     } else {
-      this.router.navigate(['/main-screen/menu-predio/baunit'], {queryParams: {mode: 'editar', baunit_id: this.baunitId}});
+      this.router.navigate(['/main-screen/menu-predio/baunit'], {
+        queryParams: {
+          mode: 'editar',
+          baunit_id: this.baunitId
+        }
+      });
     }
   }
-
-  puedeEnviar(): boolean {
-    return this.netStatusService.available && this.authService.isTokenValid && !this.predioEnviado;
-  }
-
-  async enviarPredio() {
-    if (!this.puedeEnviar()) {
-      var m = new Message('true','No es posible enviar en este momento. Verifique su conexión y su sesión.');
-      this.messageService.add(m);
-      this.snackBar.open('No es posible enviar en este momento. Verifique su conexión y su sesión.', 'Cerrar', {duration: 3000, verticalPosition: 'bottom' })
-    }
-
-    sendMessages('Iniciando el proceso de envío...', this.messageService, this.snackBar);
-
-    try {
-      const datosPredio = await this.enviarPredioService.prepararDatosPredio(this.baunitId);
-      /*const respuesta = await this.enviarAlServidor(datosPredio);
-
-      if (respuesta.success) {
-        var m = new Message('true','Datos enviados correctamente.');
-        this.messageService.add(m);
-        this.snackBar.open('Datos enviados correctamente.', 'Cerrar', {duration: 3000, verticalPosition: 'bottom' })
-        // Actualizar estado de envío aquí
-      } else {
-        sendMessages('El servidor respondió con un error: ' + respuesta.message, this.messageService, this.snackBar);
-      }*/
-    } catch (error: any) {
-      manageServerErrors(error, this.messageService, this.snackBar);
-    }
-  }
-
 
 
 }
