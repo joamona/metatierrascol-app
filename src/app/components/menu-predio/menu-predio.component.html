@@ -2,10 +2,11 @@
     <h2>Menú Principal</h2>
     <button mat-raised-button (click)="goToDatosPredio()">Datos Predio</button>
     <button mat-raised-button [routerLink]="['./list-interesados']" [queryParams]="{mode: 'añadir', baunit_id: this.baunitId}" [disabled]="!isInteresadosButtonEnabled">Datos Interesado
-        <span class="badge">{{ sqliteService.interesadoList.length }}</span>
+        <span class="badge">{{ getInteresadosCountForCurrentBaunit() }}</span>
     </button>
     <button mat-raised-button [routerLink]="['./medir-gps-list']" [queryParams]="{mode: 'añadir', baunit_id: this.baunitId}" [disabled]="!isInteresadosButtonEnabled">Medir con GPS
-        <span class="badge">{{ sqliteService.unidadEspacialList.length }}</span>
+        <span class="badge">{{ getUnidadesEspacialesCountForCurrentBaunit() }}</span>
     </button>
+
     <button mat-raised-button routerLink="../">Atrás</button>
 </div>

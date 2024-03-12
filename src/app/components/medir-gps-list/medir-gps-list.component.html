@@ -1,6 +1,6 @@
 <div class="container2">
 
-    @if (sqliteService.unidadEspacialList.length > 0) {
+    @if (getUnidadEspacialForCurrentBaunit().length > 0) {
         <table>
             <thead>
             <tr>
@@ -10,7 +10,7 @@
             </tr>
             </thead>
             <tbody>
-                @for (unidadEspacial of sqliteService.unidadEspacialList; track unidadEspacial) {
+                @for (unidadEspacial of getUnidadEspacialForCurrentBaunit(); track unidadEspacial) {
                     <tr (click)="editUnidadEspacial(unidadEspacial.id, unidadEspacial.baunit_id)">
                         <td>{{unidadEspacial.id}}</td>
                         <td>{{unidadEspacial.tipo}}</td>
