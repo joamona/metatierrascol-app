@@ -9,7 +9,7 @@ import {MessageService} from "../../services/message.service";
 import {Message} from "../../models/message";
 import {manageServerErrors, sendMessages} from "../../utilities/manageMessages";
 import {MatSnackBar} from "@angular/material/snack-bar";
-import {EnviarPredioService} from "../../services/enviar-predio.service";
+
 
 @Component({
   selector: 'app-menu-predio',
@@ -24,7 +24,7 @@ export class MenuPredioComponent  implements OnInit {
   mode!:string | null;
   isInteresadosButtonEnabled: boolean = false;
   predioEnviado: boolean = false;
-  constructor(private activatedRoute: ActivatedRoute, private snackBar: MatSnackBar, private router: Router, public enviarPredioService: EnviarPredioService, public sqliteService:SqliteService, public netStatusService: NetStatusService, public authService: AuthService, public messageService: MessageService) { }
+  constructor(private activatedRoute: ActivatedRoute, private snackBar: MatSnackBar, private router: Router, public sqliteService:SqliteService, public netStatusService: NetStatusService, public authService: AuthService, public messageService: MessageService) { }
 
   ngOnInit(): void {
     this.activatedRoute.queryParamMap.subscribe(params => {
