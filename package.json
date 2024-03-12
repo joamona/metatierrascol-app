@@ -46,6 +46,7 @@
     "geojson": "^0.5.0",
     "ionicons": "^7.2.1",
     "jeep-sqlite": "^2.5.8",
+    "jszip": "^3.10.1",
     "ol": "^9.0.0",
     "ol-layerswitcher": "^4.1.1",
     "rxjs": "~7.8.0",
