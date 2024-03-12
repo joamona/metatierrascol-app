@@ -1,6 +1,6 @@
 <div class="container2">
 
-    @if (sqliteService.interesadoList.length > 0) {
+    @if (getInteresadosForCurrentBaunit().length > 0) {
         <table>
             <thead>
             <tr>
@@ -10,7 +10,7 @@
             </tr>
             </thead>
             <tbody>
-                @for (interesado of sqliteService.interesadoList; track interesado) {
+                @for (interesado of getInteresadosForCurrentBaunit(); track interesado) {
                     <tr (click)="editInteresado(interesado.id, interesado.baunit_id)">
                         <td>{{interesado.documento_identidad}}</td>
                         <td>{{interesado.primer_nombre}} {{interesado.primer_apellido}}</td>

@@ -17,4 +17,5 @@ export class BaunitListComponent  implements OnInit {
   editBaunit(baunitId:string){
     this.router.navigate(['/main-screen/menu-predio'], {queryParams: {mode: 'editar', baunit_id: baunitId}});
   }
+
 }

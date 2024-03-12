@@ -3,6 +3,7 @@ import {SqliteService} from "../../services/sqlite/sqlite.service";
 import {ActivatedRoute, Router, RouterLink} from "@angular/router";
 import {ChangeBooleanByYesNoPipe} from "../../pipes/change-boolean-by-yes-no.pipe";
 import {MatButton} from "@angular/material/button";
+import {UnidadEspacial} from "../../models/unidadEspacial";
 @Component({
   selector: 'app-medir-gps-list',
   standalone: true,
@@ -21,6 +22,9 @@ export class MedirGpsListComponent  implements OnInit {
     });
   }
 
+  getUnidadEspacialForCurrentBaunit(): UnidadEspacial[] {
+    return this.sqliteService.unidadEspacialList.filter(unidadEspacial => unidadEspacial.baunit_id.toString() === this.baunitId);
+  }
   editUnidadEspacial(id:string, baunitId:string){
     this.router.navigate(['/main-screen/menu-predio/medir-gps-list/medir-gps'], {queryParams: {mode: 'editar', baunit_id:baunitId, id: id}});
   }

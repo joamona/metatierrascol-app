@@ -3,6 +3,13 @@ import {MatButtonModule} from "@angular/material/button";
 import {ActivatedRoute, Router, RouterLink} from "@angular/router";
 import {BaunitListComponent} from "../baunit-list/baunit-list.component";
 import {SqliteService} from "../../services/sqlite/sqlite.service";
+import {NetStatusService} from "../../services/net-status.service";
+import {AuthService} from "../../services/auth.service";
+import {MessageService} from "../../services/message.service";
+import {Message} from "../../models/message";
+import {manageServerErrors, sendMessages} from "../../utilities/manageMessages";
+import {MatSnackBar} from "@angular/material/snack-bar";
+import {EnviarPredioService} from "../../services/enviar-predio.service";
 
 @Component({
   selector: 'app-menu-predio',
@@ -16,7 +23,8 @@ export class MenuPredioComponent  implements OnInit {
   baunitId!: string | null;
   mode!:string | null;
   isInteresadosButtonEnabled: boolean = false;
-  constructor(private activatedRoute: ActivatedRoute, private router: Router, public sqliteService:SqliteService) { }
+  predioEnviado: boolean = false;
+  constructor(private activatedRoute: ActivatedRoute, private snackBar: MatSnackBar, private router: Router, public enviarPredioService: EnviarPredioService, public sqliteService:SqliteService, public netStatusService: NetStatusService, public authService: AuthService, public messageService: MessageService) { }
 
   ngOnInit(): void {
     this.activatedRoute.queryParamMap.subscribe(params => {
@@ -26,6 +34,17 @@ export class MenuPredioComponent  implements OnInit {
     });
   }
 
+  getInteresadosCountForCurrentBaunit(): number {
+    if (!this.baunitId) return 0;
+    return this.sqliteService.interesadoList.filter(i => i.baunit_id.toString() === this.baunitId).length;
+  }
+
+  getUnidadesEspacialesCountForCurrentBaunit(): number {
+    if (!this.baunitId) return 0;
+    return this.sqliteService.unidadEspacialList.filter(u => u.baunit_id.toString() === this.baunitId).length;
+  }
+
+
   goToDatosPredio(){
     if (this.mode=='añadir'){
       this.router.navigate(['/main-screen/menu-predio/baunit'], {queryParams: {mode: 'añadir'}});
@@ -33,5 +52,37 @@ export class MenuPredioComponent  implements OnInit {
       this.router.navigate(['/main-screen/menu-predio/baunit'], {queryParams: {mode: 'editar', baunit_id: this.baunitId}});
     }
   }
+
+  puedeEnviar(): boolean {
+    return this.netStatusService.available && this.authService.isTokenValid && !this.predioEnviado;
+  }
+
+  async enviarPredio() {
+    if (!this.puedeEnviar()) {
+      var m = new Message('true','No es posible enviar en este momento. Verifique su conexión y su sesión.');
+      this.messageService.add(m);
+      this.snackBar.open('No es posible enviar en este momento. Verifique su conexión y su sesión.', 'Cerrar', {duration: 3000, verticalPosition: 'bottom' })
+    }
+
+    sendMessages('Iniciando el proceso de envío...', this.messageService, this.snackBar);
+
+    try {
+      const datosPredio = await this.enviarPredioService.prepararDatosPredio(this.baunitId);
+      /*const respuesta = await this.enviarAlServidor(datosPredio);
+
+      if (respuesta.success) {
+        var m = new Message('true','Datos enviados correctamente.');
+        this.messageService.add(m);
+        this.snackBar.open('Datos enviados correctamente.', 'Cerrar', {duration: 3000, verticalPosition: 'bottom' })
+        // Actualizar estado de envío aquí
+      } else {
+        sendMessages('El servidor respondió con un error: ' + respuesta.message, this.messageService, this.snackBar);
+      }*/
+    } catch (error: any) {
+      manageServerErrors(error, this.messageService, this.snackBar);
+    }
+  }
+
+
 
 }

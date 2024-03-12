@@ -3,6 +3,7 @@ import {SqliteService} from "../../services/sqlite/sqlite.service";
 import {ActivatedRoute, Router, RouterLink} from "@angular/router";
 import {ChangeBooleanByYesNoPipe} from "../../pipes/change-boolean-by-yes-no.pipe";
 import {MatButton} from "@angular/material/button";
+import {Interesado} from "../../models/interesado";
 
 @Component({
   selector: 'app-list-interesados',
@@ -20,6 +21,9 @@ export class ListInteresadosComponent implements OnInit {
     this.activatedRoute.queryParamMap.subscribe(params => {
       this.baunitId = params.get('baunit_id');
     });
+  }
+  getInteresadosForCurrentBaunit(): Interesado[] {
+    return this.sqliteService.interesadoList.filter(interesado => interesado.baunit_id.toString() === this.baunitId);
   }
 
   editInteresado(id:string, baunitId:string){
