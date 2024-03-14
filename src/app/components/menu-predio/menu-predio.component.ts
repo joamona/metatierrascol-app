@@ -10,6 +10,9 @@ import {Message} from "../../models/message";
 import {manageServerErrors, sendMessages} from "../../utilities/manageMessages";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {EnviarPredioService} from "../../services/enviar-predio.service";
+import {NgIf} from "@angular/common";
+import Swal from "sweetalert2";
+import {Baunit} from "../../models/baunit";
 
 
 @Component({
@@ -17,7 +20,7 @@ import {EnviarPredioService} from "../../services/enviar-predio.service";
   templateUrl: './menu-predio.component.html',
   styleUrls: ['./menu-predio.component.scss'],
   standalone: true,
-  imports: [MatButtonModule, RouterLink, BaunitListComponent]
+  imports: [MatButtonModule, RouterLink, BaunitListComponent, NgIf]
 })
 export class MenuPredioComponent  implements OnInit {
 
@@ -25,6 +28,8 @@ export class MenuPredioComponent  implements OnInit {
   mode!:string | null;
   isInteresadosButtonEnabled: boolean = false;
   predioEnviado: boolean = false;
+  predioActual: Baunit | undefined;
+
   constructor(private activatedRoute: ActivatedRoute, private snackBar: MatSnackBar, private router: Router, public enviarPredioService: EnviarPredioService, public sqliteService:SqliteService, public netStatusService: NetStatusService, public authService: AuthService, public messageService: MessageService) { }
 
   ngOnInit(): void {
@@ -32,7 +37,15 @@ export class MenuPredioComponent  implements OnInit {
       this.baunitId = params.get('baunit_id');
       this.mode = params.get("mode");
       this.isInteresadosButtonEnabled = !!this.baunitId;
+      this.predioActual = this.sqliteService.baunitList.find(b => b.id === this.baunitId);
     });
+
+    if (this.isInteresadosButtonEnabled){
+      let btn = document.getElementById("btnEliminar");
+      if (btn != null){
+        btn.classList.add('rojo');
+      }
+    }
   }
 
   getInteresadosCountForCurrentBaunit(): number {
@@ -66,28 +79,83 @@ export class MenuPredioComponent  implements OnInit {
 
   async enviarPredio() {
     if (!this.puedeEnviar()) {
-      var m = new Message('true','No es posible enviar en este momento. Verifique su conexión y su sesión.');
-      this.messageService.add(m);
-      this.snackBar.open('No es posible enviar en este momento. Verifique su conexión y su sesión.', 'Cerrar', { duration: 3000, verticalPosition: 'bottom' });
+      if (!this.netStatusService.available){
+        var m = new Message('true','No es posible enviar en este momento. SIN CONEXIÓN.');
+        this.messageService.add(m);
+        this.snackBar.open('No es posible enviar en este momento. SIN CONEXIÓN.', 'Cerrar', { duration: 3000, verticalPosition: 'bottom' });
+      } else {
+        var m = new Message('true','No es posible enviar en este momento. SESIÓN NO INICIADA.');
+        this.messageService.add(m);
+        this.snackBar.open('No es posible enviar en este momento. SESIÓN NO INICIADA.', 'Cerrar', { duration: 3000, verticalPosition: 'bottom' });
+      }
+
       return;
     }
 
     sendMessages('Iniciando el proceso de envío...', this.messageService, this.snackBar);
 
     try {
-      const respuesta = await this.enviarPredioService.enviarAlServidor(this.baunitId);
+      //await this.enviarPredioService.enviarAlServidor(this.baunitId);
 
-      if (respuesta && respuesta.success) {
-        var m = new Message('info','Datos enviados correctamente.');
-        this.messageService.add(m);
-        this.snackBar.open('Datos enviados correctamente.', 'Cerrar', {duration: 3000, verticalPosition: 'bottom'});
+      if (this.predioActual && this.predioActual.enviado_servidor) {
+        const confirmacion = await Swal.fire({
+          title: 'Este predio ya ha sido enviado anteriormente',
+          text: '¿Deseas reenviarlo?',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Sí, reenviar',
+          cancelButtonText: 'Cancelar'
+        });
+
+        if (confirmacion.isConfirmed) {
+          await this.enviarPredioService.enviarAlServidor(this.baunitId)
+        }
       } else {
-        sendMessages('El servidor respondió con un error.', this.messageService, this.snackBar);
+        await this.enviarPredioService.enviarAlServidor(this.baunitId)
       }
-    } catch (error: any) {
+
+      var m = new Message('info', 'Datos enviados correctamente.');
+      this.messageService.add(m);
+      this.snackBar.open('Datos enviados correctamente.', 'Cerrar', { duration: 3000, verticalPosition: 'bottom' });
+
+    } catch (error:any) {
       manageServerErrors(error, this.messageService, this.snackBar);
     }
+
+
   }
 
+  async eliminarPredio() {
+    const { isConfirmed } = await Swal.fire({
+      title: '¿Estás seguro?',
+      text: "No podrás revertir esta acción.",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'No',
+    });
+
+    if (isConfirmed) {
+      try {
+        await this.sqliteService.deleteBaunit(this.baunitId);
+        Swal.fire(
+            'Eliminado!',
+            'El predio ha sido eliminado.',
+            'success'
+        );
+        this.router.navigate(['/']);
+      } catch (error) {
+        Swal.fire(
+            'Error',
+            'No se pudo eliminar el predio.',
+            'error'
+        );
+      }
+    }
+  }
 
 }
