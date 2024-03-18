@@ -12,7 +12,7 @@
   </thead>
   <tbody>
     @for (baunit of sqliteService.baunitList; track baunit) {
-      <tr (click) = "editBaunit(baunit.id)">
+      <tr (click)="editBaunit(baunit.id)">
         <td>{{baunit.nombre}}</td>
         <td>Num dueños</td>
         <td>Num GPS</td>

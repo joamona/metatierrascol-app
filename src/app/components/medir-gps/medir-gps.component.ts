@@ -7,7 +7,8 @@ import {GenerateOlGeoms} from "../../utilities/crearGeoms";
 import {SqliteService} from "../../services/sqlite/sqlite.service";
 import {CrPuntoLindero} from "../../models/crPuntoLindero";
 import {MessageService} from "../../services/message.service";
-
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import {FormControl, FormGroup, ReactiveFormsModule} from "@angular/forms";
 import {MatError, MatFormField} from "@angular/material/form-field";
 import {MatInput} from "@angular/material/input";
@@ -27,7 +28,8 @@ import {Interesado} from "../../models/interesado";
   styleUrl: './medir-gps.component.scss',
   providers: [],
   standalone: true,
-  imports: [MatButtonModule, NgIf, RouterLink, ReactiveFormsModule, MatError, MatFormField, MatInput, MapaComponent],
+  imports: [MatButtonModule, NgIf, RouterLink, ReactiveFormsModule, MatError, MatFormField, MatInput, MapaComponent, MatFormFieldModule,
+    MatInputModule],
 })
 export class MedirGpsComponent implements OnInit  {
 

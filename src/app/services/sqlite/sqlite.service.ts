@@ -271,7 +271,47 @@ export class SqliteService {
             });
     }
 
+    async deleteBaunit(baunitId: string | null) {
+        try {
+            const resultado = await this.db.query('SELECT * FROM baunit WHERE id = ?', [baunitId]);
+            const baunitExistente = resultado.values;
 
+            if (!baunitExistente || baunitExistente.length === 0) {
+                throw new Error('El baunit con el ID especificado no existe.');
+            }
+
+            await this.db.run('DELETE FROM baunit WHERE id = ?', [baunitId]);
+
+
+            await this.updateBaunitList();
+            await this.updateInteresadosList();
+            await this.updateUnidadEspacialList();
+            await this.updateCrPuntoLinderoList();
+
+            sendMessages(`Baunit con ID ${baunitId} y datos relacionados eliminados correctamente.`, this.messageService, this.snackBar);
+        } catch (error:any) {
+            console.error('Error al eliminar baunit y datos relacionados:', error);
+            sendMessages(`Error al eliminar baunit y datos relacionados: ${error.message}`, this.messageService, this.snackBar);
+        }
+    }
+
+
+    async marcarPredioComoEnviado(baunitId: string | null): Promise<void> {
+        const resultado = await this.db.query('SELECT * FROM baunit WHERE id = ?', [baunitId]);
+        const baunitExistente = resultado.values;
+        console.log("el baunit es: ", baunitExistente);
+
+        const query = `UPDATE baunit SET enviado_servidor = ? WHERE id = ?`;
+        const values = [true, baunitId];
+        console.log("se transforma: ", values)
+        try {
+            await this.db.run(query, values,undefined, 'one');
+            await this.updateBaunitList();
+            console.log(`Predio con ID ${baunitId} marcado como enviado.`);
+        } catch (error) {
+            console.error(`Error al marcar el predio con ID ${baunitId} como enviado:`, error);
+        }
+    }
     async addUser(username: string) {
         const q = 'insert into users (name) values (?)';
         return await this.db.run(q, [username], true, 'all')
