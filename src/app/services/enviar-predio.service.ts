@@ -5,6 +5,8 @@ import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {firstValueFrom, lastValueFrom} from "rxjs";
 import {AuthService} from "./auth.service";
 import {ServerService} from "./server.service";
+import { GeoJsonCRS, GeoJsonElement,GeoJsonGeometry,GeoJsonFeatureCollection, GeometryType } from "../utilities/createGeoJson";
+import {GenerateOlGeoms} from "../utilities/crearGeoms";
 
 @Injectable({
   providedIn: 'root'
@@ -30,6 +32,7 @@ export class EnviarPredioService {
     formData.append('tipo', datosPredio?.tipo || 'no especificado');
     formData.append('complemento', datosPredio?.complemento || 'no especificado');
 
+    const crsCode = 25830;
     const zip = new JSZip();
     zip.file("datosPredio.json", JSON.stringify(this.limpiarObjetoParaEnvio(datosPredio)));
     console.log("llega a limpiar datos predio")
@@ -39,35 +42,64 @@ export class EnviarPredioService {
       console.log("llega a limpiar interesado")
     }
 
-    if (unidadesEspaciales && unidadesEspaciales.length > 0) {
-      const geojsonUnidadesEspaciales = JSON.stringify({
-        type: "FeatureCollection",
-        features: unidadesEspaciales.map(u => ({
-          type: "Feature",
+    unidadesEspaciales.forEach(unidadEspacial => {
+      const generateOlGeoms = new GenerateOlGeoms(crsCode);
+      const puntosDeUnidad = puntosLindero.filter(p => p.unidad_espacial_id === unidadEspacial.id);
+
+      puntosDeUnidad.forEach(punto => generateOlGeoms.addPoint([punto.lon, punto.lat], punto.exactitud_horizontal));
+      const featureCollection = generateOlGeoms.getFeatureCollectionToDraw();
+
+      if (featureCollection) {
+        featureCollection.features = featureCollection.features.map(feature => ({
+          ...feature,
           properties: {
-            id: u.id,
-            baunit_id: u.baunit_id,
-            tipo: u.tipo
-          },
-          geometry: JSON.parse(u.geom)
-        }))
-      });
+            id: unidadEspacial.id,
+            baunit_id: unidadEspacial.baunit_id,
+            tipo: unidadEspacial.tipo,
+            ...feature.properties,
+          }
+        }));
 
-      zip.file("unidadesEspaciales.geojson", geojsonUnidadesEspaciales);
-    }
+        const geojsonString = JSON.stringify(featureCollection);
+        zip.file(`unidadEspacial_${unidadEspacial.id}.geojson`, geojsonString);
+      } else {
+        console.warn(`No se pudo generar featureCollection para la unidad espacial con ID ${unidadEspacial.id}.`);
+      }
+    });
 
-    if (puntosLindero && puntosLindero.length > 0) {
-      const puntosLinderoLimpios = this.limpiarObjetoParaEnvio(puntosLindero);
-      const geojsonPuntosLindero = JSON.stringify({
-        type: "FeatureCollection",
-        features: puntosLinderoLimpios.map((p: any) => ({
-          type: "Feature",
-          properties: { ...p, geom: undefined },
-          geometry: p.geom
-        }))
-      });
-      zip.file("crPuntosLindero.geojson", geojsonPuntosLindero);
-    }
+    // Paso 1: Crear el sistema de referencia de coordenadas (CRS)
+    var crs = new GeoJsonCRS(25830);
+
+    // Paso 2: Crear una clase para ver los tipos de geometría disponibles
+    var gt = new GeometryType();
+
+    // Crear un array vacío para GeoJsonElements
+    var listaGeoJsonElements: GeoJsonElement[] = [];
+
+    puntosLindero.forEach(punto => {
+      var pg = new GeoJsonGeometry(gt.point, [punto.lon, punto.lat]);
+      var pge = new GeoJsonElement({
+        "id": punto.id,
+        "baunit_id": punto.baunit_id,
+        "unidad_espacial_id": punto.unidad_espacial_id,
+        "tipo": punto.tipo,
+        "lon": punto.lon,
+        "lat": punto.lat,
+        "exactitud_horizontal": punto.exactitud_horizontal,
+        "descripcion": punto.descripcion
+      }, pg);
+
+      listaGeoJsonElements.push(pge);
+    });
+
+
+    // Paso 5: Crear la colección de elementos (FeatureCollection) pasando un array de elementos GeoJSON y el CRS
+    var fc = new GeoJsonFeatureCollection(crs, listaGeoJsonElements);
+
+    // Convertir el FeatureCollection en una cadena para incluir en el archivo .json
+    var s = JSON.stringify(fc);
+
+    zip.file("crPuntosLindero.geojson", s);
 
     try {
       const zipFile = await zip.generateAsync({ type: "blob" });

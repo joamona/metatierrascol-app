@@ -7,7 +7,7 @@ export class CrPuntoLindero {
     baunit_id: string = '';
     unidad_espacial_id: string = '';
     tipo: string = '';
-    geom: string = '';
+    //geom: string = '';
     lon: number = 0;
     lat: number = 0;
     exactitud_horizontal: number = 0;
@@ -20,7 +20,7 @@ export class CrPuntoLindero {
         this.baunit_id = crPuntoLindero.baunit_id;
         this.unidad_espacial_id = crPuntoLindero.unidad_espacial_id;
         this.tipo = crPuntoLindero.tipo;
-        this.geom = crPuntoLindero.geom;
+        //this.geom = crPuntoLindero.geom;
         this.lon = crPuntoLindero.lon;
         this.lat = crPuntoLindero.lat;
         this.exactitud_horizontal = crPuntoLindero.exactitud_horizontal;
@@ -41,11 +41,11 @@ export class CrPuntoLindero {
     }
 
     asListOfValues() {
-        return [this.baunit_id, this.unidad_espacial_id, this.tipo, this.geom, this.lon, this.lat, this.exactitud_horizontal, this.descripcion];
+        return [this.baunit_id, this.unidad_espacial_id, this.tipo, this.lon, this.lat, this.exactitud_horizontal, this.descripcion];
     }
 
     async insert() {
-        const q = `INSERT INTO cr_puntolindero (baunit_id, unidad_espacial_id, tipo, geom, lon, lat, exactitud_horizontal, descripcion) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+        const q = `INSERT INTO cr_puntolindero (baunit_id, unidad_espacial_id, tipo, lon, lat, exactitud_horizontal, descripcion) VALUES (?, ?, ?, ?, ?, ?, ?)`;
         await this.sqliteService.db.run(q, this.asListOfValues())
             .then((r: any) => {
                 this.id = r.changes.lastId.toString();
@@ -61,8 +61,7 @@ export class CrPuntoLindero {
         const q = `UPDATE cr_puntolindero SET 
         baunit_id = ?, 
         unidad_espacial_id = ?, 
-        tipo = ?, 
-        geom = ?, 
+        tipo = ?,  
         lon = ?, 
         lat = ?, 
         exactitud_horizontal = ?,

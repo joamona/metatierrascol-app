@@ -114,7 +114,6 @@ export class SqliteService {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         baunit_id INTEGER,
         tipo TEXT CHECK(tipo IN ('gps', 'digitalizado', 'archivo_cargado')) NOT NULL DEFAULT 'gps',
-        geom TEXT, 
         FOREIGN KEY(baunit_id) REFERENCES baunit(id) ON DELETE CASCADE
         );`;
         await this.db.query(unidadEspacial)
@@ -129,8 +128,7 @@ export class SqliteService {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         baunit_id INTEGER,
         unidad_espacial_id INTEGER,
-        tipo TEXT CHECK(tipo = 'GPS') NOT NULL,
-        geom TEXT, 
+        tipo TEXT CHECK(tipo = 'GPS') NOT NULL, 
         lon REAL,
         lat REAL,
         exactitud_horizontal REAL,

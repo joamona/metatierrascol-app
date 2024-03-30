@@ -164,7 +164,7 @@ export class MedirGpsComponent implements OnInit  {
     crPuntoLindero.baunit_id = this.baunit_id;
     crPuntoLindero.unidad_espacial_id = this.unidadEspacialActualId;
     crPuntoLindero.tipo = "GPS";
-    crPuntoLindero.geom = JSON.stringify({type: 'Point', coordinates: pointCoords});
+    //crPuntoLindero.geom = JSON.stringify({type: 'Point', coordinates: pointCoords});
     crPuntoLindero.lon = pointCoords[0];
     crPuntoLindero.lat = pointCoords[1];
     crPuntoLindero.exactitud_horizontal = precision;
@@ -231,7 +231,7 @@ export class MedirGpsComponent implements OnInit  {
       var nuevaUnidad = new UnidadEspacial(this.sqliteService, this.messageService);
       nuevaUnidad.id = this.unidadEspacialActualId;
       nuevaUnidad.baunit_id = this.baunit_id;
-      nuevaUnidad.geom = JSON.stringify(geometryToStore);
+      //nuevaUnidad.geom = JSON.stringify(geometryToStore);
       await nuevaUnidad.update();
     }
   }

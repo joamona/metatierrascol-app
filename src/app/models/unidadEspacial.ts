@@ -5,7 +5,7 @@ export class UnidadEspacial {
     id: string = '';
     baunit_id: string = '';
     tipo: string = 'gps';
-    geom: string = '';
+    //geom: string = '';
 
     constructor(public sqliteService: SqliteService, public messageService: MessageService) {}
 
@@ -13,7 +13,7 @@ export class UnidadEspacial {
         this.id = unidadEspacial.id;
         this.baunit_id = unidadEspacial.baunit_id;
         this.tipo = unidadEspacial.tipo;
-        this.geom = unidadEspacial.geom;
+        //this.geom = unidadEspacial.geom;
     }
 
     async setFromId(newId: string) {
@@ -24,7 +24,7 @@ export class UnidadEspacial {
                     this.id = row.id;
                     this.baunit_id = row.baunit_id;
                     this.tipo = row.tipo;
-                    this.geom = row.geom;
+                    //this.geom = row.geom;
                 }
             })
             .catch((err) => {
@@ -33,11 +33,11 @@ export class UnidadEspacial {
     }
 
     asListOfValues() {
-        return [this.baunit_id, this.tipo, this.geom];
+        return [this.baunit_id, this.tipo];
     }
 
     async insert() {
-        const q = `INSERT INTO unidad_espacial (baunit_id, tipo, geom) VALUES (?, ?, ?) returning id`;
+        const q = `INSERT INTO unidad_espacial (baunit_id, tipo) VALUES (?, ?) returning id`;
         await this.sqliteService.db.run(q, this.asListOfValues(),undefined,'one')
             .then((r: any) => {
                 this.id = r.changes.values[0].id;
@@ -51,7 +51,7 @@ export class UnidadEspacial {
     }
 
     async update() {
-        const q = `UPDATE unidad_espacial SET (baunit_id, tipo, geom) = (?,?,?) WHERE id = ?`;
+        const q = `UPDATE unidad_espacial SET (baunit_id, tipo) = (?,?) WHERE id = ?`;
         const values = this.asListOfValues();
         values.push(this.id);
         await this.sqliteService.db.run(q, values,undefined,'one')
