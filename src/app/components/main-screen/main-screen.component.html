@@ -10,13 +10,6 @@
     <h2>No existen predios en el dispositivo</h2>
   }
 
-  <!--@if (sqliteService.interesadoList.length > 0){
-      <h2>Número de interesados: {{sqliteService.interesadoList.length}} (click para editar)</h2>
-      <app-list-interesados></app-list-interesados>
-  }@else {
-      <h2>No existen interesados en el dispositivo</h2>
-  }-->
-
   <button mat-raised-button [routerLink]="['./menu-predio']" [queryParams]="{mode: 'añadir'}">Nuevo Predio</button>
   <!-- <button mat-raised-button [disabled]="true">Editar Predio desde el Mapa</button> -->
   <button mat-raised-button routerLink="./advanced">Avanzado</button>

@@ -18,6 +18,13 @@
         <!--<button mat-raised-button  >Tomar foto del terreno</button>-->
     </div>
 
+    <div>
+        <mat-form-field appearance="fill">
+            <mat-label>Descripción</mat-label>
+            <input matInput [formControl]="descripcion">
+        </mat-form-field>
+    </div>
+
     <!--<div class="image-container" *ngIf="imagenCapturada">
         <img [src]="imagenCapturada" alt="Foto del terreno" />
     </div>-->

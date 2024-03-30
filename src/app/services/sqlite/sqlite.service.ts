@@ -114,7 +114,6 @@ export class SqliteService {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         baunit_id INTEGER,
         tipo TEXT CHECK(tipo IN ('gps', 'digitalizado', 'archivo_cargado')) NOT NULL DEFAULT 'gps',
-        geom TEXT, 
         FOREIGN KEY(baunit_id) REFERENCES baunit(id) ON DELETE CASCADE
         );`;
         await this.db.query(unidadEspacial)
@@ -129,8 +128,7 @@ export class SqliteService {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         baunit_id INTEGER,
         unidad_espacial_id INTEGER,
-        tipo TEXT CHECK(tipo = 'GPS') NOT NULL,
-        geom TEXT, 
+        tipo TEXT CHECK(tipo = 'GPS') NOT NULL, 
         lon REAL,
         lat REAL,
         exactitud_horizontal REAL,
@@ -271,7 +269,47 @@ export class SqliteService {
             });
     }
 
+    async deleteBaunit(baunitId: string | null) {
+        try {
+            const resultado = await this.db.query('SELECT * FROM baunit WHERE id = ?', [baunitId]);
+            const baunitExistente = resultado.values;
 
+            if (!baunitExistente || baunitExistente.length === 0) {
+                throw new Error('El baunit con el ID especificado no existe.');
+            }
+
+            await this.db.run('DELETE FROM baunit WHERE id = ?', [baunitId]);
+
+
+            await this.updateBaunitList();
+            await this.updateInteresadosList();
+            await this.updateUnidadEspacialList();
+            await this.updateCrPuntoLinderoList();
+
+            sendMessages(`Baunit con ID ${baunitId} y datos relacionados eliminados correctamente.`, this.messageService, this.snackBar);
+        } catch (error:any) {
+            console.error('Error al eliminar baunit y datos relacionados:', error);
+            sendMessages(`Error al eliminar baunit y datos relacionados: ${error.message}`, this.messageService, this.snackBar);
+        }
+    }
+
+
+    async marcarPredioComoEnviado(baunitId: string | null): Promise<void> {
+        const resultado = await this.db.query('SELECT * FROM baunit WHERE id = ?', [baunitId]);
+        const baunitExistente = resultado.values;
+        console.log("el baunit es: ", baunitExistente);
+
+        const query = `UPDATE baunit SET enviado_servidor = ? WHERE id = ?`;
+        const values = [true, baunitId];
+        console.log("se transforma: ", values)
+        try {
+            await this.db.run(query, values,undefined, 'one');
+            await this.updateBaunitList();
+            console.log(`Predio con ID ${baunitId} marcado como enviado.`);
+        } catch (error) {
+            console.error(`Error al marcar el predio con ID ${baunitId} como enviado:`, error);
+        }
+    }
     async addUser(username: string) {
         const q = 'insert into users (name) values (?)';
         return await this.db.run(q, [username], true, 'all')

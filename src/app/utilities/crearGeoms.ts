@@ -6,8 +6,8 @@ export class GenerateOlGeoms{
     geoJsonCRS: GeoJsonCRS
     public gt: GeometryType = new GeometryType();
     pointsList: any[]=[];
-    geoJsonPointElementList: GeoJsonElement[]=[];//lista de puntos en geojson, con precisión
-    
+    geoJsonPointElementList: GeoJsonElement[]=[];
+
     geoJsonElementPoint: GeoJsonElement = new GeoJsonElement({'default':0},new GeoJsonGeometry(this.gt.point,[0,0]));
     geoJsonElementLineString: GeoJsonElement = new GeoJsonElement({'default':0},new GeoJsonGeometry(this.gt.lineString,[[0,0],[1,1]]));
     geoJsonElementPolygon: GeoJsonElement = new GeoJsonElement({'default':0},new GeoJsonGeometry(this.gt.polygon,[[[0,0],[1,1],[0,1],[0,0]]]));
@@ -76,19 +76,12 @@ export class GenerateOlGeoms{
     public getGeoJsonFeatureCollectionPoint(){
         return new GeoJsonFeatureCollection(this.geoJsonCRS,this.geoJsonPointElementList);
     }
-    private getGeoJsonFeatureCollectionLineString(){
+    public getGeoJsonFeatureCollectionLineString(){
         return new GeoJsonFeatureCollection(this.geoJsonCRS,[this.geoJsonElementLineString]);
     }
-    private getGeoJsonFeatureCollectionPolygon(){
+    public getGeoJsonFeatureCollectionPolygon(){
         return new GeoJsonFeatureCollection(this.geoJsonCRS,[this.geoJsonElementPolygon]);
     }
-
-    /*getFeatureCollectionToDraw(){
-        if (this.pointsList.length==0){return}
-        if (this.pointsList.length==1){return this.getGeoJsonFeatureCollectionPoint()}
-        if (this.pointsList.length==2){return this.getGeoJsonFeatureCollectionLineString()}
-        if (this.pointsList.length>=2){return this.getGeoJsonFeatureCollectionPolygon()}
-    }*/
 
     getFeatureCollectionToDraw(){
         if (this.pointsList.length === 0) {

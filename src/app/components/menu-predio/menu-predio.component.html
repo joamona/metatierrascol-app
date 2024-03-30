@@ -8,5 +8,10 @@
         <span class="badge">{{ getUnidadesEspacialesCountForCurrentBaunit() }}</span>
     </button>
 
+    <button mat-raised-button  (click)="enviarPredio()" [disabled]="!isInteresadosButtonEnabled">
+        <ng-container *ngIf="this.predioActual?.enviado_servidor">Reenviar</ng-container>
+        <ng-container *ngIf="!this.predioActual?.enviado_servidor">Enviar</ng-container>
+    </button>
+    <button mat-raised-button id="btnEliminar" (click)="eliminarPredio()" [disabled]="!isInteresadosButtonEnabled">Eliminar</button>
     <button mat-raised-button routerLink="../">Atrás</button>
 </div>
