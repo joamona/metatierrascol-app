@@ -116,6 +116,7 @@
 
         <!-- Porcentaje de Propiedad -->
         <mat-form-field class="custom-input">
+            <mat-label>Porcentaje de Propiedad</mat-label>
             <input matInput type="number" placeholder="Porcentaje de Propiedad" [formControl]="porcentaje_propiedad" name="porcentaje_propiedad">
         </mat-form-field>
 
@@ -154,12 +155,13 @@
         </mat-form-field>
 
         <!-- Autorización para notificación por correo -->
-        <mat-checkbox formControlName="autoriza_notificacion_correo">Autoriza notificación por correo</mat-checkbox>
+        <mat-checkbox formControlName="autoriza_notificacion_correo" (change)="confirmarAutorizacionCorreo($event)">Autoriza notificación por correo</mat-checkbox>
 
         <!-- Autorización para tratamientos de datos personales -->
-        <mat-checkbox formControlName="autoriza_procesamiento_datos_personales">Autoriza tratamientos de datos personales</mat-checkbox>
+        <mat-checkbox formControlName="autoriza_procesamiento_datos_personales" (change)="confirmarTratamientoDatos($event)">Autoriza tratamientos de datos personales</mat-checkbox>
+
         <div class="button-container">
-            <button mat-raised-button *ngIf="appGlobalVarsService.appMode==1" (click)="fillAutomatically()">Fill automatically</button>
+            <!--<button mat-raised-button *ngIf="appGlobalVarsService.appMode==1" (click)="fillAutomatically()">Fill automatically</button>-->
             <button mat-raised-button *ngIf="mode=='añadir'" [disabled]="!controlsGroup.valid" (click)="save()">Guardar</button>
             <button mat-raised-button *ngIf="mode=='editar'" [disabled]="!controlsGroup.valid" (click)="save()">Guardar cambios</button>
             <button mat-raised-button class="rojo" *ngIf="mode === 'editar'" (click)="confirmDelete()">Eliminar</button>

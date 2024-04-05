@@ -25,7 +25,7 @@ import {LC_PredioTipo} from "../../enumerations/lc_predio-tipo";
 import { Departamento } from 'src/app/interfaces/departamento';
 import { departamentos } from 'src/app/interfaces/listas/listaDepartamentos';
 import {municipios} from "../../interfaces/listas/listaMunicipios";
-import {MatCheckbox} from "@angular/material/checkbox";
+import {MatCheckbox, MatCheckboxChange} from "@angular/material/checkbox";
 import {CR_DocumentoTipo} from "../../enumerations/cr_documento-tipo";
 import {CR_SexoTipo} from "../../enumerations/cr_sexo-tipo";
 import {CR_InteresadoTipo} from "../../enumerations/cr_interesado-tipo";
@@ -214,6 +214,15 @@ export class InteresadoComponent  implements OnInit {
     interesado.setFromModel(this.controlsGroup.value as Interesado);
     //const baunitId = this.controlsGroup.get('baunit_id')!.value;
     if (this.mode == 'añadir') {
+
+      const existe = await this.sqliteService.getInteresadoPorDocumentoIdentidad(interesado.documento_identidad);
+      if (existe) {
+        this.snackBar.open('Ya existe un interesado con el mismo documento de identidad.', 'Cerrar', {duration: 3000});
+        sendMessages('Ya existe un interesado con el mismo documento de identidad.', this.messageService, this.snackBar);
+        return;
+      }
+
+
       await interesado.insert();
       this.id = interesado.id;
       this.router.navigate(['/main-screen/menu-predio/list-interesados/interesado'], {queryParams: {mode: 'editar', baunit_id:this.paramBaunitId, id: this.id}});
@@ -237,25 +246,16 @@ export class InteresadoComponent  implements OnInit {
 
   }
 
-  /*onDepartamentoChange(){
-    this.municipio.setValue(null);
-    var departamento = this.departamento.value;
-    this.todosMunicipiosDelDepartamento = this.todosLosMunicipios.filter(m => m.departamento === departamento);
-  }*/
-
   onDepartamentoChange(){
     this.provincia.setValue(null);
     this.municipio.setValue(null);
     this.municipiosDeLaProvincia=[];
 
     var departamento = this.departamento.value;
-    //console.log(departamento);
     //Saca los municipios del departamento
     this.todosMunicipiosDelDepartamento = this.todosLosMunicipios.filter(m => m.departamento === departamento);
-    //console.log(this.todosMunicipiosDelDepartamento);
     //Elimina los municipios que tienen la misma provincia, para obtener un listado de provincias únicas
     this.municipiosDelDepartamentoProvinciaUnique = [...new Map(this.todosMunicipiosDelDepartamento.map( (municipio: Municipio) => [municipio.provincia, municipio])).values()]
-    //console.log(this.municipiosDelDepartamentoProvinciaUnique);
   }
 
   onProvinciaChange(){
@@ -299,6 +299,48 @@ export class InteresadoComponent  implements OnInit {
         );
       }
     }
+  }
+
+  confirmarTratamientoDatos(event: MatCheckboxChange) {
+    Swal.fire({
+      title: 'Autorización de Tratamiento de Datos Personales',
+      text: 'De acuerdo con lo dispuesto en el artículo 5 de la Ley Orgánica 15/1999 de 13 de diciembre, sobre Protección de datos de carácter personal, el grupo CCASAT, responsable del proyecto MetaTierras Colombia, de la Universitat Politécnica de València, España, en adelante UPV, le informa que los datos de carácter personal, y toda la información relacionada con usted, serán almacenados, y tratados en una base de datos con el único fin de proporcionar servicios en su propio interés.\n' +
+          '\n' +
+          'Valoramos su confianza al brindarnos su Información personal. Pero recuerde que ningún método de transmisión a través de Internet o método de transmisión electrónica el almacenamiento es 100% seguro y confiable, y no podemos garantizar su absoluta seguridad.\n' +
+          '\n' +
+          'Usted usa el software y el servicio de almacenamiento de la UPV bajo su propia responsabilidad, eximiendo al grupo CCASAT de la UPV de cualquier responsabilidad por pérdida, o extravío, acceso indebido que se pueda producir sobre sus datos.\n' +
+          '\n' +
+          'Usted podrá ejercer, en todo momento y de conformidad con la legislación vigente, sus derechos de acceso, eliminación y rectificación mediante solicitud dirigida al responsable de la base de datos (ccasat@upv.es)',
+      icon: 'info',
+      showCancelButton: true,
+      confirmButtonText: 'Acepto',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.autoriza_procesamiento_datos_personales.setValue(true);
+      } else {
+        event.source.checked = false;
+        this.autoriza_procesamiento_datos_personales.setValue(false);
+      }
+    });
+  }
+
+  confirmarAutorizacionCorreo(event: MatCheckboxChange) {
+    Swal.fire({
+      title: 'Autorización para Recibir Notificaciones por Correo',
+      text: 'Usted acepta que nos pongamos en comunicación con usted a través de email u otro medio, siempre en su propio interés, con el objetivo de regularizar su propiedad.',
+      icon: 'info',
+      showCancelButton: true,
+      confirmButtonText: 'Acepto',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.autoriza_notificacion_correo.setValue(true);
+      } else {
+        event.source.checked = false;
+        this.autoriza_notificacion_correo.setValue(false);
+      }
+    });
   }
 
 
