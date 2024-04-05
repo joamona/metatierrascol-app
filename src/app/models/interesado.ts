@@ -146,12 +146,12 @@ export class Interesado {
 
     async insert() {
         const q = `INSERT INTO interesado (
-    baunit_id, tipo_documento, documento_identidad, tipo, primer_nombre, primer_apellido, 
-    correo_electronico, sexo, departamento, provincia, municipio, porcentaje_propiedad, 
-    segundo_nombre, segundo_apellido, grupo_etnico, telefono_1, telefono_2, 
-    notas, estado, autoriza_notificacion_correo, 
-    autoriza_procesamiento_datos_personales
-) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id`;
+        baunit_id, tipo_documento, documento_identidad, tipo, primer_nombre, primer_apellido, 
+        correo_electronico, sexo, departamento, provincia, municipio, porcentaje_propiedad, 
+        segundo_nombre, segundo_apellido, grupo_etnico, telefono_1, telefono_2, 
+        notas, estado, autoriza_notificacion_correo, 
+        autoriza_procesamiento_datos_personales
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id`;
 
         await this.sqliteService.db.run(q, this.asListOfValues(), undefined, 'one')
             .then((r: any) => {

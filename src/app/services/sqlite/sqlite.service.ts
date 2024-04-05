@@ -168,7 +168,7 @@ export class SqliteService {
     }
 
     async updateBaunitList() {
-        const q = 'select * from baunit';
+        //const q = 'select * from baunit';
         await this.db.query('select * from baunit')
             .then((r: any) => {
                 if (r == undefined) {
@@ -319,6 +319,19 @@ export class SqliteService {
         const q = 'select * from users where name = ?';
         return await this.db.query(q, [username]);
     }
+
+    async getInteresadoPorDocumentoIdentidad(documentoIdentidad: string): Promise<boolean> {
+        try {
+            const result = await this.db.query("SELECT * FROM interesado WHERE documento_identidad = ?", [documentoIdentidad]);
+            const values = result.values ?? [];
+            return values.length > 0;
+        } catch (error) {
+            console.error('Error al buscar interesado por documento de identidad', error);
+            throw error;
+        }
+    }
+
+
 }
 
 
