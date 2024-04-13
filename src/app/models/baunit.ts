@@ -125,7 +125,7 @@ export class Baunit {
             this.longitud, this.latitud,
             this.enviado_servidor]
     }
-    async insert(){
+    /*async insert(){
         var q=`insert into baunit (
             nombre, tipo, departamento, provincia,
             municipio, sector_predio, vereda, complemento,
@@ -141,6 +141,24 @@ export class Baunit {
         .catch( (err) =>{
             sendMessages(err.message,this.messageService, this.sqliteService.snackBar)
         })
+        await this.sqliteService.updateBaunitList();
+    }*/
+    async insert(){
+        var q=`insert into baunit (
+            nombre, tipo, departamento, provincia,
+            municipio, sector_predio, vereda, complemento,
+            numero_predial, numero_catastral, 
+            longitud, latitud, enviado_servidor
+        ) values (?,?,?,?,?,?,?,?,?,?,?,?,?)`;
+        await this.sqliteService.db.run(q, this.asListOfValues())
+            .then( (r:any) => {
+                this.id = r.changes.lastId.toString();
+                sendMessages(`Predio ${this.id} guardado`, this.messageService, this.sqliteService.snackBar);
+                console.log(`Predio ${this.id} guardado`)
+            })
+            .catch( (err) =>{
+                sendMessages(err.message,this.messageService, this.sqliteService.snackBar)
+            })
         await this.sqliteService.updateBaunitList();
     }
     async update(){

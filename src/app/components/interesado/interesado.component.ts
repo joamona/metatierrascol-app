@@ -84,8 +84,8 @@ export class InteresadoComponent  implements OnInit {
   provincia=new FormControl('', [Validators.required]);
   municipio = new FormControl('', [Validators.required]);
   sexo = new FormControl('', [Validators.required]);
-  autoriza_notificacion_correo = new FormControl(false, [Validators.required]);
-  autoriza_procesamiento_datos_personales = new FormControl(false, [Validators.required]);
+  autoriza_notificacion_correo = new FormControl(false, [Validators.requiredTrue]);
+  autoriza_procesamiento_datos_personales = new FormControl(false, [Validators.requiredTrue]);
   baunit_id = new FormControl('', [Validators.required]);
 
   //opcionales
@@ -207,30 +207,28 @@ export class InteresadoComponent  implements OnInit {
 
   }
 
-
   async save() {
     sendMessages('Salvando datos en SQLite', this.messageService, this.snackBar);
     var interesado = new Interesado(this.sqliteService, this.messageService);
     interesado.setFromModel(this.controlsGroup.value as Interesado);
-    //const baunitId = this.controlsGroup.get('baunit_id')!.value;
-    if (this.mode == 'añadir') {
 
-      const existe = await this.sqliteService.getInteresadoPorDocumentoIdentidad(interesado.documento_identidad);
+    if (this.mode == 'añadir') {
+      const existe = await this.sqliteService.getInteresadoPorDocumentoIdentidad(interesado.documento_identidad, this.paramBaunitId);
       if (existe) {
-        this.snackBar.open('Ya existe un interesado con el mismo documento de identidad.', 'Cerrar', {duration: 3000});
-        sendMessages('Ya existe un interesado con el mismo documento de identidad.', this.messageService, this.snackBar);
+        this.snackBar.open('Ya existe un interesado con el mismo documento de identidad en este predio.', 'Cerrar', {duration: 3000});
+        sendMessages('Ya existe un interesado con el mismo documento de identidad en este predio.', this.messageService, this.snackBar);
         return;
       }
 
-
       await interesado.insert();
       this.id = interesado.id;
-      this.router.navigate(['/main-screen/menu-predio/list-interesados/interesado'], {queryParams: {mode: 'editar', baunit_id:this.paramBaunitId, id: this.id}});
+      this.router.navigate(['/main-screen/menu-predio/list-interesados/interesado'], {queryParams: {mode: 'editar', baunit_id: this.paramBaunitId, id: this.id}});
     } else {
       interesado.id = this.id;
       await interesado.update();
     }
   }
+
 
   fillAutomatically(){
     var interesado: Interesado = createDummyInteresado(this.sqliteService, this.messageService);

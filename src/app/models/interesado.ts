@@ -144,7 +144,7 @@ export class Interesado {
         ];
     }
 
-    async insert() {
+    /*async insert() {
         const q = `INSERT INTO interesado (
         baunit_id, tipo_documento, documento_identidad, tipo, primer_nombre, primer_apellido, 
         correo_electronico, sexo, departamento, provincia, municipio, porcentaje_propiedad, 
@@ -161,6 +161,26 @@ export class Interesado {
             .catch((err) => {
                 sendMessages(err.message, this.messageService, this.sqliteService.snackBar);
             });
+        await this.sqliteService.updateInteresadosList();
+    }*/
+    async insert() {
+        const q = `INSERT INTO interesado (
+        baunit_id, tipo_documento, documento_identidad, tipo, primer_nombre, primer_apellido, 
+        correo_electronico, sexo, departamento, provincia, municipio, porcentaje_propiedad, 
+        segundo_nombre, segundo_apellido, grupo_etnico, telefono_1, telefono_2, 
+        notas, estado, autoriza_notificacion_correo, 
+        autoriza_procesamiento_datos_personales
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+
+        await this.sqliteService.db.run(q, this.asListOfValues())
+            .then( (r:any) => {
+                this.id = r.changes.lastId.toString();
+                sendMessages(`Interesado ${this.id} guardado`, this.messageService, this.sqliteService.snackBar);
+                console.log(`Interesado ${this.id} guardado`)
+            })
+            .catch( (err) =>{
+                sendMessages(err.message,this.messageService, this.sqliteService.snackBar)
+            })
         await this.sqliteService.updateInteresadosList();
     }
 

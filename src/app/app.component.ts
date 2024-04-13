@@ -76,6 +76,9 @@ export class AppComponent implements OnInit{
     await this.setSqliteServiceDb();
     await this.sqliteService.createTables();
     await this.sqliteService.updateBaunitList();
+    await this.sqliteService.updateInteresadosList();
+    await this.sqliteService.updateUnidadEspacialList();
+    await this.sqliteService.updateCrPuntoLinderoList();
     // var a:Baunit = createDummyBaunit(this.sqliteService, this.messageService);
     // await a.insert();
     // console.log(a.id)

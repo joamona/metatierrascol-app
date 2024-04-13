@@ -230,9 +230,9 @@ export class SqliteService {
             .then((r: any) => {
                 if (r.values.length > 0) {
                     this.unidadEspacialList = [];
-                    r.values.forEach((row: any) => {
+                    r.values.forEach((row: UnidadEspacial) => {
                         const unidadEspacial = new UnidadEspacial(this, this.messageService);
-                        unidadEspacial.setFromModel(row);
+                        unidadEspacial.setFromModel(row as UnidadEspacial);
                         this.unidadEspacialList.push(unidadEspacial);
                     });
                     console.log('unidadEspacialList', this.unidadEspacialList);
@@ -243,7 +243,7 @@ export class SqliteService {
                 }
             })
             .catch((err) => {
-                sendMessages(`Error al recuperar unidades espaciales: ${err.message}`, this.messageService, this.snackBar);
+                sendMessages(`Error al recuperar unidades espaciales: ${err.message, this.messageService, this.snackBar}`, this.messageService, this.snackBar);
             });
     }
 
@@ -252,9 +252,9 @@ export class SqliteService {
             .then((r: any) => {
                 if (r.values.length > 0) {
                     this.crPuntoLinderoList = [];
-                    r.values.forEach((row: any) => {
+                    r.values.forEach((row: CrPuntoLindero) => {
                         const crPuntoLindero = new CrPuntoLindero(this, this.messageService);
-                        crPuntoLindero.setFromModel(row);
+                        crPuntoLindero.setFromModel(row as CrPuntoLindero);
                         this.crPuntoLinderoList.push(crPuntoLindero);
                     });
                     console.log('CrPuntoLinderoList', this.crPuntoLinderoList)
@@ -320,16 +320,17 @@ export class SqliteService {
         return await this.db.query(q, [username]);
     }
 
-    async getInteresadoPorDocumentoIdentidad(documentoIdentidad: string): Promise<boolean> {
+    async getInteresadoPorDocumentoIdentidad(documentoIdentidad: string, baunitId: string): Promise<boolean> {
         try {
-            const result = await this.db.query("SELECT * FROM interesado WHERE documento_identidad = ?", [documentoIdentidad]);
+            const result = await this.db.query("SELECT * FROM interesado WHERE documento_identidad = ? AND baunit_id = ?", [documentoIdentidad, baunitId]);
             const values = result.values ?? [];
             return values.length > 0;
         } catch (error) {
-            console.error('Error al buscar interesado por documento de identidad', error);
+            console.error('Error al buscar interesado por documento de identidad y baunit_id', error);
             throw error;
         }
     }
+
 
 
 }
