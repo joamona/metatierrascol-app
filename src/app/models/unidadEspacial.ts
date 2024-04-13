@@ -36,7 +36,7 @@ export class UnidadEspacial {
         return [this.baunit_id, this.tipo];
     }
 
-    async insert() {
+    /*async insert() {
         const q = `INSERT INTO unidad_espacial (baunit_id, tipo) VALUES (?, ?) returning id`;
         await this.sqliteService.db.run(q, this.asListOfValues(),undefined,'one')
             .then((r: any) => {
@@ -48,7 +48,23 @@ export class UnidadEspacial {
                 console.error(err);
             });
         await this.sqliteService.updateUnidadEspacialList();
+    }*/
+
+    async insert() {
+        const q = `INSERT INTO unidad_espacial (baunit_id, tipo) VALUES (?, ?)`;
+        await this.sqliteService.db.run(q, this.asListOfValues())
+            .then((r: any) => {
+                this.id = r.changes.lastId.toString();
+                sendMessages(`Unidad espacial ${this.id} guardado`, this.messageService, this.sqliteService.snackBar);
+                console.log(`Unidad espacial ${this.id} guardado`);
+            })
+            .catch((err) => {
+                sendMessages(err.message, this.messageService, this.sqliteService.snackBar);
+                console.error(err);
+            });
+        await this.sqliteService.updateUnidadEspacialList();
     }
+
 
     async update() {
         const q = `UPDATE unidad_espacial SET (baunit_id, tipo) = (?,?) WHERE id = ?`;

@@ -83,7 +83,7 @@ export class MedirGpsComponent implements OnInit  {
         nuevaUnidad.baunit_id = this.baunit_id;
 
         await nuevaUnidad.setFromId(this.unidadEspacialActualId);
-
+        this.medicionIniciada = true;
       }
 
     });
@@ -104,16 +104,17 @@ export class MedirGpsComponent implements OnInit  {
   }
 
   async medirPunto() {
+    console.log("la medición está iniciada? ", this.medicionIniciada);
     if (!this.medicionIniciada) {
       await this.iniciarMedicion();
-      this.medicionIniciada = true;
+      console.log("la medición está iniciada ahora? ", this.medicionIniciada);
+
     }
 
     try {
       const position = await this.geolocationService.getCurrentCoordinates();
       const precision = parseFloat(position.coords.accuracy.toFixed(4));
       const pointCoords = [position.coords.longitude, position.coords.latitude];
-
 
       this.generateOlGeoms.addPoint(pointCoords, precision);
 
@@ -160,6 +161,9 @@ export class MedirGpsComponent implements OnInit  {
   }
   async insertPunto(pointCoords: number[], precision: number) {
 
+    console.log("la medición está iniciada antes de insertar el punto? ", this.medicionIniciada);
+
+    console.log("el baunit id y la unidad_espacial_id serán respectivamente: ", this.baunit_id, this.unidadEspacialActualId)
     const crPuntoLindero = new CrPuntoLindero(this.sqliteService, this.messageService);
     crPuntoLindero.baunit_id = this.baunit_id;
     crPuntoLindero.unidad_espacial_id = this.unidadEspacialActualId;
@@ -170,10 +174,14 @@ export class MedirGpsComponent implements OnInit  {
     crPuntoLindero.exactitud_horizontal = precision;
     crPuntoLindero.descripcion = this.descripcion.value;
     await crPuntoLindero.insert();
+
+
     this.id = crPuntoLindero.id;
     this.lista_id.push(crPuntoLindero.id);
 
+
     await this.actualizarGeometriaUnidadEspacial();
+
   }
 
 
@@ -184,6 +192,7 @@ export class MedirGpsComponent implements OnInit  {
     nuevaUnidad.baunit_id = this.baunit_id;
     await nuevaUnidad.insert();
     this.unidadEspacialActualId = nuevaUnidad.id;
+    console.log("el id de la unidadEspacial actual es: ", this.unidadEspacialActualId)
     console.log("el baunit_id es: ", this.baunit_id, " y el id de la unidad_espacial es: ", nuevaUnidad.id);
   }
 
@@ -268,6 +277,7 @@ export class MedirGpsComponent implements OnInit  {
   async navigateToMenu() {
     this.moverFeaturesACapaEstatica();
 
+    console.log("generateOlGeoms point list legth: ", this.generateOlGeoms.pointsList.length )
     if (this.generateOlGeoms.pointsList.length === 0 && this.unidadEspacialActualId) {
       var nuevaUnidad = new UnidadEspacial(this.sqliteService, this.messageService);
       nuevaUnidad.baunit_id = this.baunit_id;
@@ -275,6 +285,8 @@ export class MedirGpsComponent implements OnInit  {
       await nuevaUnidad.delete();
     }
 
+    console.table(this.sqliteService.crPuntoLinderoList)
+    console.table(this.sqliteService.unidadEspacialList)
     this.router.navigate(['/main-screen/menu-predio'], { queryParams: {mode: 'editar', baunit_id: this.baunit_id}});
   }
 

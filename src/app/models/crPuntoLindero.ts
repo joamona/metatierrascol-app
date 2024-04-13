@@ -1,5 +1,6 @@
 import {SqliteService} from "../services/sqlite/sqlite.service";
 import {MessageService} from "../services/message.service";
+import {sendMessages} from "../utilities/manageMessages";
 
 
 export class CrPuntoLindero {
@@ -49,8 +50,11 @@ export class CrPuntoLindero {
         await this.sqliteService.db.run(q, this.asListOfValues())
             .then((r: any) => {
                 this.id = r.changes.lastId.toString();
+                sendMessages(`Punto lindero ${this.id} guardado`, this.messageService, this.sqliteService.snackBar);
+                console.log(`Punto lindero  ${this.id} guardado`);
             })
             .catch((err) => {
+                sendMessages(err.message, this.messageService, this.sqliteService.snackBar);
                 console.error(err);
             });
         await this.sqliteService.updateCrPuntoLinderoList();
@@ -68,7 +72,8 @@ export class CrPuntoLindero {
         descripcion = ? 
         WHERE id = ?`;
 
-        const values = [...this.asListOfValues(), this.id];
+        const values = this.asListOfValues();
+        values.push(this.id);
         await this.sqliteService.db.run(q, values)
             .then(() => {
                 console.log(`CrPuntoLindero ${this.id} actualizado`);
