@@ -21,6 +21,7 @@ export class GenerateOlGeoms{
         if (accuracy >this.worstAccuracy){this.worstAccuracy = accuracy}
 
         this.pointsList.push(pt);
+        console.log("lista de puntos: ", this.pointsList);
         var pg1 = new GeoJsonGeometry(this.gt.point,pt);
         var pge1 = new GeoJsonElement({"Precision":accuracy},pg1);
         this.geoJsonPointElementList.push(pge1);

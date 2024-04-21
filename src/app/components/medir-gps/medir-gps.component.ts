@@ -19,8 +19,10 @@ import {Feature} from "ol";
 import {Geometry} from "ol/geom";
 import {UnidadEspacial} from "../../models/unidadEspacial";
 import Swal from "sweetalert2";
-import {Interesado} from "../../models/interesado";
-
+import { Point } from 'ol/geom';
+import {createPointTextStyle} from "../../utilities/open-layers/labels";
+import VectorSource from "ol/source/Vector";
+import VectorLayer from "ol/layer/Vector";
 
 @Component({
   selector: 'app-medir-gps',
@@ -44,6 +46,11 @@ export class MedirGpsComponent implements OnInit  {
   id: string = '';
   lista_id: string[] = [];
   mode!: string | null;
+  pointSource: VectorSource = new VectorSource();
+  pointsLayer: VectorLayer<VectorSource> = new VectorLayer({
+    source: this.pointSource,
+    style: createPointTextStyle('id', 'red')
+  });
 
   private fakePoints = [
     { lat: 40.416775, lon: -3.703790, precision: 5 },
@@ -83,11 +90,15 @@ export class MedirGpsComponent implements OnInit  {
         nuevaUnidad.baunit_id = this.baunit_id;
 
         await nuevaUnidad.setFromId(this.unidadEspacialActualId);
+        await this.dibujarGeometriasExistentes();
         this.medicionIniciada = true;
       }
 
     });
 
+  }
+  ngAfterViewInit() {
+    CONFIG_OPENLAYERS.MAP.addLayer(this.pointsLayer);
   }
 
   centerMapToMyPosition() {
@@ -116,11 +127,14 @@ export class MedirGpsComponent implements OnInit  {
       const precision = parseFloat(position.coords.accuracy.toFixed(4));
       const pointCoords = [position.coords.longitude, position.coords.latitude];
 
+      await this.insertPunto(pointCoords, precision);
+
+
       this.generateOlGeoms.addPoint(pointCoords, precision);
 
       this.actualizarMapaConGeometrias();
 
-      await this.insertPunto(pointCoords, precision);
+
 
       this.puntosMedidos = this.generateOlGeoms.pointsList.length;
       this.precisiones.push(precision);
@@ -175,6 +189,12 @@ export class MedirGpsComponent implements OnInit  {
     crPuntoLindero.descripcion = this.descripcion.value;
     await crPuntoLindero.insert();
 
+    const pointFeature = new Feature(new Point(pointCoords));
+    pointFeature.setId(crPuntoLindero.id.toString());
+    this.pointSource.addFeature(pointFeature);
+
+    console.log(pointFeature)
+
 
     this.id = crPuntoLindero.id;
     this.lista_id.push(crPuntoLindero.id);
@@ -203,13 +223,18 @@ export class MedirGpsComponent implements OnInit  {
       return;
     }
     this.generateOlGeoms.deletePoint();
-    this.actualizarMapaConGeometrias();
+
 
     var ultimo_punto = new CrPuntoLindero(this.sqliteService, this.messageService);
     ultimo_punto.id = ultimoPuntoId;
     await ultimo_punto.delete();
 
+    const feature = this.pointSource.getFeatureById(ultimoPuntoId);
+    if (feature) {
+      this.pointSource.removeFeature(feature);
+    }
 
+    this.actualizarMapaConGeometrias();
     await this.actualizarGeometriaUnidadEspacial();
 
     if (this.precisiones.length > 0) {
@@ -260,7 +285,16 @@ export class MedirGpsComponent implements OnInit  {
         console.log("la feature es: ", feature);
       });
       CONFIG_OPENLAYERS.SOURCE_DRAW_GPS.addFeatures(features);
+
+      if (features.length > 0) {
+        const extent = CONFIG_OPENLAYERS.SOURCE_DRAW_GPS.getExtent();
+        CONFIG_OPENLAYERS.MAP.getView().fit(extent, {
+          padding: [50, 50, 50, 50],
+          duration: 1000
+        });
+      }
     }
+
   }
 
   private moverFeaturesACapaEstatica() {
@@ -275,7 +309,7 @@ export class MedirGpsComponent implements OnInit  {
   }
 
   async navigateToMenu() {
-    this.moverFeaturesACapaEstatica();
+    //this.moverFeaturesACapaEstatica();
 
     console.log("generateOlGeoms point list legth: ", this.generateOlGeoms.pointsList.length )
     if (this.generateOlGeoms.pointsList.length === 0 && this.unidadEspacialActualId) {
@@ -342,6 +376,26 @@ export class MedirGpsComponent implements OnInit  {
         );
       }
     }
+  }
+
+  async dibujarGeometriasExistentes() {
+    const puntosDeUnidad = this.sqliteService.crPuntoLinderoList.filter(p =>
+        p.unidad_espacial_id.toString() === this.unidadEspacialActualId && p.baunit_id.toString() === this.baunit_id
+    );
+
+    console.log("puntos unidad: ", puntosDeUnidad);
+
+    for (const puntoData of puntosDeUnidad) {
+      let punto = new CrPuntoLindero(this.sqliteService, this.messageService);
+      await punto.setFromId(puntoData.id);
+      const pointFeature = new Feature(new Point([punto.lon, punto.lat]));
+      pointFeature.setId(punto.id.toString());
+      this.pointSource.addFeature(pointFeature);
+      this.generateOlGeoms.addPoint([punto.lon,punto.lat], punto.exactitud_horizontal);
+      this.lista_id.push(punto.id);
+    }
+
+    this.actualizarMapaConGeometrias();
   }
 
 
