@@ -28,7 +28,7 @@ export class MenuPredioComponent  implements OnInit {
   mode!:string | null;
   isInteresadosButtonEnabled: boolean = false;
   predioEnviado: boolean = false;
-  predioActual: Baunit | undefined;
+  predioActual?: Baunit;
 
   constructor(private activatedRoute: ActivatedRoute, private snackBar: MatSnackBar, private router: Router, public enviarPredioService: EnviarPredioService, public sqliteService:SqliteService, public netStatusService: NetStatusService, public authService: AuthService, public messageService: MessageService) { }
 
@@ -37,7 +37,11 @@ export class MenuPredioComponent  implements OnInit {
       this.baunitId = params.get('baunit_id');
       this.mode = params.get("mode");
       this.isInteresadosButtonEnabled = !!this.baunitId;
-      this.predioActual = this.sqliteService.baunitList.find(b => b.id === this.baunitId);
+
+      if (this.baunitId) {
+        this.predioActual = this.sqliteService.baunitList.find(b => b.id.toString() === this.baunitId);
+        console.log("Predio actual encontrado:", this.predioActual);
+      }
     });
 
     if (this.isInteresadosButtonEnabled){
@@ -109,17 +113,20 @@ export class MenuPredioComponent  implements OnInit {
           cancelButtonText: 'Cancelar'
         });
 
-        if (confirmacion.isConfirmed) {
-          await this.enviarPredioService.enviarAlServidor(this.baunitId)
+        if (!confirmacion.isConfirmed) {
+          return
         }
-      } else {
-        await this.enviarPredioService.enviarAlServidor(this.baunitId)
       }
 
+      await this.enviarPredioService.enviarAlServidor(this.baunitId);
+      if (this.predioActual) {
+        this.predioActual.enviado_servidor = true;
+      }
       var m = new Message('info', 'Datos enviados correctamente.');
       this.messageService.add(m);
       this.snackBar.open('Datos enviados correctamente.', 'Cerrar', { duration: 3000, verticalPosition: 'bottom' });
 
+      console.log(this.predioActual?.enviado_servidor)
     } catch (error:any) {
       manageServerErrors(error, this.messageService, this.snackBar);
     }
