@@ -20,7 +20,7 @@ import { Feature } from 'ol';
 * 						  'table.gid'. Spits the string and returns the gid
 * @return none
 */
-function get_etiqueta(feature: Feature,campo: string){
+/*function get_etiqueta(feature: Feature,campo: string){
 	var etiqueta;
 	if ((campo=='gid') || (campo=='id')){
 		etiqueta = feature.getId();
@@ -28,9 +28,18 @@ function get_etiqueta(feature: Feature,campo: string){
 		etiqueta = feature.get(campo);
 	}
 	return etiqueta.toString();
+}*/
+
+function get_etiqueta(feature: Feature, campo: string){
+	let etiqueta;
+	if ((campo === 'gid') || (campo === 'id')) {
+		etiqueta = feature.getId();
+	} else {
+		etiqueta = feature.get(campo);
+	}
+	// Asegúrate de que etiqueta sea un string antes de retornar
+	return etiqueta ? etiqueta.toString() : 'N/A';
 }
-
-
 /**
 * Return a OL3 text style to label a vector layer
 * @method createTextStyle
@@ -49,7 +58,7 @@ function createTextStyle (feature: Feature, campo: string, col:string): Text {
     fill: new Fill({color: col}),
     stroke: new Stroke({color: col, width: 0.5})
   });
-};
+}
 
 /**
 * This is a example from how to use an image to draw points.
@@ -72,7 +81,7 @@ const pointImageSymbol = new Icon(({
 * @return OL3 style with text style
 */
 export function createPointTextStyle (campo: string, col: string) {
-	  return function(feature, color) {
+	  return function(feature:any, color:any) {
 		  const estilo=new Style({
 				image: new CircleStyle({
 			        radius: 4,
