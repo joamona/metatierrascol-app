@@ -23,6 +23,8 @@ import { Point } from 'ol/geom';
 import {createPointTextStyle} from "../../utilities/open-layers/labels";
 import VectorSource from "ol/source/Vector";
 import VectorLayer from "ol/layer/Vector";
+import {MatDialog} from "@angular/material/dialog";
+import {PointDetailsModalComponent} from "../point-details-modal/point-details-modal.component";
 
 @Component({
   selector: 'app-medir-gps',
@@ -33,7 +35,7 @@ import VectorLayer from "ol/layer/Vector";
   imports: [MatButtonModule, NgIf, RouterLink, ReactiveFormsModule, MatError, MatFormField, MatInput, MapaComponent, MatFormFieldModule,
     MatInputModule],
 })
-export class MedirGpsComponent implements OnInit  {
+export class MedirGpsComponent implements OnInit {
 
   generateOlGeoms: GenerateOlGeoms;
   puntosMedidos: number = 0;
@@ -53,11 +55,11 @@ export class MedirGpsComponent implements OnInit  {
   });
 
   private fakePoints = [
-    { lat: 40.416775, lon: -3.703790, precision: 5 },
-    { lat: 41.385064, lon: 2.173404, precision: 10 },
-    { lat: 39.469907, lon: -0.376288, precision: 15 },
-    { lat: 36.721273, lon: -4.421399, precision: 21 },
-    { lat: 37.388630, lon: -5.982330, precision: 25 }
+    {lat: 40.416775, lon: -3.703790, precision: 5},
+    {lat: 41.385064, lon: 2.173404, precision: 10},
+    {lat: 39.469907, lon: -0.376288, precision: 15},
+    {lat: 36.721273, lon: -4.421399, precision: 21},
+    {lat: 37.388630, lon: -5.982330, precision: 25}
 
   ];
 
@@ -68,7 +70,8 @@ export class MedirGpsComponent implements OnInit  {
   controlsGroup = new FormGroup({
     descripcion: this.descripcion
   });
-  constructor(private geolocationService: GeolocationService, public router: Router, public sqliteService: SqliteService, public messageService: MessageService, public route: ActivatedRoute) {
+
+  constructor(private geolocationService: GeolocationService, public router: Router, private dialog: MatDialog, public sqliteService: SqliteService, public messageService: MessageService, public route: ActivatedRoute) {
     this.generateOlGeoms = new GenerateOlGeoms(4326);
     this.route.queryParamMap.subscribe(params => {
       this.mode = params.get("mode");
@@ -91,12 +94,14 @@ export class MedirGpsComponent implements OnInit  {
 
         await nuevaUnidad.setFromId(this.unidadEspacialActualId);
         await this.dibujarGeometriasExistentes();
+        this.restaurarFeaturesParaEdicion();
         this.medicionIniciada = true;
       }
 
     });
 
   }
+
   ngAfterViewInit() {
     CONFIG_OPENLAYERS.MAP.addLayer(this.pointsLayer);
   }
@@ -129,11 +134,7 @@ export class MedirGpsComponent implements OnInit  {
 
       await this.insertPunto(pointCoords, precision);
 
-
-      this.generateOlGeoms.addPoint(pointCoords, precision);
-
       this.actualizarMapaConGeometrias();
-
 
 
       this.puntosMedidos = this.generateOlGeoms.pointsList.length;
@@ -157,22 +158,16 @@ export class MedirGpsComponent implements OnInit  {
     const precision = fakePoint.precision;
     const pointCoords = [fakePoint.lon, fakePoint.lat];
 
-
-    this.generateOlGeoms.addPoint(pointCoords, precision);
-
-
     this.currentFakePointIndex = (this.currentFakePointIndex + 1) % this.fakePoints.length;
 
-    this.actualizarMapaConGeometrias();
-
-
     await this.insertPunto(pointCoords, precision);
-
+    this.actualizarMapaConGeometrias();
 
     this.puntosMedidos = this.generateOlGeoms.pointsList.length;
     this.precisiones.push(precision);
     this.actualizarPeorPrecision()
   }
+
   async insertPunto(pointCoords: number[], precision: number) {
 
     console.log("la medición está iniciada antes de insertar el punto? ", this.medicionIniciada);
@@ -188,6 +183,8 @@ export class MedirGpsComponent implements OnInit  {
     crPuntoLindero.exactitud_horizontal = precision;
     crPuntoLindero.descripcion = this.descripcion.value;
     await crPuntoLindero.insert();
+
+    this.generateOlGeoms.addPoint([crPuntoLindero.lon, crPuntoLindero.lat], crPuntoLindero.exactitud_horizontal, crPuntoLindero.id);
 
     const pointFeature = new Feature(new Point(pointCoords));
     pointFeature.setId(crPuntoLindero.id.toString());
@@ -205,7 +202,6 @@ export class MedirGpsComponent implements OnInit  {
   }
 
 
-
   async iniciarMedicion() {
     this.medicionIniciada = true;
     var nuevaUnidad = new UnidadEspacial(this.sqliteService, this.messageService);
@@ -216,7 +212,7 @@ export class MedirGpsComponent implements OnInit  {
     console.log("el baunit_id es: ", this.baunit_id, " y el id de la unidad_espacial es: ", nuevaUnidad.id);
   }
 
-  async deleteLastPoint(){
+  /*async deleteLastPoint() {
     let ultimoPuntoId = this.lista_id.pop();
     if (typeof ultimoPuntoId === "undefined") {
       console.log("No hay puntos para eliminar.");
@@ -242,7 +238,36 @@ export class MedirGpsComponent implements OnInit  {
       this.actualizarPeorPrecision();
     }
 
+  }*/
+
+  async deletePoint(pointId: string) {
+    const index = this.lista_id.indexOf(pointId);
+    if (index > -1) {
+      this.lista_id.splice(index, 1);
+    }
+
+    console.log("el tipo de punto desde medir-gps es: ", typeof pointId)
+    this.generateOlGeoms.deletePoint(pointId);
+
+    var punto = new CrPuntoLindero(this.sqliteService, this.messageService);
+    punto.id = pointId;
+    await punto.delete();
+
+    const feature = this.pointSource.getFeatureById(pointId);
+    if (feature) {
+      this.pointSource.removeFeature(feature);
+    }
+
+    this.actualizarMapaConGeometrias();
+    await this.actualizarGeometriaUnidadEspacial();
+
+    if (this.precisiones.length > 0) {
+      this.precisiones.pop();
+      this.actualizarPeorPrecision();
+    }
   }
+
+
 
   actualizarPeorPrecision() {
     if (this.precisiones.length > 0) {
@@ -309,9 +334,9 @@ export class MedirGpsComponent implements OnInit  {
   }
 
   async navigateToMenu() {
-    //this.moverFeaturesACapaEstatica();
+    this.moverFeaturesACapaEstatica();
 
-    console.log("generateOlGeoms point list legth: ", this.generateOlGeoms.pointsList.length )
+    console.log("generateOlGeoms point list legth: ", this.generateOlGeoms.pointsList.length)
     if (this.generateOlGeoms.pointsList.length === 0 && this.unidadEspacialActualId) {
       var nuevaUnidad = new UnidadEspacial(this.sqliteService, this.messageService);
       nuevaUnidad.baunit_id = this.baunit_id;
@@ -321,7 +346,19 @@ export class MedirGpsComponent implements OnInit  {
 
     console.table(this.sqliteService.crPuntoLinderoList)
     console.table(this.sqliteService.unidadEspacialList)
-    this.router.navigate(['/main-screen/menu-predio'], { queryParams: {mode: 'editar', baunit_id: this.baunit_id}});
+    this.router.navigate(['/main-screen/menu-predio'], {queryParams: {mode: 'editar', baunit_id: this.baunit_id}});
+  }
+
+  private restaurarFeaturesParaEdicion() {
+    const features = CONFIG_OPENLAYERS.SOURCE_DRAW_STATIC.getFeatures().filter(feature => feature.getId() === this.unidadEspacialActualId);
+
+    if (features.length > 0) {
+      CONFIG_OPENLAYERS.SOURCE_DRAW_STATIC.clear();
+      CONFIG_OPENLAYERS.SOURCE_DRAW_GPS.addFeatures(features);
+      this.actualizarMapaConGeometrias();
+    }
+
+    console.log("la lista de puntos de crearGeoms es: ", this.generateOlGeoms.pointsList)
   }
 
 
@@ -335,7 +372,12 @@ export class MedirGpsComponent implements OnInit  {
         console.log(`Unidad Espacial ${this.unidadEspacialActualId} eliminada.`);
 
         await this.eliminarGeometriaPorUnidadEspacial(this.unidadEspacialActualId);
-        await this.router.navigate(['/main-screen/menu-predio/medir-gps-list'], { queryParams: {mode: 'editar', baunit_id: this.baunit_id}});
+        await this.router.navigate(['/main-screen/menu-predio/medir-gps-list'], {
+          queryParams: {
+            mode: 'editar',
+            baunit_id: this.baunit_id
+          }
+        });
       } catch (error) {
         console.error('Error al eliminar la unidad espacial:', error);
       }
@@ -391,13 +433,36 @@ export class MedirGpsComponent implements OnInit  {
       const pointFeature = new Feature(new Point([punto.lon, punto.lat]));
       pointFeature.setId(punto.id.toString());
       this.pointSource.addFeature(pointFeature);
-      this.generateOlGeoms.addPoint([punto.lon,punto.lat], punto.exactitud_horizontal);
+      this.generateOlGeoms.addPoint([punto.lon, punto.lat], punto.exactitud_horizontal, punto.id);
       this.lista_id.push(punto.id);
     }
 
     this.actualizarMapaConGeometrias();
   }
 
+  openPointDetailsModal(): void {
+    const puntosDeUnidad = this.sqliteService.crPuntoLinderoList.filter(p =>
+        p.unidad_espacial_id.toString() === this.unidadEspacialActualId && p.baunit_id.toString() === this.baunit_id
+    );
+    console.log(puntosDeUnidad);
+    const dialogRef = this.dialog.open(PointDetailsModalComponent, {
+      width: '400px',
+      data: {
+        points: puntosDeUnidad,
+        deletePoint: (id: string) => this.deletePoint(id)
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('El modal se ha cerrado', result);
+      if (result && result.deleted) {
+        console.log("Punto eliminado, ID:", result.pointId);
+
+        this.actualizarMapaConGeometrias();
+        this.actualizarGeometriaUnidadEspacial();
+      }
+    });
+  }
 
 
 }
