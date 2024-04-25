@@ -46,7 +46,7 @@ export class EnviarPredioService {
       const generateOlGeoms = new GenerateOlGeoms(crsCode);
       const puntosDeUnidad = puntosLindero.filter(p => p.unidad_espacial_id === unidadEspacial.id);
 
-      puntosDeUnidad.forEach(punto => generateOlGeoms.addPoint([punto.lon, punto.lat], punto.exactitud_horizontal));
+      puntosDeUnidad.forEach(punto => generateOlGeoms.addPoint([punto.lon, punto.lat], punto.exactitud_horizontal, punto.id));
       const featureCollection = generateOlGeoms.getFeatureCollectionToDraw();
 
       if (featureCollection) {
