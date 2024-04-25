@@ -441,10 +441,14 @@ export class MedirGpsComponent implements OnInit {
   }
 
   openPointDetailsModal(): void {
+    const puntosDeUnidad = this.sqliteService.crPuntoLinderoList.filter(p =>
+        p.unidad_espacial_id.toString() === this.unidadEspacialActualId && p.baunit_id.toString() === this.baunit_id
+    );
+    console.log(puntosDeUnidad);
     const dialogRef = this.dialog.open(PointDetailsModalComponent, {
       width: '400px',
       data: {
-        points: this.sqliteService.crPuntoLinderoList,
+        points: puntosDeUnidad,
         deletePoint: (id: string) => this.deletePoint(id)
       }
     });
