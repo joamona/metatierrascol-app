@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, NgZone, OnDestroy, OnInit} from '@angular/core';
 import {GeolocationService} from "../../services/Geolocation.service";
 import {ActivatedRoute, Router, RouterLink} from '@angular/router';
 import { NgIf } from '@angular/common';
@@ -9,6 +9,7 @@ import {CrPuntoLindero} from "../../models/crPuntoLindero";
 import {MessageService} from "../../services/message.service";
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatIconModule } from '@angular/material/icon';
 import {FormControl, FormGroup, ReactiveFormsModule} from "@angular/forms";
 import {MatError, MatFormField} from "@angular/material/form-field";
 import {MatInput} from "@angular/material/input";
@@ -25,6 +26,7 @@ import VectorSource from "ol/source/Vector";
 import VectorLayer from "ol/layer/Vector";
 import {MatDialog} from "@angular/material/dialog";
 import {PointDetailsModalComponent} from "../point-details-modal/point-details-modal.component";
+import { Geolocation, PositionOptions } from '@capacitor/geolocation';
 
 @Component({
   selector: 'app-medir-gps',
@@ -33,9 +35,9 @@ import {PointDetailsModalComponent} from "../point-details-modal/point-details-m
   providers: [],
   standalone: true,
   imports: [MatButtonModule, NgIf, RouterLink, ReactiveFormsModule, MatError, MatFormField, MatInput, MapaComponent, MatFormFieldModule,
-    MatInputModule],
+    MatInputModule, MatIconModule],
 })
-export class MedirGpsComponent implements OnInit {
+export class MedirGpsComponent implements OnInit, OnDestroy {
 
   generateOlGeoms: GenerateOlGeoms;
   puntosMedidos: number = 0;
@@ -53,6 +55,8 @@ export class MedirGpsComponent implements OnInit {
     source: this.pointSource,
     style: createPointTextStyle('id', 'red')
   });
+  gpsAccuracy: number | null = null;
+  watchId: string | null = null;
 
   private fakePoints = [
     {lat: 40.416775, lon: -3.703790, precision: 5},
@@ -71,7 +75,7 @@ export class MedirGpsComponent implements OnInit {
     descripcion: this.descripcion
   });
 
-  constructor(private geolocationService: GeolocationService, public router: Router, private dialog: MatDialog, public sqliteService: SqliteService, public messageService: MessageService, public route: ActivatedRoute) {
+  constructor(private geolocationService: GeolocationService, private zone: NgZone, public router: Router, private dialog: MatDialog, public sqliteService: SqliteService, public messageService: MessageService, public route: ActivatedRoute) {
     this.generateOlGeoms = new GenerateOlGeoms(4326);
     this.route.queryParamMap.subscribe(params => {
       this.mode = params.get("mode");
@@ -79,7 +83,7 @@ export class MedirGpsComponent implements OnInit {
   }
 
   async ngOnInit() {
-
+    this.startWatchingPosition();
     console.log("lista de puntos: ", this.generateOlGeoms.pointsList);
 
     this.route.queryParamMap.subscribe(async params => {
@@ -260,7 +264,7 @@ export class MedirGpsComponent implements OnInit {
 
     this.actualizarMapaConGeometrias();
     await this.actualizarGeometriaUnidadEspacial();
-
+    console.log("precisiones lenght es: ", this.precisiones.length)
     if (this.precisiones.length > 0) {
       this.precisiones.pop();
       this.actualizarPeorPrecision();
@@ -462,6 +466,41 @@ export class MedirGpsComponent implements OnInit {
         this.actualizarGeometriaUnidadEspacial();
       }
     });
+  }
+
+  async startWatchingPosition() {
+    const options: PositionOptions = {
+      enableHighAccuracy: true,
+      timeout: 1000,
+      maximumAge: 0
+    };
+
+    this.watchId = await Geolocation.watchPosition(options, (position, err) => {
+      if (err) {
+        console.error('Error al observar la posición:', err);
+        return;
+      }
+      if (position) {
+        this.zone.run(() => {
+          this.gpsAccuracy = parseFloat(position.coords.accuracy.toFixed(3));
+          console.log(`Precisión actual del GPS: ${this.gpsAccuracy} metros`);
+        });
+      }
+    });
+
+    console.log(`Watch ID: ${this.watchId}`);
+  }
+
+
+  ngOnDestroy() {
+    if (this.watchId) {
+      Geolocation.clearWatch({ id: this.watchId }).then(() => {
+        console.log('GPS watch stopped');
+        this.watchId = null;
+      }).catch(err => {
+        console.error('Error al detener la observación del GPS:', err);
+      });
+    }
   }
 
 

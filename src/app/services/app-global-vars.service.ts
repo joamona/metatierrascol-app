@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { isDevMode } from '@angular/core';
 
-export var appMode: number = 1;
+export var appMode: number = 2;
 
 @Injectable({
   providedIn: 'root'
