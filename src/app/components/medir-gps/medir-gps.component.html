@@ -6,7 +6,12 @@
     </div>
 
     <div class="list">
-        <p class="list-item" (click)="openPointDetailsModal()">Puntos medidos: {{ generateOlGeoms.pointsList.length }}</p>
+        <p class="list-item"(click)="openPointDetailsModal()">
+            <mat-icon style="margin-right: 10px">list</mat-icon>
+            Puntos medidos: {{ generateOlGeoms.pointsList.length }}
+        </p>
+
+        <p class="list-item" *ngIf="gpsAccuracy !== null">Precisión del GPS: {{ gpsAccuracy }} metros</p>
         <p class="list-item">Precisión del último punto: {{peorPrecision}} metros</p>
     </div>
 

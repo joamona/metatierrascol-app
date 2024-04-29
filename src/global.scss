@@ -63,6 +63,9 @@ button[mat-raised-button]:active {
 }
 
 .list-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 80%;
   background-color: #626262;
   color: #fff;

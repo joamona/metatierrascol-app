@@ -81,7 +81,6 @@ export class MapaComponent implements OnInit {
       })
     });
 
-    //Layer switcher definition
     var layerSwitcher = new LayerSwitcher({
       tipLabel: 'Leyenda'
     });
