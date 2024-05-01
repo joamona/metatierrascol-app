@@ -98,6 +98,7 @@ export class MedirGpsComponent implements OnInit, OnDestroy {
         await this.dibujarGeometriasExistentes();
         this.restaurarFeaturesParaEdicion();
         this.medicionIniciada = true;
+        this.setLastMeasuredAccuracyFromPoints();
       }
 
 
@@ -148,7 +149,7 @@ export class MedirGpsComponent implements OnInit, OnDestroy {
 
       this.puntosMedidos = this.generateOlGeoms.pointsList.length;
       this.precisiones.push(precision);
-      this.actualizarPeorPrecision();
+      this.setLastMeasuredAccuracyFromPoints();
       mapDraw.disableDrawings();
     } catch (error) {
       this.showLocationError(error);
@@ -174,7 +175,7 @@ export class MedirGpsComponent implements OnInit, OnDestroy {
 
     this.puntosMedidos = this.generateOlGeoms.pointsList.length;
     this.precisiones.push(precision);
-    this.actualizarPeorPrecision()
+    this.setLastMeasuredAccuracyFromPoints()
     mapDraw.disableDrawings();
   }
 
@@ -247,17 +248,17 @@ export class MedirGpsComponent implements OnInit, OnDestroy {
     console.log("precisiones lenght es: ", this.precisiones.length)
     if (this.precisiones.length > 0) {
       this.precisiones.pop();
-      this.actualizarPeorPrecision();
+      this.setLastMeasuredAccuracyFromPoints();
     }
   }
 
 
 
-  actualizarPeorPrecision() {
+  /*actualizarPeorPrecision() {
     if (this.precisiones.length > 0) {
       this.peorPrecision = Math.max(...this.precisiones);
     }
-  }
+  }*/
 
   async actualizarGeometriaUnidadEspacial() {
     let geometryToStore;
@@ -356,6 +357,20 @@ export class MedirGpsComponent implements OnInit, OnDestroy {
     }
 
     console.log("la lista de puntos de crearGeoms es: ", this.generateOlGeoms.pointsList)
+  }
+
+  async setLastMeasuredAccuracyFromPoints() {
+    const puntosDeUnidad = this.sqliteService.crPuntoLinderoList.filter(p =>
+        p.unidad_espacial_id.toString() === this.unidadEspacialActualId
+    );
+
+    puntosDeUnidad.sort((a, b) => parseInt(b.id) - parseInt(a.id));
+
+    if (puntosDeUnidad.length > 0) {
+      const lastPoint = puntosDeUnidad[0];  // El último punto añadido
+      this.peorPrecision = lastPoint.exactitud_horizontal;
+      console.log(`Última precisión recuperada de la unidad espacial actual: ${this.peorPrecision}`);
+    }
   }
 
 
@@ -511,7 +526,7 @@ export class MedirGpsComponent implements OnInit, OnDestroy {
         this.pointSource.removeFeature(feature);
       }
       this.actualizarMapaConGeometrias();
-      this.actualizarPeorPrecision();
+      this.setLastMeasuredAccuracyFromPoints();
     }
   }
 
