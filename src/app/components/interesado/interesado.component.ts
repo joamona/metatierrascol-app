@@ -57,6 +57,9 @@ import Swal from 'sweetalert2';
 })
 export class InteresadoComponent  implements OnInit {
 
+  initialNotificacionCorreo: boolean = false;
+  initialProcesamientoDatos: boolean = false;
+
   array_LC_PredioTipo = Object.values(LC_PredioTipo);
   array_CR_DocumentoTipo = Object.values(CR_DocumentoTipo);
   array_CR_SexoTipo = Object.values(CR_SexoTipo);
@@ -89,7 +92,10 @@ export class InteresadoComponent  implements OnInit {
   baunit_id = new FormControl('', [Validators.required]);
 
   //opcionales
-  porcentaje_propiedad = new FormControl(0);
+  porcentaje_propiedad = new FormControl(0, [
+    Validators.min(0),
+    Validators.max(100)
+  ]);
   telefono_1 = new FormControl('');
   telefono_2 = new FormControl('');
   notas = new FormControl('');
@@ -149,6 +155,8 @@ export class InteresadoComponent  implements OnInit {
 
   ngOnInit() {
 
+    console.log("valores de checkbox al entrar", this.autoriza_notificacion_correo.value, this.autoriza_procesamiento_datos_personales.value)
+
     this.route.queryParamMap.subscribe(params => {
       this.paramBaunitId = params.get('baunit_id') || '-1';
       if (this.paramBaunitId) {
@@ -165,7 +173,12 @@ export class InteresadoComponent  implements OnInit {
     var interesado = new Interesado(this.sqliteService, this.messageService);
     await interesado.setFromId(this.id);
     this.setFormControlValuesFromModel(interesado);
-    console.log("el itneresado es: ",interesado);
+
+    console.log("valores de checkbox", this.autoriza_notificacion_correo.value, this.autoriza_procesamiento_datos_personales.value)
+    this.initialNotificacionCorreo = interesado.autoriza_notificacion_correo;
+    this.initialProcesamientoDatos = interesado.autoriza_procesamiento_datos_personales;
+    console.log("control group: ", this.controlsGroup);
+    console.log("control group 2: ", this.controlsGroup.errors)
   }
 
   setFormControlValuesFromModel(interesado: Interesado) {
@@ -199,8 +212,8 @@ export class InteresadoComponent  implements OnInit {
     this.grupo_etnico.setValue(interesado.grupo_etnico);
     this.estado.setValue(interesado.estado);
 
-    this.autoriza_notificacion_correo.setValue(interesado.autoriza_notificacion_correo);
-    this.autoriza_procesamiento_datos_personales.setValue(interesado.autoriza_procesamiento_datos_personales);
+    this.autoriza_notificacion_correo.setValue(true);
+    this.autoriza_procesamiento_datos_personales.setValue(true);
 
     this.baunit_id.setValue(interesado.baunit_id);
 
@@ -227,6 +240,9 @@ export class InteresadoComponent  implements OnInit {
       interesado.id = this.id;
       await interesado.update();
     }
+
+    console.log("control group: ", this.controlsGroup);
+    console.log("control group 2: ", this.controlsGroup.errors)
   }
 
 
@@ -300,45 +316,55 @@ export class InteresadoComponent  implements OnInit {
   }
 
   confirmarTratamientoDatos(event: MatCheckboxChange) {
-    Swal.fire({
-      title: 'Autorización de Tratamiento de Datos Personales',
-      text: 'De acuerdo con lo dispuesto en el artículo 5 de la Ley Orgánica 15/1999 de 13 de diciembre, sobre Protección de datos de carácter personal, el grupo CCASAT, responsable del proyecto MetaTierras Colombia, de la Universitat Politécnica de València, España, en adelante UPV, le informa que los datos de carácter personal, y toda la información relacionada con usted, serán almacenados, y tratados en una base de datos con el único fin de proporcionar servicios en su propio interés.\n' +
-          '\n' +
-          'Valoramos su confianza al brindarnos su Información personal. Pero recuerde que ningún método de transmisión a través de Internet o método de transmisión electrónica el almacenamiento es 100% seguro y confiable, y no podemos garantizar su absoluta seguridad.\n' +
-          '\n' +
-          'Usted usa el software y el servicio de almacenamiento de la UPV bajo su propia responsabilidad, eximiendo al grupo CCASAT de la UPV de cualquier responsabilidad por pérdida, o extravío, acceso indebido que se pueda producir sobre sus datos.\n' +
-          '\n' +
-          'Usted podrá ejercer, en todo momento y de conformidad con la legislación vigente, sus derechos de acceso, eliminación y rectificación mediante solicitud dirigida al responsable de la base de datos (ccasat@upv.es)',
-      icon: 'info',
-      showCancelButton: true,
-      confirmButtonText: 'Acepto',
-      cancelButtonText: 'Cancelar',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.autoriza_procesamiento_datos_personales.setValue(true);
-      } else {
-        event.source.checked = false;
-        this.autoriza_procesamiento_datos_personales.setValue(false);
-      }
-    });
+    if (event.checked !== this.initialProcesamientoDatos) {
+
+      Swal.fire({
+        title: 'Autorización de Tratamiento de Datos Personales',
+        text: 'De acuerdo con lo dispuesto en el artículo 5 de la Ley Orgánica 15/1999 de 13 de diciembre, sobre Protección de datos de carácter personal, el grupo CCASAT, responsable del proyecto MetaTierras Colombia, de la Universitat Politécnica de València, España, en adelante UPV, le informa que los datos de carácter personal, y toda la información relacionada con usted, serán almacenados, y tratados en una base de datos con el único fin de proporcionar servicios en su propio interés.\n' +
+            '\n' +
+            'Valoramos su confianza al brindarnos su Información personal. Pero recuerde que ningún método de transmisión a través de Internet o método de transmisión electrónica el almacenamiento es 100% seguro y confiable, y no podemos garantizar su absoluta seguridad.\n' +
+            '\n' +
+            'Usted usa el software y el servicio de almacenamiento de la UPV bajo su propia responsabilidad, eximiendo al grupo CCASAT de la UPV de cualquier responsabilidad por pérdida, o extravío, acceso indebido que se pueda producir sobre sus datos.\n' +
+            '\n' +
+            'Usted podrá ejercer, en todo momento y de conformidad con la legislación vigente, sus derechos de acceso, eliminación y rectificación mediante solicitud dirigida al responsable de la base de datos (ccasat@upv.es)',
+        icon: 'info',
+        showCancelButton: true,
+        confirmButtonText: 'Acepto',
+        cancelButtonText: 'Cancelar',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.autoriza_procesamiento_datos_personales.setValue(true);
+        } else {
+          this.autoriza_procesamiento_datos_personales.setValue(false);
+        }
+      });
+
+    } else {
+      event.source.checked = this.initialProcesamientoDatos;
+    }
   }
 
   confirmarAutorizacionCorreo(event: MatCheckboxChange) {
-    Swal.fire({
-      title: 'Autorización para Recibir Notificaciones por Correo',
-      text: 'Usted acepta que nos pongamos en comunicación con usted a través de email u otro medio, siempre en su propio interés, con el objetivo de regularizar su propiedad.',
-      icon: 'info',
-      showCancelButton: true,
-      confirmButtonText: 'Acepto',
-      cancelButtonText: 'Cancelar',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.autoriza_notificacion_correo.setValue(true);
-      } else {
-        event.source.checked = false;
-        this.autoriza_notificacion_correo.setValue(false);
-      }
-    });
+    if (event.checked !== this.initialNotificacionCorreo) {
+      Swal.fire({
+        title: 'Autorización para Recibir Notificaciones por Correo',
+        text: 'Usted acepta que nos pongamos en comunicación con usted a través de email u otro medio, siempre en su propio interés, con el objetivo de regularizar su propiedad.',
+        icon: 'info',
+        showCancelButton: true,
+        confirmButtonText: 'Acepto',
+        cancelButtonText: 'Cancelar',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.autoriza_notificacion_correo.setValue(true);
+        } else {
+          this.autoriza_notificacion_correo.setValue(false);
+        }
+      });
+
+    } else {
+      event.source.checked = this.initialNotificacionCorreo;
+    }
+
   }
 
 

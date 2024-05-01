@@ -74,8 +74,14 @@ export class BaunitComponent  implements OnInit {
   //opcionales. Se inicializan a '', si es undefined;
   numero_predial=new FormControl('');
   numero_catastral=new FormControl('');
-  longitud=new FormControl('');
-  latitud=new FormControl('');
+  longitud=new FormControl('', [
+    Validators.min(-180),
+    Validators.max(180)
+  ]);
+  latitud=new FormControl('', [
+    Validators.min(-90),
+    Validators.max(90)
+  ]);
   enviado_servidor=new FormControl(false);
   id: string ='';//el id de sqlite
 
