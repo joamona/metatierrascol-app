@@ -532,7 +532,7 @@ export class MedirGpsComponent implements OnInit, OnDestroy {
 
   openGPSSettings() {
     NativeSettings.openAndroid({
-      option: AndroidSettings.ApplicationDetails
+      option: AndroidSettings.Location
     }).catch(err => {
       console.error('Error al abrir la configuración de la aplicación en Android:', err);
       Swal.fire('Error', 'No se pudo abrir la configuración de la aplicación', 'error');
