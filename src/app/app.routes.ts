@@ -10,6 +10,8 @@ import {InteresadoComponent} from "./components/interesado/interesado.component"
 import {ListInteresadosComponent} from "./components/list-interesados/list-interesados.component";
 import {MedirGpsListComponent} from "./components/medir-gps-list/medir-gps-list.component";
 import {MedirGpsComponent} from "./components/medir-gps/medir-gps.component";
+import {PuntosListComponent} from "./components/puntos-list/puntos-list.component";
+import {PuntoComponent} from "./components/punto/punto.component";
 export const routes: Routes = [
   { path: '', component: InitialScreenComponent },
   { path: 'main-screen', component: MainScreenComponent },
@@ -22,4 +24,6 @@ export const routes: Routes = [
   { path: 'main-screen/menu-predio/list-interesados/interesado', component: InteresadoComponent },
   { path: 'main-screen/menu-predio/medir-gps-list', component: MedirGpsListComponent },
   { path: 'main-screen/menu-predio/medir-gps-list/medir-gps', component: MedirGpsComponent },
+  { path: 'main-screen/menu-predio/puntos-list', component: PuntosListComponent },
+  { path: 'main-screen/menu-predio/puntos-list/punto', component: PuntoComponent },
 ];

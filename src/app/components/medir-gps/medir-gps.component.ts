@@ -25,8 +25,10 @@ import {createPointTextStyle} from "../../utilities/open-layers/labels";
 import VectorSource from "ol/source/Vector";
 import VectorLayer from "ol/layer/Vector";
 import {MatDialog} from "@angular/material/dialog";
-import {PointDetailsModalComponent} from "../point-details-modal/point-details-modal.component";
 import { Geolocation, PositionOptions } from '@capacitor/geolocation';
+import {mapDraw} from "../../mapa/mapDraw";
+import { NativeSettings, AndroidSettings, IOSSettings } from 'capacitor-native-settings';
+import {PointService} from "../../services/point.service";
 
 @Component({
   selector: 'app-medir-gps',
@@ -71,11 +73,7 @@ export class MedirGpsComponent implements OnInit, OnDestroy {
   private currentFakePointIndex = 0;
 
 
-  controlsGroup = new FormGroup({
-    descripcion: this.descripcion
-  });
-
-  constructor(private geolocationService: GeolocationService, private zone: NgZone, public router: Router, private dialog: MatDialog, public sqliteService: SqliteService, public messageService: MessageService, public route: ActivatedRoute) {
+  constructor(private geolocationService: GeolocationService, private pointService: PointService, private zone: NgZone, public router: Router, private dialog: MatDialog, public sqliteService: SqliteService, public messageService: MessageService, public route: ActivatedRoute) {
     this.generateOlGeoms = new GenerateOlGeoms(4326);
     this.route.queryParamMap.subscribe(params => {
       this.mode = params.get("mode");
@@ -102,12 +100,20 @@ export class MedirGpsComponent implements OnInit, OnDestroy {
         this.medicionIniciada = true;
       }
 
+
     });
 
+    this.pointService.deletePointObservable.subscribe({
+      next: (pointId) => {
+        this.handlePointDeletion(pointId);
+      },
+      error: (err) => console.error('Error al eliminar punto:', err)
+    });
   }
 
   ngAfterViewInit() {
     CONFIG_OPENLAYERS.MAP.addLayer(this.pointsLayer);
+    mapDraw.disableDrawings();
   }
 
   centerMapToMyPosition() {
@@ -118,8 +124,7 @@ export class MedirGpsComponent implements OnInit, OnDestroy {
       CONFIG_OPENLAYERS.MAP.setView(centro);
       console.log([position.coords.latitude, position.coords.longitude])
     }).catch(error => {
-      console.error('Error al obtener la posición actual:', error);
-      alert(`Error al obtener la ubicación: ${error.message}`);
+      this.showLocationError(error);
     });
   }
 
@@ -128,7 +133,7 @@ export class MedirGpsComponent implements OnInit, OnDestroy {
     if (!this.medicionIniciada) {
       await this.iniciarMedicion();
       console.log("la medición está iniciada ahora? ", this.medicionIniciada);
-
+      mapDraw.enableDrawPoints();
     }
 
     try {
@@ -144,10 +149,9 @@ export class MedirGpsComponent implements OnInit, OnDestroy {
       this.puntosMedidos = this.generateOlGeoms.pointsList.length;
       this.precisiones.push(precision);
       this.actualizarPeorPrecision();
-
+      mapDraw.disableDrawings();
     } catch (error) {
-      console.error('Error al medir el punto:', error);
-      alert(`Error al obtener la ubicación: ${error instanceof Error ? error.message : String(error)}`);
+      this.showLocationError(error);
     }
   }
 
@@ -155,6 +159,7 @@ export class MedirGpsComponent implements OnInit, OnDestroy {
     if (!this.medicionIniciada) {
       await this.iniciarMedicion();
       this.medicionIniciada = true;
+      mapDraw.enableDrawPoints();
     }
 
 
@@ -170,6 +175,7 @@ export class MedirGpsComponent implements OnInit, OnDestroy {
     this.puntosMedidos = this.generateOlGeoms.pointsList.length;
     this.precisiones.push(precision);
     this.actualizarPeorPrecision()
+    mapDraw.disableDrawings();
   }
 
   async insertPunto(pointCoords: number[], precision: number) {
@@ -212,37 +218,11 @@ export class MedirGpsComponent implements OnInit, OnDestroy {
     nuevaUnidad.baunit_id = this.baunit_id;
     await nuevaUnidad.insert();
     this.unidadEspacialActualId = nuevaUnidad.id;
+
+
     console.log("el id de la unidadEspacial actual es: ", this.unidadEspacialActualId)
     console.log("el baunit_id es: ", this.baunit_id, " y el id de la unidad_espacial es: ", nuevaUnidad.id);
   }
-
-  /*async deleteLastPoint() {
-    let ultimoPuntoId = this.lista_id.pop();
-    if (typeof ultimoPuntoId === "undefined") {
-      console.log("No hay puntos para eliminar.");
-      return;
-    }
-    this.generateOlGeoms.deletePoint();
-
-
-    var ultimo_punto = new CrPuntoLindero(this.sqliteService, this.messageService);
-    ultimo_punto.id = ultimoPuntoId;
-    await ultimo_punto.delete();
-
-    const feature = this.pointSource.getFeatureById(ultimoPuntoId);
-    if (feature) {
-      this.pointSource.removeFeature(feature);
-    }
-
-    this.actualizarMapaConGeometrias();
-    await this.actualizarGeometriaUnidadEspacial();
-
-    if (this.precisiones.length > 0) {
-      this.precisiones.pop();
-      this.actualizarPeorPrecision();
-    }
-
-  }*/
 
   async deletePoint(pointId: string) {
     const index = this.lista_id.indexOf(pointId);
@@ -329,15 +309,25 @@ export class MedirGpsComponent implements OnInit, OnDestroy {
   private moverFeaturesACapaEstatica() {
     const features = CONFIG_OPENLAYERS.SOURCE_DRAW_GPS.getFeatures();
 
-
     if (features.length > 0) {
       CONFIG_OPENLAYERS.SOURCE_DRAW_GPS.clear();
 
-      CONFIG_OPENLAYERS.SOURCE_DRAW_STATIC.addFeatures(features);
+      features.forEach(feature => {
+        const existingFeatures = CONFIG_OPENLAYERS.SOURCE_DRAW_STATIC.getFeatures().filter(f => f.getId() === feature.getId());
+
+        existingFeatures.forEach(existingFeature => {
+          CONFIG_OPENLAYERS.SOURCE_DRAW_STATIC.removeFeature(existingFeature);
+        });
+
+        CONFIG_OPENLAYERS.SOURCE_DRAW_STATIC.addFeature(feature);
+      });
     }
   }
 
+
+
   async navigateToMenu() {
+
     this.moverFeaturesACapaEstatica();
 
     console.log("generateOlGeoms point list legth: ", this.generateOlGeoms.pointsList.length)
@@ -357,8 +347,11 @@ export class MedirGpsComponent implements OnInit, OnDestroy {
     const features = CONFIG_OPENLAYERS.SOURCE_DRAW_STATIC.getFeatures().filter(feature => feature.getId() === this.unidadEspacialActualId);
 
     if (features.length > 0) {
-      CONFIG_OPENLAYERS.SOURCE_DRAW_STATIC.clear();
-      CONFIG_OPENLAYERS.SOURCE_DRAW_GPS.addFeatures(features);
+
+      features.forEach(feature => {
+        CONFIG_OPENLAYERS.SOURCE_DRAW_STATIC.removeFeature(feature);
+        CONFIG_OPENLAYERS.SOURCE_DRAW_GPS.addFeature(feature);
+      });
       this.actualizarMapaConGeometrias();
     }
 
@@ -366,63 +359,6 @@ export class MedirGpsComponent implements OnInit, OnDestroy {
   }
 
 
-  async deleteUnidadEspacial() {
-    if (this.unidadEspacialActualId) {
-      const unidadEspacial = new UnidadEspacial(this.sqliteService, this.messageService);
-      unidadEspacial.id = this.unidadEspacialActualId;
-
-      try {
-        await unidadEspacial.delete();
-        console.log(`Unidad Espacial ${this.unidadEspacialActualId} eliminada.`);
-
-        await this.eliminarGeometriaPorUnidadEspacial(this.unidadEspacialActualId);
-        await this.router.navigate(['/main-screen/menu-predio/medir-gps-list'], {
-          queryParams: {
-            mode: 'editar',
-            baunit_id: this.baunit_id
-          }
-        });
-      } catch (error) {
-        console.error('Error al eliminar la unidad espacial:', error);
-      }
-    } else {
-      console.warn("No hay una unidad espacial seleccionada para borrar.");
-    }
-  }
-
-  async eliminarGeometriaPorUnidadEspacial(unidadEspacialId: string) {
-    const result = await Swal.fire({
-      title: '¿Estás seguro?',
-      text: "No podrás revertir esta acción",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#3085d6',
-      confirmButtonText: 'Eliminar',
-      cancelButtonText: 'Cancelar'
-    });
-
-    if (result.isConfirmed) {
-      try {
-        let feature = CONFIG_OPENLAYERS.SOURCE_DRAW_GPS.getFeatureById(unidadEspacialId);
-        if (feature) {
-          CONFIG_OPENLAYERS.SOURCE_DRAW_GPS.removeFeature(feature);
-        }
-
-        feature = CONFIG_OPENLAYERS.SOURCE_DRAW_STATIC.getFeatureById(unidadEspacialId);
-        if (feature) {
-          CONFIG_OPENLAYERS.SOURCE_DRAW_STATIC.removeFeature(feature);
-        }
-      } catch (err) {
-        const errorMessage = (err instanceof Error) ? err.message : 'Ocurrió un error desconocido';
-        await Swal.fire(
-            'Error!',
-            'No se pudo eliminar el interesado: ' + errorMessage,
-            'error'
-        );
-      }
-    }
-  }
 
   async dibujarGeometriasExistentes() {
     const puntosDeUnidad = this.sqliteService.crPuntoLinderoList.filter(p =>
@@ -444,26 +380,73 @@ export class MedirGpsComponent implements OnInit, OnDestroy {
     this.actualizarMapaConGeometrias();
   }
 
-  openPointDetailsModal(): void {
-    const puntosDeUnidad = this.sqliteService.crPuntoLinderoList.filter(p =>
-        p.unidad_espacial_id.toString() === this.unidadEspacialActualId && p.baunit_id.toString() === this.baunit_id
-    );
-    console.log(puntosDeUnidad);
-    const dialogRef = this.dialog.open(PointDetailsModalComponent, {
-      width: '400px',
-      data: {
-        points: puntosDeUnidad,
-        deletePoint: (id: string) => this.deletePoint(id)
+  async deleteUnidadEspacial() {
+    if (this.unidadEspacialActualId) {
+      const result = await Swal.fire({
+        title: '¿Estás seguro?',
+        text: "No podrás revertir esta acción",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Eliminar',
+        cancelButtonText: 'Cancelar'
+      });
+
+      if (result.isConfirmed) {
+        try {
+          const unidadEspacial = new UnidadEspacial(this.sqliteService, this.messageService);
+          unidadEspacial.id = this.unidadEspacialActualId;
+
+          await unidadEspacial.delete();
+          console.log(`Unidad Espacial ${this.unidadEspacialActualId} eliminada.`);
+          await this.eliminarGeometriaPorUnidadEspacial(this.unidadEspacialActualId);
+
+          await this.router.navigate(['/main-screen/menu-predio/medir-gps-list'], {
+            queryParams: {
+              mode: 'editar',
+              baunit_id: this.baunit_id
+            }
+          });
+        } catch (error) {
+          console.error('Error al eliminar la unidad espacial:', error);
+        }
+      } else {
+        console.log("Acción de eliminación cancelada.");
       }
-    });
+    } else {
+      console.warn("No hay una unidad espacial seleccionada para borrar.");
+    }
+  }
 
-    dialogRef.afterClosed().subscribe(result => {
-      console.log('El modal se ha cerrado', result);
-      if (result && result.deleted) {
-        console.log("Punto eliminado, ID:", result.pointId);
+  async eliminarGeometriaPorUnidadEspacial(unidadEspacialId: string) {
+    try {
+      let feature = CONFIG_OPENLAYERS.SOURCE_DRAW_GPS.getFeatureById(unidadEspacialId);
+      if (feature) {
+        CONFIG_OPENLAYERS.SOURCE_DRAW_GPS.removeFeature(feature);
+      }
 
-        this.actualizarMapaConGeometrias();
-        this.actualizarGeometriaUnidadEspacial();
+      feature = CONFIG_OPENLAYERS.SOURCE_DRAW_STATIC.getFeatureById(unidadEspacialId);
+      if (feature) {
+        CONFIG_OPENLAYERS.SOURCE_DRAW_STATIC.removeFeature(feature);
+      }
+    } catch (err) {
+      const errorMessage = (err instanceof Error) ? err.message : 'Ocurrió un error desconocido';
+      await Swal.fire(
+          'Error!',
+          'No se pudo eliminar el interesado: ' + errorMessage,
+          'error'
+      );
+    }
+  }
+
+
+  openPointDetails() {
+    this.router.navigate(['/main-screen/menu-predio/puntos-list'], {
+      queryParams: {
+        mode: 'editar',
+        baunit_id: this.baunit_id,
+        unidadEspacial_id: this.unidadEspacialActualId,
       }
     });
   }
@@ -503,5 +486,42 @@ export class MedirGpsComponent implements OnInit, OnDestroy {
     }
   }
 
+  showLocationError(error: any) {
+    Swal.fire({
+      title: 'Error al obtener la ubicación',
+      text: `Error al obtener la ubicación: ${error.message}`,
+      icon: 'error',
+      confirmButtonText: 'Abrir Configuración GPS',
+      showCancelButton: true,
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.openGPSSettings();
+      }
+    });
+  }
+
+  handlePointDeletion(pointId: string) {
+    const index = this.lista_id.indexOf(pointId);
+    if (index > -1) {
+      this.lista_id.splice(index, 1);
+      this.generateOlGeoms.deletePoint(pointId);
+      const feature = this.pointSource.getFeatureById(pointId);
+      if (feature) {
+        this.pointSource.removeFeature(feature);
+      }
+      this.actualizarMapaConGeometrias();
+      this.actualizarPeorPrecision();
+    }
+  }
+
+  openGPSSettings() {
+    NativeSettings.openAndroid({
+      option: AndroidSettings.ApplicationDetails
+    }).catch(err => {
+      console.error('Error al abrir la configuración de la aplicación en Android:', err);
+      Swal.fire('Error', 'No se pudo abrir la configuración de la aplicación', 'error');
+    });
+  }
 
 }

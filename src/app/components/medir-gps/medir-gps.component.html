@@ -6,7 +6,7 @@
     </div>
 
     <div class="list">
-        <p class="list-item"(click)="openPointDetailsModal()">
+        <p class="list-item"(click)="openPointDetails()">
             <mat-icon style="margin-right: 10px">list</mat-icon>
             Puntos medidos: {{ generateOlGeoms.pointsList.length }}
         </p>
@@ -19,7 +19,7 @@
         <button mat-raised-button  (click)="centerMapToMyPosition()">Centrar mapa a mi posición</button>
         <button mat-raised-button  (click)="medirPunto()">Medir punto</button>
 
-        <button mat-raised-button  (click)="medirPuntoPruebas()">Medir punto prueba</button>
+        <!--<button mat-raised-button  (click)="medirPuntoPruebas()">Medir punto prueba</button>-->
 
         <button mat-raised-button  (click)="deletePoint(this.lista_id[lista_id.length-1])">Borrar último punto</button>
         <!--<button mat-raised-button  >Tomar foto del terreno</button>-->

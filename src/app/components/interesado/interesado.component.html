@@ -16,6 +16,7 @@
 
         <!-- Documento de Identidad -->
         <mat-form-field class="custom-input">
+            <mat-label>Documento de Identidad</mat-label>
             <input matInput placeholder="Documento de Identidad*" [formControl]="documento_identidad" name="documento_identidad">
             <mat-error *ngIf="documento_identidad.hasError('required')">
                 Este campo es obligatorio
@@ -36,6 +37,7 @@
 
         <!-- Primer Nombre -->
         <mat-form-field class="custom-input">
+            <mat-label>Primer Nombre</mat-label>
             <input matInput placeholder="Primer Nombre*" [formControl]="primer_nombre" name="primer_nombre">
             <mat-error *ngIf="primer_nombre.hasError('required')">
                 Este campo es obligatorio
@@ -44,6 +46,7 @@
 
         <!-- Primer Apellido -->
         <mat-form-field class="custom-input">
+            <mat-label>Primer Apellido</mat-label>
             <input matInput placeholder="Primer Apellido*" [formControl]="primer_apellido" name="primer_apellido">
             <mat-error *ngIf="primer_apellido.hasError('required')">
                 Este campo es obligatorio
@@ -52,6 +55,7 @@
 
         <!-- Correo Electrónico -->
         <mat-form-field class="custom-input">
+            <mat-label>Correo Electrónico</mat-label>
             <input matInput type="email" placeholder="Correo Electrónico" [formControl]="correo_electronico" name="correo_electronico">
         </mat-form-field>
 
@@ -101,32 +105,37 @@
 
         <!-- Teléfono 1 -->
         <mat-form-field class="custom-input">
+            <mat-label>Teléfono 1</mat-label>
             <input matInput placeholder="Teléfono 1" [formControl]="telefono_1" name="telefono_1">
         </mat-form-field>
 
         <!-- Teléfono 2 -->
         <mat-form-field class="custom-input">
+            <mat-label>Teléfono 2</mat-label>
             <input matInput placeholder="Teléfono 2" [formControl]="telefono_2" name="telefono_2">
         </mat-form-field>
 
         <!-- Notas -->
         <mat-form-field class="custom-input">
+            <mat-label>Notas</mat-label>
             <textarea matInput placeholder="Notas" [formControl]="notas" name="notas"></textarea>
         </mat-form-field>
 
         <!-- Porcentaje de Propiedad -->
         <mat-form-field class="custom-input">
-            <mat-label>Porcentaje de Propiedad</mat-label>
+            <mat-label>Porcentaje de Propiedad 0-100%</mat-label>
             <input matInput type="number" placeholder="Porcentaje de Propiedad" [formControl]="porcentaje_propiedad" name="porcentaje_propiedad">
         </mat-form-field>
 
         <!-- Segundo Nombre -->
         <mat-form-field class="custom-input">
+            <mat-label>Segundo Nombre</mat-label>
             <input matInput placeholder="Segundo Nombre" [formControl]="segundo_nombre" name="segundo_nombre">
         </mat-form-field>
 
         <!-- Segundo Apellido -->
         <mat-form-field class="custom-input">
+            <mat-label>Segundo Apellido</mat-label>
             <input matInput placeholder="Segundo Apellido" [formControl]="segundo_apellido" name="segundo_apellido">
         </mat-form-field>
 

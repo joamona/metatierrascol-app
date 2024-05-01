@@ -1,19 +1,19 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 
-import { PointDetailsModalComponent } from './point-details-modal.component';
+import { PuntosListComponent } from './puntos-list.component';
 
-describe('PointDetailsModalComponent', () => {
-  let component: PointDetailsModalComponent;
-  let fixture: ComponentFixture<PointDetailsModalComponent>;
+describe('PuntosListComponent', () => {
+  let component: PuntosListComponent;
+  let fixture: ComponentFixture<PuntosListComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ PointDetailsModalComponent ],
+      declarations: [ PuntosListComponent ],
       imports: [IonicModule.forRoot()]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(PointDetailsModalComponent);
+    fixture = TestBed.createComponent(PuntosListComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   }));

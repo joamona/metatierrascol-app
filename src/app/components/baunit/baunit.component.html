@@ -69,6 +69,7 @@
     </mat-form-field>
 
     <mat-form-field class="custom-input">
+        <mat-label>Vereda</mat-label>
       <input matInput placeholder="Vereda*" [formControl]="vereda" name="vereda">
       <mat-error *ngIf="vereda.hasError('required')">
         Este campo es obligatorio
@@ -76,6 +77,7 @@
     </mat-form-field>
         
     <mat-form-field class="custom-input">
+        <mat-label>Complemento o descripción adicional</mat-label>
       <input matInput placeholder="Complemento o descripción adicional*" [formControl]="complemento" name="complemento">
       <mat-error *ngIf="complemento.hasError('required')">
         Este campo es obligatorio
@@ -83,19 +85,27 @@
     </mat-form-field>
         
     <mat-form-field class="custom-input">
+        <mat-label>Número predial</mat-label>
       <input matInput placeholder="Número predial" [formControl]="numero_predial" name="numero_predial">
     </mat-form-field>
         
     <mat-form-field class="custom-input">
+        <mat-label>Número catastral</mat-label>
       <input matInput placeholder="Número catastral" [formControl]="numero_catastral" name="numero_catastral">
     </mat-form-field>
         
     <mat-form-field class="custom-input">
-      <input matInput placeholder="Coordenadas: longitud" [formControl]="longitud" name="longitud">
+        <mat-label>Longitud</mat-label>
+        <input matInput placeholder="Coordenadas: longitud" type="number" [formControl]="longitud" name="longitud">
+        <mat-error *ngIf="longitud.hasError('min')">El valor mínimo es -180.</mat-error>
+        <mat-error *ngIf="longitud.hasError('max')">El valor máximo es 180.</mat-error>
     </mat-form-field>
         
     <mat-form-field class="custom-input">
-      <input matInput placeholder="Coordenadas: latitud" [formControl]="latitud" name="latitud">
+        <mat-label>Latitud</mat-label>
+        <input matInput placeholder="Coordenadas: latitud"  type="number" [formControl]="latitud" name="latitud">
+        <mat-error *ngIf="latitud.hasError('min')">El valor mínimo es -90.</mat-error>
+        <mat-error *ngIf="latitud.hasError('max')">El valor máximo es 90.</mat-error>
     </mat-form-field>
 
     <p>Enviado al servidor {{enviado_servidor.value | changeBooleanByYesNoPipe:true}}</p>

@@ -1,0 +1,21 @@
+<div class="container2">
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Precisión (m)</th>
+            <th>Descripción</th>
+        </tr>
+        </thead>
+        <tbody>
+            @for (point of points; track point.id){
+                <tr (click)="editPoints(baunitId, unidadEspacialId, point.id)">
+                    <td>{{ point.id }}</td>
+                    <td>{{ point.exactitud_horizontal | number:'1.3-3'}}</td>
+                    <td>{{point.descripcion}}</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <button mat-raised-button (click)="navigateToMenu()">Atrás</button>
+</div>
