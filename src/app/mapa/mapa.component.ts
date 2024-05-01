@@ -12,10 +12,7 @@ import LayerSwitcher from 'ol-layerswitcher';
 import Map from 'ol/Map';
 import OSM from 'ol/source/OSM.js';
 import {mapDraw} from "./mapDraw";
-import VectorLayer from "ol/layer/Vector";
-import VectorSource from "ol/source/Vector";
-import Feature from "ol/Feature.js";
-import Polygon from "ol/geom/Polygon.js";
+import { ScaleLine, defaults as defaultControls } from 'ol/control';
 @Component({
   selector: 'app-mapa',
   templateUrl: './mapa.component.html',
@@ -78,14 +75,21 @@ export class MapaComponent implements OnInit {
         projection: 'EPSG:4326',
         center: [-4,40],
         zoom: 6
-      })
+      }),
+      controls: defaultControls().extend([
+        new ScaleLine({
+          units: 'metric',
+          minWidth: 100
+        })
+      ])
     });
 
     var layerSwitcher = new LayerSwitcher({
       tipLabel: 'Leyenda'
     });
 
-    CONFIG_OPENLAYERS.MAP.addControl(layerSwitcher);
+    //Descomentar LayerSwitcher cuando se añadan más capas
+    //CONFIG_OPENLAYERS.MAP.addControl(layerSwitcher);
 
   }
 
