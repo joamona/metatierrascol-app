@@ -1,5 +1,5 @@
 import {Component, NgZone, OnDestroy, OnInit} from '@angular/core';
-import {GeolocationService} from "../../services/Geolocation.service";
+import {GeolocationService} from "../../services/geolocation.service";
 import {ActivatedRoute, Router, RouterLink} from '@angular/router';
 import { NgIf } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
@@ -27,7 +27,7 @@ import VectorLayer from "ol/layer/Vector";
 import {MatDialog} from "@angular/material/dialog";
 import { Geolocation, PositionOptions } from '@capacitor/geolocation';
 import {mapDraw} from "../../mapa/mapDraw";
-import { NativeSettings, AndroidSettings, IOSSettings } from 'capacitor-native-settings';
+import {NativeSettings, AndroidSettings} from 'capacitor-native-settings';
 import {PointService} from "../../services/point.service";
 
 @Component({
@@ -69,9 +69,7 @@ export class MedirGpsComponent implements OnInit, OnDestroy {
 
   ];
 
-
   private currentFakePointIndex = 0;
-
 
   constructor(private geolocationService: GeolocationService, private pointService: PointService, private zone: NgZone, public router: Router, private dialog: MatDialog, public sqliteService: SqliteService, public messageService: MessageService, public route: ActivatedRoute) {
     this.generateOlGeoms = new GenerateOlGeoms(4326);
@@ -252,8 +250,6 @@ export class MedirGpsComponent implements OnInit, OnDestroy {
     }
   }
 
-
-
   /*actualizarPeorPrecision() {
     if (this.precisiones.length > 0) {
       this.peorPrecision = Math.max(...this.precisiones);
@@ -279,7 +275,6 @@ export class MedirGpsComponent implements OnInit, OnDestroy {
       await nuevaUnidad.update();
     }
   }
-
 
   private actualizarMapaConGeometrias() {
     const featureCollection = this.generateOlGeoms.getFeatureCollectionToDraw();
@@ -324,8 +319,6 @@ export class MedirGpsComponent implements OnInit, OnDestroy {
       });
     }
   }
-
-
 
   async navigateToMenu() {
 
