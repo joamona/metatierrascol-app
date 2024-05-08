@@ -1,23 +1,8 @@
-<!--<ion-app>
-  
-  
-</ion-app>
--->
-
-<!-- <div class="container">
-  <div class="contenido">
-     <jeep-sqlite *ngIf="isWeb">Isweb</jeep-sqlite>
-      <app-header></app-header>  
-      <ion-router-outlet></ion-router-outlet>
-      <app-footer></app-footer>
-  </div>
-</div> -->
-
-<div class="container">
-  <div class="contenido">
-      <jeep-sqlite *ngIf="isWeb">Isweb</jeep-sqlite>
-      <app-header></app-header>    
-      <router-outlet></router-outlet>
-      <app-footer></app-footer>
+<jeep-sqlite *ngIf="isWeb">Isweb</jeep-sqlite>
+<div class="contenedor-exterior">
+  <div class="container">
+        <app-header></app-header>    
+        <router-outlet></router-outlet>
+        <app-footer></app-footer>
   </div>
 </div>

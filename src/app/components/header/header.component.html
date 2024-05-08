@@ -1,7 +1,7 @@
 <header>
-    <div class="header-content">
-      <div class="align-left"><mat-icon (click)="changeShowMessages()">mail_outline</mat-icon></div>
-      <div class="align-right"> 
+    <div class="cont">
+      <div><mat-icon (click)="changeShowMessages()">mail_outline</mat-icon></div>
+      <div> 
           @if (authService.username!=''){
             <span class="margin-right">{{authService.username}}</span>
             <span class="margin-right">{{authService.groups}}</span>

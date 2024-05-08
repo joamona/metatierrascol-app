@@ -4,11 +4,16 @@ header {
     text-align: left;
     width: 100%;
   }
+  .cont{
+    display: flex;
+    justify-content: space-between;
+
+  }
 .header-content{
+    width: 100%;
     padding: 5px;
-    display: grid;
-    gap: 5px;
-    grid-template-columns: 1fr 3fr;
+    display: flex;
+    flex-direction: row
 }
 
 span {
