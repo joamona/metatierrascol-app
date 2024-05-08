@@ -10,6 +10,14 @@ Este repositorio contiene parte de la implementación del diseño de una aplicac
 
 Esta aplicación guarda los datos capturado en el móvil hasta que se envían a un servidor para ser estudiados por expertos. La implementación de la API e el servidor se puede encontrar en <a href="https://github.com/joamona/metatierrascol-api">código fuente de la API</a>.
 
+# Vídeos demostrativos
+
+- Uso de la app para la toma de datos: datos del predio, propietarios, y medición del perímetro: https://media.upv.es/player/?id=57bc4170-0d1e-11ef-a769-7f9c22a58452
+- Envío de datos desde la app al servidor: https://media.upv.es/player/?id=973dbb80-0d1e-11ef-a769-7f9c22a58452
+- Descarga de datos y visualización: https://media.upv.es/player/?id=cd5f9cb0-0d1e-11ef-9b06-df984097a654
+- Gestión de usuarios: https://media.upv.es/player/?id=017b74b0-0d1f-11ef-9b06-df984097a654
+- Gestión de las sesiones de usuario: https://media.upv.es/player/?id=6760a930-0d1f-11ef-9b06-df984097a654
+
 # Desarrolladores de la app
 
     Diego Terevinto Charquero

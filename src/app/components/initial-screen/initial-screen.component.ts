@@ -10,7 +10,7 @@ import {RouterLink} from "@angular/router";
     RouterLink
   ],
   templateUrl: './initial-screen.component.html',
-  styleUrl: './initial-screen.component.css'
+  styleUrl: './initial-screen.component.scss'
 })
 export class InitialScreenComponent {
 

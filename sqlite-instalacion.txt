@@ -3,6 +3,7 @@ https://github.com/capacitor-community/sqlite/blob/1a62cbe78ea27abc53a48b415dd50
 
 Ejecuta lo siguiente antes de ng serve, si no jeep-sqlite no funcionará
 
+ionic cap add android
 export CAPACITOR_ANDROID_STUDIO_PATH="/home/joamona/desktopApps/android-studio/bin/studio.sh"
 ionic cap build android
 npx cap sync
@@ -11,7 +12,13 @@ npx cap open android
 Luego ya puedes ejecutar
 ng serve
 
+Para crear los iconos:
+npm install --save-dev @capacitor/assets   //esto es para generar los iconos de la app
+crear la carpeta resources, en la raíz del proyecto y poner el icono: logo.png
+Luego ejecutar:
+npx @capacitor/assets generate --iconBackgroundColor '#eeeeee' --iconBackgroundColorDark '#222222' --splashBackgroundColor '#eeeeee' --splashBackgroundColorDark '#111111'
 
+Si se borra la carpeta android hay que volver a ejecutar todo esto
 
 
 

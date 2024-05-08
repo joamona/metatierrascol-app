@@ -8,7 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 @Component({
     selector: 'app-header',
     templateUrl: './header.component.html',
-    styleUrl: './header.component.css',
+    styleUrl: './header.component.scss',
     standalone: true,
     imports: [MatIconModule, MessagesComponent],
     providers: [],

@@ -13,11 +13,14 @@ import {MedirGpsComponent} from "./components/medir-gps/medir-gps.component";
 import {PuntosListComponent} from "./components/puntos-list/puntos-list.component";
 import {PuntoComponent} from "./components/punto/punto.component";
 import { AboutComponent } from './components/about/about.component';
+import { AyudaComponent } from './components/ayuda/ayuda.component';
 
 export const routes: Routes = [
   { path: '', component: InitialScreenComponent },
   { path: 'main-screen', component: MainScreenComponent }, 
-  { path: 'about', component: AboutComponent },  
+  { path: 'about', component: AboutComponent },
+  { path: 'ayuda', component: AyudaComponent },  
+  { path: 'main-screen/advanced', component: AdvancedComponent },
   { path: 'main-screen/advanced/set-conexion', component: SetConexionComponent },
   //{ path: 'main-screen/baunit', component: BaunitComponent },
   { path: 'main-screen/menu-predio', component: MenuPredioComponent },

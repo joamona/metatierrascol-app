@@ -33,7 +33,7 @@ import { manageServerErrors, sendMessages } from '../../utilities/manageMessages
     MatButtonModule
   ],
   templateUrl: './advanced.component.html',
-  styleUrl: './advanced.component.css'
+  styleUrl: './advanced.component.scss'
 })
 export class AdvancedComponent {
   //refSystems = CONFIG_OPENLAYERS.REFERENCE_SYSTEMS;//lista de srcs

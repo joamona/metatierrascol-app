@@ -37,7 +37,7 @@ import { manageServerErrors, sendMessages } from '../../../utilities/manageMessa
     MatButtonModule
   ],
   templateUrl: './set-conexion.component.html',
-  styleUrl: './set-conexion.component.css'
+  styleUrl: './set-conexion.component.scss'
 })
 export class SetConexionComponent implements OnInit{
   
