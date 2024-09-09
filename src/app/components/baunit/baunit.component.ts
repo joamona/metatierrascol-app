@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {AfterViewInit, Component, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormGroup, Validators} from '@angular/forms';
 import {Router, ActivatedRoute} from '@angular/router';
@@ -50,7 +50,7 @@ import { addIcons } from "ionicons";
   templateUrl: './baunit.component.html',
   styleUrls: ['./baunit.component.scss'],
 })
-export class BaunitComponent  implements OnInit {
+export class BaunitComponent  implements OnInit, AfterViewInit{
 
   array_LC_PredioTipo = Object.values(LC_PredioTipo);
   departamentos: Departamento[] = departamentos;
@@ -111,9 +111,6 @@ export class BaunitComponent  implements OnInit {
       this.mode = params.get("mode");
       if (this.mode=='añadir'){
         //console.log('Baunit. Mode añadir')
-        if (appGlobalVarsService.appMode==1){
-          this.fillAutomatically();
-        }
       } else {
         this.mode=='editar'
         this.id = params.get('baunit_id') || '';
@@ -188,6 +185,7 @@ export class BaunitComponent  implements OnInit {
   }
 
   fillAutomatically(){
+    console.log('Relleno automático dummy baunit')
     var baunit: Baunit = createDummyBaunit(this.sqliteService,this.messageService);
     this.setFormControlValuesFromModel(baunit);
   }
@@ -198,5 +196,12 @@ export class BaunitComponent  implements OnInit {
 
   navigateToMenu() {
     this.router.navigate(['/main-screen/menu-predio'], { queryParams: {mode: 'editar', baunit_id: this.id} });
+  }
+  ngAfterViewInit(): void {
+    if (this.mode=="añadir"){
+      if (this.appGlobalVarsService.appMode==1){
+        this.fillAutomatically();
+      }
+    }
   }
 }

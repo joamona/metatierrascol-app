@@ -1,5 +1,8 @@
 <div class="container">
-  <h2>Datos del predio: {{mode}} {{id}}</h2>
+  <div class="header">
+    <p class="titulo">Datos del predio. Modo: {{mode}} {{id}}</p>
+  </div>
+  
   <form [formGroup]="controlsGroup" onsubmit="event.preventDefault();">
     <mat-form-field class="custom-input">
       <input matInput placeholder="Nombre del predio*" [formControl]="nombre" name="nombre">
@@ -110,9 +113,9 @@
     <p>Enviado al servidor {{enviado_servidor.value | changeBooleanByYesNoPipe:true}}</p>
 
     <div class="button-container">
-    <!--<button mat-raised-button *ngIf="appGlobalVarsService.appMode==1" (click)="fillAutomatically()">Fill automatically</button>-->
-    <button mat-raised-button *ngIf="mode=='añadir'" [disabled]="!controlsGroup.valid" (click)="save()">Cuardar</button>
-    <button mat-raised-button *ngIf="mode=='editar'" [disabled]="!controlsGroup.valid" (click)="save()">Cuardar cambios</button>
+    <button mat-raised-button *ngIf="appGlobalVarsService.appMode==1" (click)="fillAutomatically()">Fill automatically</button>
+    <button mat-raised-button *ngIf="mode=='añadir'" [disabled]="!controlsGroup.valid" (click)="save()">Guardar</button>
+    <button mat-raised-button *ngIf="mode=='editar'" [disabled]="!controlsGroup.valid" (click)="save()">Guardar cambios</button>
     <button mat-raised-button (click)="navigateToMenu()">Atrás</button> 
     </div>
   </form>

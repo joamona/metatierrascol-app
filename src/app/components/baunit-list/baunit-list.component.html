@@ -15,7 +15,7 @@
     <tbody>
       @for (baunit of sqliteService.baunitList; track baunit) {
         <tr (click)="editBaunit(baunit.id)">
-          <td>{{baunit.nombre}}</td>
+          <td><div class="width-200px">{{baunit.nombre}}</div></td>
           <td>{{getInteresadosCountForBaunit(baunit.id)}}</td>
           <td>{{getUnidadesEspacialesCountForBaunit(baunit.id)}}</td>
           <td>{{baunit.enviado_servidor | changeBooleanByYesNoPipe:true}}</td>

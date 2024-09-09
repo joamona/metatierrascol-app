@@ -26,8 +26,8 @@ export function createDummyBaunit(sqliteService: SqliteService, messageService: 
     //opcionales. Se inicializan a '', si es undefined;
     baunit.numero_predial = 'Dummy número predial';
     baunit.numero_catastral = 'Dummy número catastral';
-    baunit.longitud = 'Dummy longitud';;
-    baunit.latitud = 'Dummy latitud';;
+    baunit.longitud = '50';;
+    baunit.latitud = '60';;
     baunit.enviado_servidor = false;
     return baunit;
 }
