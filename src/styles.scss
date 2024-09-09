@@ -154,3 +154,15 @@ button[disabled]  {
   text-align: center;
 }
 
+/*Son los párrafos con el título de todas las páginas
+Es un div que dentro tiene un párrafo class="titulo"
+*/
+.header {
+  text-align: center;
+  padding-top: 20px;
+}
+.titulo{
+  font-size: 25px;
+  font-weight:500;
+}
+

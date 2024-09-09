@@ -1,24 +1,25 @@
 <div class="container">
-<!--   <div class="list">
-    <p class="list-item">Predios Medidos: {{ prediosMedidos }}</p>
-    <p class="list-item">Predios Enviado: {{ prediosEnviados }}/{{ prediosMedidos }}</p>
-  </div> -->
-
   @if (newVersion>0){
     <div class="border container">
       <h2 class="red">Existe una nueva versión de la app</h2>
       <p class="red">Usted tiene la {{appGlobalVarsService.appVersion}}, y la última versión es la {{newVersion}}</p>
       <p class="red">Es recomendable que actualice la versión.</p> 
       <p class="red">Descárguela de <a href="{{appGlobalVarsService.web_url + 'last_app_version'}}" target="_blank">aquí</a></p>
-  </div>
+    </div>
   }
-
+  
   @if (sqliteService.baunitList.length > 0){
-    <h2>Número de predios: {{sqliteService.baunitList.length}} (click para editar)</h2>
+    <div class="header">
+      <p class="titulo">Número de predios: {{sqliteService.baunitList.length}}</p>
+      <p class="titulo">Click sobre la fila para editar</p>
+    </div>
     <app-baunit-list></app-baunit-list>
   }@else {
-    <h2>No existen predios en el dispositivo</h2>
+    <div class="header">
+      <p class="titulo">No existen predios en el dispositivo</p>
+    </div>
   }
+  
 
   <button mat-raised-button [routerLink]="['./menu-predio']" [queryParams]="{mode: 'añadir'}">Nuevo Predio</button>
   <!-- <button mat-raised-button [disabled]="true">Editar Predio desde el Mapa</button> -->

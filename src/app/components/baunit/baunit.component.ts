@@ -111,6 +111,9 @@ export class BaunitComponent  implements OnInit {
       this.mode = params.get("mode");
       if (this.mode=='añadir'){
         //console.log('Baunit. Mode añadir')
+        if (appGlobalVarsService.appMode==1){
+          this.fillAutomatically();
+        }
       } else {
         this.mode=='editar'
         this.id = params.get('baunit_id') || '';
