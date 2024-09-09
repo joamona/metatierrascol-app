@@ -1,0 +1,119 @@
+<div class="container">
+  <h2>Datos del predio: {{mode}} {{id}}</h2>
+  <form [formGroup]="controlsGroup" onsubmit="event.preventDefault();">
+    <mat-form-field class="custom-input">
+      <input matInput placeholder="Nombre del predio*" [formControl]="nombre" name="nombre">
+      <mat-error *ngIf="nombre.hasError('required')">
+        Este campo es obligatorio
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Tipo del Predio -->
+    <mat-form-field class="custom-input">
+      <mat-label>Tipo del Predio</mat-label>
+      <mat-select formControlName="tipo">
+        @for (tipo of array_LC_PredioTipo | alphabeticalOrder:'tipo'; track tipo) {
+          <mat-option [value]="tipo">
+            {{ tipo }}
+          </mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <!-- Departamento -->
+    <mat-form-field class="custom-input">
+      <mat-label>Departamento</mat-label>
+      <mat-select formControlName="departamento" (selectionChange)="onDepartamentoChange()">
+        @for (depto of departamentos | alphabeticalOrder:'departamento'; track depto) {
+          <mat-option [value]="depto.departamento">
+            {{ depto.departamento }}
+          </mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+        
+    <!-- Provincia -->
+    <mat-form-field class="custom-input">
+      <mat-label>Provincia</mat-label>
+      <mat-select formControlName="provincia" (selectionChange)="onProvinciaChange()">
+        @for (municip of municipiosDelDepartamentoProvinciaUnique | alphabeticalOrder:'provincia'; track municip) {
+          <mat-option [value]="municip.provincia">
+            {{ municip.provincia }}
+          </mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+        
+    <!-- Municipio -->
+    <mat-form-field class="custom-input">
+      <mat-label>Municipio</mat-label>
+      <mat-select formControlName="municipio">
+        @for (municip of municipiosDeLaProvincia | alphabeticalOrder:'nombre_municipio'; track municip) {
+          <mat-option [value]="municip.codigo_municipio">
+            {{ municip.nombre_municipio }}
+          </mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <!-- Sector del Predio -->
+    <mat-form-field class="custom-input">
+      <mat-label>Sector</mat-label>
+      <mat-select formControlName="sector_predio">
+        <mat-option value="Norte">Norte</mat-option>
+        <mat-option value="Sur">Sur</mat-option>
+        <mat-option value="Este">Este</mat-option>
+        <mat-option value="Oeste">Oeste</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field class="custom-input">
+        <mat-label>Vereda</mat-label>
+      <input matInput placeholder="Vereda*" [formControl]="vereda" name="vereda">
+      <mat-error *ngIf="vereda.hasError('required')">
+        Este campo es obligatorio
+      </mat-error>
+    </mat-form-field>
+        
+    <mat-form-field class="custom-input">
+        <mat-label>Complemento o descripción adicional</mat-label>
+      <input matInput placeholder="Complemento o descripción adicional*" [formControl]="complemento" name="complemento">
+      <mat-error *ngIf="complemento.hasError('required')">
+        Este campo es obligatorio
+      </mat-error>
+    </mat-form-field>
+        
+    <mat-form-field class="custom-input">
+        <mat-label>Número predial</mat-label>
+      <input matInput placeholder="Número predial" [formControl]="numero_predial" name="numero_predial">
+    </mat-form-field>
+        
+    <mat-form-field class="custom-input">
+        <mat-label>Número catastral</mat-label>
+      <input matInput placeholder="Número catastral" [formControl]="numero_catastral" name="numero_catastral">
+    </mat-form-field>
+        
+    <mat-form-field class="custom-input">
+        <mat-label>Longitud</mat-label>
+        <input matInput placeholder="Coordenadas: longitud" type="number" [formControl]="longitud" name="longitud">
+        <mat-error *ngIf="longitud.hasError('min')">El valor mínimo es -180.</mat-error>
+        <mat-error *ngIf="longitud.hasError('max')">El valor máximo es 180.</mat-error>
+    </mat-form-field>
+        
+    <mat-form-field class="custom-input">
+        <mat-label>Latitud</mat-label>
+        <input matInput placeholder="Coordenadas: latitud"  type="number" [formControl]="latitud" name="latitud">
+        <mat-error *ngIf="latitud.hasError('min')">El valor mínimo es -90.</mat-error>
+        <mat-error *ngIf="latitud.hasError('max')">El valor máximo es 90.</mat-error>
+    </mat-form-field>
+
+    <p>Enviado al servidor {{enviado_servidor.value | changeBooleanByYesNoPipe:true}}</p>
+
+    <div class="button-container">
+    <!--<button mat-raised-button *ngIf="appGlobalVarsService.appMode==1" (click)="fillAutomatically()">Fill automatically</button>-->
+    <button mat-raised-button *ngIf="mode=='añadir'" [disabled]="!controlsGroup.valid" (click)="save()">Cuardar</button>
+    <button mat-raised-button *ngIf="mode=='editar'" [disabled]="!controlsGroup.valid" (click)="save()">Cuardar cambios</button>
+    <button mat-raised-button (click)="navigateToMenu()">Atrás</button> 
+    </div>
+  </form>
+</div>

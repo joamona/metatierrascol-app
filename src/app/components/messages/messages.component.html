@@ -1,0 +1,8 @@
+<div class="scrollContent">
+    <p>Mensajes:</p>
+    <div *ngFor='let message of messageService.messages'>
+        <div class="{{message.class}}">
+            <strong>{{message.time}}</strong> {{message.message}}
+        </div>
+    </div>
+</div>

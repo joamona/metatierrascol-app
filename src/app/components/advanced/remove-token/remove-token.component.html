@@ -1,0 +1,51 @@
+
+  <div class="text-align-center">
+    <h2 class="header">Eliminar datos de la sesión</h2>
+  </div>
+  
+
+  <p>Disculpe por hacerle leer esta información técnica</p>
+
+  <p>Un identificador de sesión es almacenado en su dispositivo</p>
+
+  <p>La gestión de los identificadores de sesión es para ahorrarle
+  tener que iniciar la sesión cada vez que use la aplicación.</p>
+
+  <p>Si pierde el móvil, lo primero que tiene que hacer es entrar entrar
+    la web de MetaTierras Colombia ({{appGlobalVarsService.web_url}}), 
+    iniciar sesión, y cerrar todas las 
+    sesiones, desde el menú Menú -> Cerrar sesiones.
+    Esto evitará que alguien pueda entrar en a web de MetaTierras Colombia,
+    y ver sus datos.
+  </p>
+
+  <p>Cuando usted cierre la sesión, automáticamente el identificador de 
+    la sesión se eliminará del dispotitivo para poder iniciar una sesión
+    nueva.
+  </p>
+
+  <p>Pero las sesiones caducan pasado un mes.</p>
+
+  <p>Esto quiere decir que el identificador de sesión de su dispositivo 
+    ya no funcionará, y hay que borrarlo para poder 
+    inciar sesión normalmente. Esto se debe hacer
+    automáticamente, pero también puede borrar los datos de la sesión
+    manualmente desde aquí, por si el proceso automático falla.
+  </p>
+  <p> 
+    Si tiene un identificador de sesión erróneo en el dispositivo, no podrá
+    inciar sesión, ni cerrar la sesión. Debe borrar este identificador manualmente 
+    con esta opción </p> 
+    
+    <p>Después de volver a inciar la sesión, es recomendable que pulse el botón 
+    <b>Cerrar todas las sesiones</b> en el menú anterior.
+  </p>
+
+
+
+<button mat-raised-button (click)="removeToken()">Eliminar datos de sesión</button>
+
+
+<button mat-raised-button routerLink="../">Atrás</button>
+
+

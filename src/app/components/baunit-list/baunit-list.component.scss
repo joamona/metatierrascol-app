@@ -1,0 +1,34 @@
+.container2{
+  padding-left: 10px;
+  padding-right: 10px;
+}
+table tbody tr:nth-child(odd) {
+background: #74727c;
+  color: white
+}
+table tbody tr:nth-child(even) {
+background: #bebebe;
+}
+
+table {
+border-collapse: collapse;
+width: 100%;
+}
+
+td {
+  margin: 5px;
+  padding: 5px;
+  font-size: 22px;
+  text-align: center;
+}
+
+th {
+  margin: 5px;
+  padding: 5px;
+  font-size: 22px;
+}
+
+.rojo {
+background-color: red !important;
+color: white !important;
+}

@@ -1,0 +1,28 @@
+<div class="container2">
+
+    @if (getUnidadEspacialForCurrentBaunit().length > 0) {
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Tipo</th>
+                <!--<th>Geom</th>-->
+            </tr>
+            </thead>
+            <tbody>
+                @for (unidadEspacial of getUnidadEspacialForCurrentBaunit(); track unidadEspacial) {
+                    <tr (click)="editUnidadEspacial(unidadEspacial.id, unidadEspacial.baunit_id)">
+                        <td>{{unidadEspacial.id}}</td>
+                        <td>{{unidadEspacial.tipo}}</td>
+                        <!--<td>{{unidadEspacial.geom}}</td>-->
+                    </tr>
+                }
+            </tbody>
+        </table>
+    } @else {
+        <h2>Lista de interesados vacía</h2>
+    }
+
+    <button mat-raised-button [routerLink]="['./medir-gps']" [queryParams]="{mode: 'añadir', baunit_id: this.baunitId}">Comenzar medición</button>
+    <button mat-raised-button (click)="navigateToMenu()">Atrás</button>
+</div>

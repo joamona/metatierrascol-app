@@ -1,0 +1,22 @@
+<div class="container">
+  <h2>Avanzado</h2>
+  <!--<mat-form-field class="custom-input">
+    <mat-select [(ngModel)]="selectedRefSystem" >
+      @for (refSystem of refSystems; track refSystem) {
+        <mat-option [value]="refSystem.code">{{refSystem.code}}</mat-option>
+      }
+    </mat-select>
+    <mat-select [(ngModel)]="selectedRefSystem" (change)="onRefSystemChange(selectedRefSystem)">
+      @for (refSystem of refSystems; track refSystem) {
+        <mat-option [value]="refSystem.code">{{refSystem.code}}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>-->
+  <div class="button-container">
+    <button mat-raised-button [disabled]="authService.token!=''" routerLink="set-conexion">Establecer conexión</button>
+    <button mat-raised-button [disabled]="(authService.token=='')" (click)="closeSession()">Cerrar sesión</button>
+    <button mat-raised-button [disabled]="(authService.token=='')" routerLink="remove-token">Eliminar datos de la sesion</button>
+    <button mat-raised-button [disabled]="(authService.token=='')" routerLink="remove-sessions">Cerrar todas las sesiones</button>
+    <button mat-raised-button routerLink="../">Atrás</button>
+  </div>
+</div>

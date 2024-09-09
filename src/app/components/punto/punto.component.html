@@ -1,0 +1,40 @@
+<div class="container">
+    <h2>Detalle del Punto: {{ punto.id }}</h2>
+    <form [formGroup]="puntoForm">
+        <!-- ID del punto -->
+        <mat-form-field class="custom-input">
+            <mat-label>ID</mat-label>
+            <input matInput placeholder="ID" [value]="punto.id" disabled>
+        </mat-form-field>
+
+        <!-- Longitud -->
+        <mat-form-field class="custom-input">
+            <mat-label>Longitud</mat-label>
+            <input matInput placeholder="Longitud" [value]="punto.lon" disabled>
+        </mat-form-field>
+
+        <!-- Latitud -->
+        <mat-form-field class="custom-input">
+            <mat-label>Latitud</mat-label>
+            <input matInput placeholder="Latitud" [value]="punto.lat" disabled>
+        </mat-form-field>
+
+        <!-- Precisión -->
+        <mat-form-field class="custom-input">
+            <mat-label>Precisión (m)</mat-label>
+            <input matInput placeholder="Precisión" [value]="punto.exactitud_horizontal | number:'1.3-3'" disabled>
+        </mat-form-field>
+
+        <!-- Descripción -->
+        <mat-form-field class="custom-input">
+            <mat-label>Descripción</mat-label>
+            <textarea matInput placeholder="Descripción" formControlName="descripcion"></textarea>
+        </mat-form-field>
+
+        <div class="button-container">
+            <button mat-raised-button color="primary" [disabled]="!puntoForm.valid" (click)="save()">Guardar Cambios</button>
+            <button mat-raised-button class="rojo" (click)="deletePunto()">Eliminar Punto</button>
+            <button mat-raised-button (click)="navigateBack()">Atrás</button>
+        </div>
+    </form>
+</div>

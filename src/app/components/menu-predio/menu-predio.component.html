@@ -1,0 +1,22 @@
+<div class="container">
+    <h2>Menú Principal</h2>
+    <button mat-raised-button (click)="goToDatosPredio()">Datos Predio</button>
+    <button mat-raised-button [routerLink]="['./list-interesados']" [queryParams]="{mode: 'añadir', baunit_id: this.baunitId}" [disabled]="!isInteresadosButtonEnabled">Datos Interesado
+        <span class="badge">{{ getInteresadosCountForCurrentBaunit() }}</span>
+    </button>
+
+    <button mat-raised-button [routerLink]="['./field-image']" [queryParams]="{mode: 'añadir', baunit_id: this.baunitId}"> Añadir imagen del terreno
+        <span class="badge">0</span>
+    </button>
+    
+    <button mat-raised-button [routerLink]="['./medir-gps-list']" [queryParams]="{mode: 'añadir', baunit_id: this.baunitId}" [disabled]="!isInteresadosButtonEnabled">Medir con GPS
+        <span class="badge">{{ getUnidadesEspacialesCountForCurrentBaunit() }}</span>
+    </button>
+
+    <button mat-raised-button  (click)="enviarPredio()" [disabled]="!isInteresadosButtonEnabled">
+        <ng-container *ngIf="this.predioActual?.enviado_servidor">Reenviar</ng-container>
+        <ng-container *ngIf="!this.predioActual?.enviado_servidor">Enviar</ng-container>
+    </button>
+    <button mat-raised-button id="btnEliminar" (click)="eliminarPredio()" [disabled]="!isInteresadosButtonEnabled">Eliminar</button>
+    <button mat-raised-button routerLink="../">Atrás</button>
+</div>

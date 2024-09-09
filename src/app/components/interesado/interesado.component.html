@@ -1,0 +1,180 @@
+<div class="container">
+    <h2>Datos del interesado: {{mode}} {{id}}</h2>
+    <form [formGroup]="controlsGroup" onsubmit="event.preventDefault();">
+
+        <!-- Tipo de Documento -->
+        <mat-form-field class="custom-input">
+            <mat-label>Tipo de Documento</mat-label>
+            <mat-select formControlName="tipo_documento">
+                @for (tipo of array_CR_DocumentoTipo | alphabeticalOrder:'tipo'; track tipo) {
+                    <mat-option [value]="tipo">
+                        {{ tipo }}
+                    </mat-option>
+                }
+            </mat-select>
+        </mat-form-field>
+
+        <!-- Documento de Identidad -->
+        <mat-form-field class="custom-input">
+            <mat-label>Documento de Identidad</mat-label>
+            <input matInput placeholder="Documento de Identidad*" [formControl]="documento_identidad" name="documento_identidad">
+            <mat-error *ngIf="documento_identidad.hasError('required')">
+                Este campo es obligatorio
+            </mat-error>
+        </mat-form-field>
+
+        <!-- Tipo de Interesado -->
+        <mat-form-field class="custom-input">
+            <mat-label>Tipo de Interesado</mat-label>
+            <mat-select formControlName="tipo">
+                @for (tipo of array_CR_InteresadoTipo | alphabeticalOrder: 'tipo'; track tipo) {
+                    <mat-option  [value]="tipo">
+                        {{ tipo }}
+                    </mat-option>
+                }
+            </mat-select>
+        </mat-form-field>
+
+        <!-- Primer Nombre -->
+        <mat-form-field class="custom-input">
+            <mat-label>Primer Nombre</mat-label>
+            <input matInput placeholder="Primer Nombre*" [formControl]="primer_nombre" name="primer_nombre">
+            <mat-error *ngIf="primer_nombre.hasError('required')">
+                Este campo es obligatorio
+            </mat-error>
+        </mat-form-field>
+
+        <!-- Primer Apellido -->
+        <mat-form-field class="custom-input">
+            <mat-label>Primer Apellido</mat-label>
+            <input matInput placeholder="Primer Apellido*" [formControl]="primer_apellido" name="primer_apellido">
+            <mat-error *ngIf="primer_apellido.hasError('required')">
+                Este campo es obligatorio
+            </mat-error>
+        </mat-form-field>
+
+        <!-- Correo Electrónico -->
+        <mat-form-field class="custom-input">
+            <mat-label>Correo Electrónico</mat-label>
+            <input matInput type="email" placeholder="Correo Electrónico" [formControl]="correo_electronico" name="correo_electronico">
+        </mat-form-field>
+
+        <!-- Departamento -->
+        <mat-form-field class="custom-input">
+            <mat-label>Departamento</mat-label>
+            <mat-select formControlName="departamento" (selectionChange)="onDepartamentoChange()">
+                @for (depto of departamentos | alphabeticalOrder:'departamento'; track depto) {
+                    <mat-option [value]="depto.departamento">
+                        {{ depto.departamento }}
+                    </mat-option>
+                }
+            </mat-select>
+        </mat-form-field>
+
+        <!-- Provincia -->
+        <mat-form-field class="custom-input">
+            <mat-label>Provincia</mat-label>
+            <mat-select formControlName="provincia" (selectionChange)="onProvinciaChange()">
+                @for (municip of municipiosDelDepartamentoProvinciaUnique | alphabeticalOrder:'provincia'; track municip) {
+                    <mat-option [value]="municip.provincia">
+                        {{ municip.provincia }}
+                    </mat-option>
+                }
+            </mat-select>
+        </mat-form-field>
+
+        <!-- Municipio -->
+        <mat-form-field class="custom-input">
+            <mat-label>Municipio</mat-label>
+            <mat-select formControlName="municipio">
+                @for (municip of municipiosDeLaProvincia | alphabeticalOrder:'nombre_municipio'; track municip) {
+                    <mat-option [value]="municip.codigo_municipio">
+                        {{ municip.nombre_municipio }}
+                    </mat-option>
+                }
+            </mat-select>
+        </mat-form-field>
+
+        <!-- Sexo -->
+        <mat-form-field class="custom-input">
+            <mat-label>Sexo</mat-label>
+            <mat-select formControlName="sexo">
+                <mat-option *ngFor="let sexo of array_CR_SexoTipo" [value]="sexo">{{ sexo }}</mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <!-- Teléfono 1 -->
+        <mat-form-field class="custom-input">
+            <mat-label>Teléfono 1</mat-label>
+            <input matInput placeholder="Teléfono 1" [formControl]="telefono_1" name="telefono_1">
+        </mat-form-field>
+
+        <!-- Teléfono 2 -->
+        <mat-form-field class="custom-input">
+            <mat-label>Teléfono 2</mat-label>
+            <input matInput placeholder="Teléfono 2" [formControl]="telefono_2" name="telefono_2">
+        </mat-form-field>
+
+        <!-- Notas -->
+        <mat-form-field class="custom-input">
+            <mat-label>Notas</mat-label>
+            <textarea matInput placeholder="Notas" [formControl]="notas" name="notas"></textarea>
+        </mat-form-field>
+
+        <!-- Porcentaje de Propiedad -->
+        <mat-form-field class="custom-input">
+            <mat-label>Porcentaje de Propiedad 0-100%</mat-label>
+            <input matInput type="number" placeholder="Porcentaje de Propiedad" [formControl]="porcentaje_propiedad" name="porcentaje_propiedad">
+        </mat-form-field>
+
+        <!-- Segundo Nombre -->
+        <mat-form-field class="custom-input">
+            <mat-label>Segundo Nombre</mat-label>
+            <input matInput placeholder="Segundo Nombre" [formControl]="segundo_nombre" name="segundo_nombre">
+        </mat-form-field>
+
+        <!-- Segundo Apellido -->
+        <mat-form-field class="custom-input">
+            <mat-label>Segundo Apellido</mat-label>
+            <input matInput placeholder="Segundo Apellido" [formControl]="segundo_apellido" name="segundo_apellido">
+        </mat-form-field>
+
+        <!-- Grupo Étnico -->
+        <mat-form-field class="custom-input">
+            <mat-label>Grupo Étnico</mat-label>
+            <mat-select formControlName="grupo_etnico">
+                @for (grupo of array_Grupo_Etnico | alphabeticalOrder:'grupo'; track grupo) {
+                    <mat-option [value]="grupo">
+                        {{ grupo }}
+                    </mat-option>
+                }
+            </mat-select>
+        </mat-form-field>
+
+        <!-- Estado -->
+        <mat-form-field class="custom-input">
+            <mat-label>Estado</mat-label>
+            <mat-select formControlName="estado">
+                @for (estado of array_Estados | alphabeticalOrder:'grupo'; track estado) {
+                    <mat-option [value]="estado">
+                        {{ estado }}
+                    </mat-option>
+                }
+            </mat-select>
+        </mat-form-field>
+
+        <!-- Autorización para notificación por correo -->
+        <mat-checkbox formControlName="autoriza_notificacion_correo" (change)="confirmarAutorizacionCorreo($event)">Autoriza notificación por correo</mat-checkbox>
+
+        <!-- Autorización para tratamientos de datos personales -->
+        <mat-checkbox formControlName="autoriza_procesamiento_datos_personales" (change)="confirmarTratamientoDatos($event)">Autoriza tratamientos de datos personales</mat-checkbox>
+
+        <div class="button-container">
+            <!--<button mat-raised-button *ngIf="appGlobalVarsService.appMode==1" (click)="fillAutomatically()">Fill automatically</button>-->
+            <button mat-raised-button *ngIf="mode=='añadir'" [disabled]="!controlsGroup.valid" (click)="save()">Guardar</button>
+            <button mat-raised-button *ngIf="mode=='editar'" [disabled]="!controlsGroup.valid" (click)="save()">Guardar cambios</button>
+            <button mat-raised-button class="rojo" *ngIf="mode === 'editar'" (click)="confirmDelete()">Eliminar</button>
+            <button mat-raised-button (click)="navigateToMenu()">Atrás</button>
+        </div>
+    </form>
+</div>

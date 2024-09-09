@@ -1,0 +1,30 @@
+header {
+    background-color: #021b41;
+    color: white;
+    text-align: left;
+    width: 100%;
+  }
+  .cont{
+    display: flex;
+    justify-content: space-between;
+
+  }
+.header-content{
+    width: 100%;
+    padding: 5px;
+    display: flex;
+    flex-direction: row
+}
+
+span {
+    font-size: 1rem;
+    font-weight: bold;
+  }
+
+.align-right{
+  display: inline-block;
+  text-align: right;
+}
+.margin-right{
+  margin-right: 5px;
+}

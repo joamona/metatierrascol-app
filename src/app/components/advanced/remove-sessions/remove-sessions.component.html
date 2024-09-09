@@ -1,0 +1,20 @@
+      <div class="text-align-center">
+          <h2 class="header">Cerrar sesiones en otros dispositivos</h2>
+          <h2 class="header">El número máximo de sesiones abiertas es 10</h2>
+          <h2 class="header">Usted tiene abiertas {{authService.opened_sessions}} sesiones</h2>
+          <p>Si usted tiene sesiones abiertas en otros dispositivos. Puede cerrarlas 
+              pulsando el botón siguiente.
+          </p>
+          <p class="red">Esto cerrará también su sesión actual en este dispositivo. 
+              Deberá iniciar la sesión de nuevo.
+          </p>
+      </div>
+
+
+      <button mat-raised-button [disabled]="authService.token==''" (click)="removeAllSessions()">Cerrar sesiones</button>
+
+
+      <button mat-raised-button routerLink="../">Atrás</button>
+
+
+  

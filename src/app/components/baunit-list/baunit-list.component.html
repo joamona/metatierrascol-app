@@ -1,0 +1,26 @@
+<div class="container2">
+  <table>
+    <thead>
+      <tr>
+        <th>Nom</th>
+        <th>Interesados</th>
+        <th>Geometrías</th>
+        <!--
+        <th>Img</th>
+        <th>Doc</th>
+        -->
+        <th>Env</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (baunit of sqliteService.baunitList; track baunit) {
+        <tr (click)="editBaunit(baunit.id)">
+          <td>{{baunit.nombre}}</td>
+          <td>{{getInteresadosCountForBaunit(baunit.id)}}</td>
+          <td>{{getUnidadesEspacialesCountForBaunit(baunit.id)}}</td>
+          <td>{{baunit.enviado_servidor | changeBooleanByYesNoPipe:true}}</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+  </div>

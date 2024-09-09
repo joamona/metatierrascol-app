@@ -1,0 +1,28 @@
+<div class="container2">
+
+    @if (getInteresadosForCurrentBaunit().length > 0) {
+        <table>
+            <thead>
+            <tr>
+                <th>Documento</th>
+                <th>Nombre Completo</th>
+                <th>Correo Electrónico</th>
+            </tr>
+            </thead>
+            <tbody>
+                @for (interesado of getInteresadosForCurrentBaunit(); track interesado) {
+                    <tr (click)="editInteresado(interesado.id, interesado.baunit_id)">
+                        <td>{{interesado.documento_identidad}}</td>
+                        <td>{{interesado.primer_nombre}} {{interesado.primer_apellido}}</td>
+                        <td>{{interesado.correo_electronico}}</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    } @else {
+        <h2>Lista de interesados vacía</h2>
+    }
+
+    <button mat-raised-button [routerLink]="['./interesado']" [queryParams]="{mode: 'añadir', baunit_id: this.baunitId}">Añadir Interesado</button>
+    <button mat-raised-button (click)="navigateToMenu()">Atrás</button>
+</div>
