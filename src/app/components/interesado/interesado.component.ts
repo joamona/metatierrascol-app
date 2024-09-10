@@ -156,7 +156,7 @@ export class InteresadoComponent  implements OnInit {
 
   ngOnInit() {
 
-    console.log("valores de checkbox al entrar", this.autoriza_notificacion_correo.value, this.autoriza_procesamiento_datos_personales.value)
+    //console.log("valores de checkbox al entrar", this.autoriza_notificacion_correo.value, this.autoriza_procesamiento_datos_personales.value)
 
     this.route.queryParamMap.subscribe(params => {
       this.paramBaunitId = params.get('baunit_id') || '-1';

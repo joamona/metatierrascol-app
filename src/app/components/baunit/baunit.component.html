@@ -84,8 +84,8 @@
     </mat-form-field>
         
     <mat-form-field class="custom-input">
-        <mat-label>Complemento o descripción adicional</mat-label>
-      <input matInput placeholder="Complemento o descripción adicional*" [formControl]="complemento" name="complemento">
+        <mat-label>Descripción adicional</mat-label>
+      <input matInput placeholder="Descripción adicional*" [formControl]="complemento" name="complemento">
       <mat-error *ngIf="complemento.hasError('required')">
         Este campo es obligatorio
       </mat-error>

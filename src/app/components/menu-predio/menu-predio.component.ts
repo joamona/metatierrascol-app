@@ -13,6 +13,7 @@ import {EnviarPredioService} from "../../services/enviar-predio.service";
 import {NgIf} from "@angular/common";
 import Swal from "sweetalert2";
 import {Baunit} from "../../models/baunit";
+import { AppGlobalVarsService } from '../../services/app-global-vars.service';
 
 
 @Component({
@@ -30,7 +31,11 @@ export class MenuPredioComponent  implements OnInit {
   predioEnviado: boolean = false;
   predioActual?: Baunit;
 
-  constructor(private activatedRoute: ActivatedRoute, private snackBar: MatSnackBar, private router: Router, public enviarPredioService: EnviarPredioService, public sqliteService:SqliteService, public netStatusService: NetStatusService, public authService: AuthService, public messageService: MessageService) { }
+  constructor(private activatedRoute: ActivatedRoute, private snackBar: MatSnackBar, 
+    private router: Router, public enviarPredioService: EnviarPredioService, 
+    public sqliteService:SqliteService, public netStatusService: NetStatusService, 
+    public authService: AuthService, public messageService: MessageService,
+    public appGlobalVarsService: AppGlobalVarsService) { }
 
   ngOnInit(): void {
     this.activatedRoute.queryParamMap.subscribe(params => {
@@ -154,7 +159,7 @@ export class MenuPredioComponent  implements OnInit {
             'El predio ha sido eliminado.',
             'success'
         );
-        this.router.navigate(['/']);
+        this.router.navigate(['/main-screen']);
       } catch (error) {
         Swal.fire(
             'Error',

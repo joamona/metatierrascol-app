@@ -27,13 +27,13 @@ export class HeaderComponent {
     this.showMessages = !this.showMessages;
   }
   getUsername():string{
-    return this.slice(this.authService.username,17)
+    return this.slice(this.authService.username,30)
   }
   getUserGroups():string{
-    return this.slice(this.authService.getGroupsAsString(),17)
+    return this.slice(this.authService.getGroupsAsString(),30)
   }
   slice(str:string, maxLength:number):string{
-    if (str.length > length){
+    if (str.length > maxLength){
       return str.slice(0,maxLength) + '...';
     }else{
       return str;

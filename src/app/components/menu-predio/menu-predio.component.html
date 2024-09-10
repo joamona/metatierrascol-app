@@ -19,9 +19,11 @@
         <span class="badge">{{ getInteresadosCountForCurrentBaunit() }}</span>
     </button>
 
-    <button mat-raised-button [routerLink]="['./field-image']" [queryParams]="{mode: 'añadir', baunit_id: this.baunitId}"> Añadir imagen del terreno
-        <span class="badge">0</span>
-    </button>
+    @if (appGlobalVarsService.appMode==1){
+        <button mat-raised-button [routerLink]="['./field-image']" [queryParams]="{mode: 'añadir', baunit_id: this.baunitId}"> Añadir imagen del terreno
+            <span class="badge">0</span>
+        </button>
+    }
     
     <button mat-raised-button [routerLink]="['./medir-gps-list']" [queryParams]="{mode: 'añadir', baunit_id: this.baunitId}" [disabled]="!isInteresadosButtonEnabled">Medir con GPS
         <span class="badge">{{ getUnidadesEspacialesCountForCurrentBaunit() }}</span>

@@ -6,7 +6,7 @@ import { isDevMode } from '@angular/core';
  * Mode 2. Producción upvusig
  */
 
-export var appMode: number = 1;  
+export var appMode: number = 2;  
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +17,7 @@ export class AppGlobalVarsService {
   public web_url:string=''; //url donde está la web metatierrascol.
   public showMessagesInConsole: boolean = false;
   public appMode = appMode;
-  public appVersion = 2.5;
+  public appVersion = 2.6;
   
   constructor() { 
     console.log('Is devmode',isDevMode())

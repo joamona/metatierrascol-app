@@ -1,7 +1,7 @@
 <div class="container">
   @if (newVersion>0){
     <div class="border container">
-      <h2 class="red">Existe una nueva versión de la app</h2>
+      <p class="titulo red">Existe una nueva versión de la app</p>
       <p class="red">Usted tiene la {{appGlobalVarsService.appVersion}}, y la última versión es la {{newVersion}}</p>
       <p class="red">Es recomendable que actualice la versión.</p> 
       <p class="red">Descárguela de <a href="{{appGlobalVarsService.web_url + 'last_app_version'}}" target="_blank">aquí</a></p>
