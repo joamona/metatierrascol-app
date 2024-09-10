@@ -1,9 +1,21 @@
 <div class="container">
-    <div class="header">
-        <p class="titulo">Menú Principal</p>
+    <div class="header max-width-350px">
+        @if (mode=='añadir'){
+            <p class="titulo">Nuevo predio</p>
+        }@else {
+            <p class="titulo">Editar predio</p>
+            @if (predioActual){
+                <p class="titulo">Nombre: {{predioActual.nombre}}</p>
+            }
+        }
     </div>
-    <button mat-raised-button (click)="goToDatosPredio()">Datos Predio</button>
-    <button mat-raised-button [routerLink]="['./list-interesados']" [queryParams]="{mode: 'añadir', baunit_id: this.baunitId}" [disabled]="!isInteresadosButtonEnabled">Datos Interesado
+    @if (mode=='añadir'){
+        <button mat-raised-button (click)="goToDatosPredio()">Nuevo predio</button>
+    }@else {
+        <button mat-raised-button (click)="goToDatosPredio()">Editar este predio</button>
+    }
+
+    <button mat-raised-button [routerLink]="['./list-interesados']" [queryParams]="{mode: 'añadir', baunit_id: this.baunitId}" [disabled]="!isInteresadosButtonEnabled">Datos Interesados
         <span class="badge">{{ getInteresadosCountForCurrentBaunit() }}</span>
     </button>
 

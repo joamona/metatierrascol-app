@@ -1,6 +1,8 @@
 <div class="container">
-    <h2>Detalle del Punto: {{ punto.id }}</h2>
-    <form [formGroup]="puntoForm">
+    <div class="header">
+        <p class="titulo">Detalle del Punto: {{ punto.id }}</p>
+    </div>
+    <form [formGroup]="puntoForm" onsubmit="event.preventDefault();">
         <!-- ID del punto -->
         <mat-form-field class="custom-input">
             <mat-label>ID</mat-label>

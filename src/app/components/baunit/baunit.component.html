@@ -1,6 +1,11 @@
 <div class="container">
-  <div class="header">
-    <p class="titulo">Datos del predio. Modo: {{mode}} {{id}}</p>
+  <div class="header max-width-350px">
+    @if(mode=="añadir"){
+      <p class="titulo">Nuevo predio</p>
+    }@else {
+      <p class="titulo">Editar predio</p>
+      <p class="titulo">Nombre: {{nombre.value}}</p>
+    }
   </div>
   
   <form [formGroup]="controlsGroup" onsubmit="event.preventDefault();">

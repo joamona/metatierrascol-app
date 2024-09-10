@@ -1,5 +1,13 @@
 <div class="container">
-    <h2>Datos del interesado: {{mode}} {{id}}</h2>
+    <div class="header max-width-350px">
+        @if(mode=="añadir"){
+          <p class="titulo">Nuevo interesado</p>
+        }@else {
+          <p class="titulo">Editar interesado</p>
+          <p class="titulo">Nombre: {{primer_nombre.value}}</p>
+        }
+      </div>
+
     <form [formGroup]="controlsGroup" onsubmit="event.preventDefault();">
 
         <!-- Tipo de Documento -->
@@ -170,7 +178,7 @@
         <mat-checkbox formControlName="autoriza_procesamiento_datos_personales" (change)="confirmarTratamientoDatos($event)">Autoriza tratamientos de datos personales</mat-checkbox>
 
         <div class="button-container">
-            <!--<button mat-raised-button *ngIf="appGlobalVarsService.appMode==1" (click)="fillAutomatically()">Fill automatically</button>-->
+            <button mat-raised-button *ngIf="appGlobalVarsService.appMode==1" (click)="fillAutomatically()">Fill automatically</button>
             <button mat-raised-button *ngIf="mode=='añadir'" [disabled]="!controlsGroup.valid" (click)="save()">Guardar</button>
             <button mat-raised-button *ngIf="mode=='editar'" [disabled]="!controlsGroup.valid" (click)="save()">Guardar cambios</button>
             <button mat-raised-button class="rojo" *ngIf="mode === 'editar'" (click)="confirmDelete()">Eliminar</button>

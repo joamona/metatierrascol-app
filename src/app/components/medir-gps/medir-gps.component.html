@@ -1,16 +1,25 @@
 <div id="container">
     <div id="cabecera">
-        <h1>Medir con GPS</h1>
-
-        <p>Sitúese sobre el punto del lindero a medir</p>
+        <div class="header max-width-350px">
+            <p class="titulo">Medir con GPS</p>
+            @if (baunit){
+                <p class="titulo">Predio: {{baunit.nombre}}</p>
+            }
+        </div>
+        <p>Sitúese sobre el punto del lindero a medir, y presione Medir punto</p>
     </div>
 
     <div class="list">
+
         <p class="list-item"(click)="openPointDetails()">
-            <mat-icon style="margin-right: 10px">list</mat-icon>
             Puntos medidos: {{ generateOlGeoms.pointsList.length }}
         </p>
-
+        @if(generateOlGeoms.pointsList.length>0){
+            <p class="list-item"(click)="openPointDetails()">
+                <mat-icon style="margin-right: 10px">list</mat-icon>
+                Ver / Editar puntos de la geometría
+            </p>
+        }
         <p class="list-item" *ngIf="gpsAccuracy !== null">Precisión del GPS: {{ gpsAccuracy }} metros</p>
         <p class="list-item">Precisión del último punto: {{peorPrecision}} metros</p>
     </div>

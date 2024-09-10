@@ -11,17 +11,17 @@
   @if (sqliteService.baunitList.length > 0){
     <div class="header">
       <p class="titulo">Número de predios: {{sqliteService.baunitList.length}}</p>
-      <p class="titulo">Click sobre la fila para editar</p>
+      <p>Click sobre la fila del predio para editar</p>
     </div>
     <app-baunit-list></app-baunit-list>
   }@else {
     <div class="header">
-      <p class="titulo">No existen predios en el dispositivo</p>
+      <p class="titulo">No hay predios todavía</p>
     </div>
   }
   
 
-  <button mat-raised-button [routerLink]="['./menu-predio']" [queryParams]="{mode: 'añadir'}">Nuevo Predio</button>
+  <button mat-raised-button [routerLink]="['/main-screen/menu-predio/baunit']" [queryParams]="{mode: 'añadir'}">Nuevo Predio</button>
   <!-- <button mat-raised-button [disabled]="true">Editar Predio desde el Mapa</button> -->
   <button mat-raised-button routerLink="./advanced">Avanzado</button>
   <button mat-raised-button routerLink="../">Atrás</button>

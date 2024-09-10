@@ -1,6 +1,11 @@
 <header>
     <div class="cont">
-      <div><mat-icon (click)="changeShowMessages()">mail_outline</mat-icon></div>
+      <div>
+        <mat-icon (click)="changeShowMessages()">mail_outline</mat-icon>
+        @if(appGlobalVarsService.appMode==1){
+          <span>DESARROLLO</span>
+        }
+      </div>
       <div> 
         <!--<span class="margin-right" (click)="showPreferences()">III</span>-->
         @if (authService.username!=''){

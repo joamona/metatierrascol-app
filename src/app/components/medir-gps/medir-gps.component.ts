@@ -29,6 +29,7 @@ import { Geolocation, PositionOptions } from '@capacitor/geolocation';
 import {mapDraw} from "../../mapa/mapDraw";
 import {NativeSettings, AndroidSettings} from 'capacitor-native-settings';
 import {PointService} from "../../services/point.service";
+import { Baunit } from '../../models/baunit';
 
 @Component({
   selector: 'app-medir-gps',
@@ -59,6 +60,7 @@ export class MedirGpsComponent implements OnInit, OnDestroy {
   });
   gpsAccuracy: number | null = null;
   watchId: string | null = null;
+  baunit!: Baunit;
 
   private fakePoints = [
     {lat: 40.416775, lon: -3.703790, precision: 5},
@@ -71,7 +73,11 @@ export class MedirGpsComponent implements OnInit, OnDestroy {
 
   private currentFakePointIndex = 0;
 
-  constructor(private geolocationService: GeolocationService, private pointService: PointService, private zone: NgZone, public router: Router, private dialog: MatDialog, public sqliteService: SqliteService, public messageService: MessageService, public route: ActivatedRoute) {
+  constructor(private geolocationService: GeolocationService, 
+    private pointService: PointService, private zone: NgZone, public router: Router, 
+    public sqliteService: SqliteService, 
+    public messageService: MessageService, 
+    public route: ActivatedRoute) {
     this.generateOlGeoms = new GenerateOlGeoms(4326);
     this.route.queryParamMap.subscribe(params => {
       this.mode = params.get("mode");
@@ -84,7 +90,8 @@ export class MedirGpsComponent implements OnInit, OnDestroy {
 
     this.route.queryParamMap.subscribe(async params => {
       this.baunit_id = params.get('baunit_id') || "-1";
-
+      this.baunit = new Baunit(this.sqliteService, this.messageService);
+      this.baunit.setFromId(this.baunit_id!)
 
       this.unidadEspacialActualId = params.get('id') || "-1";
 
@@ -334,7 +341,8 @@ export class MedirGpsComponent implements OnInit, OnDestroy {
 
     console.table(this.sqliteService.crPuntoLinderoList)
     console.table(this.sqliteService.unidadEspacialList)
-    this.router.navigate(['/main-screen/menu-predio'], {queryParams: {mode: 'editar', baunit_id: this.baunit_id}});
+    //this.router.navigate(['/main-screen/menu-predio'], {queryParams: {mode: 'editar', baunit_id: this.baunit_id}});
+    this.router.navigate(['/main-screen/menu-predio/medir-gps-list'], {queryParams: {mode: 'añadir', baunit_id: this.baunit_id}});
   }
 
   private restaurarFeaturesParaEdicion() {

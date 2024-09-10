@@ -229,21 +229,19 @@ export class InteresadoComponent  implements OnInit {
     if (this.mode == 'añadir') {
       const existe = await this.sqliteService.getInteresadoPorDocumentoIdentidad(interesado.documento_identidad, this.paramBaunitId);
       if (existe) {
-        this.snackBar.open('Ya existe un interesado con el mismo documento de identidad en este predio.', 'Cerrar', {duration: 3000});
+        //this.snackBar.open('Ya existe un interesado con el mismo documento de identidad en este predio.', 'Cerrar', {duration: 3000});
         sendMessages('Ya existe un interesado con el mismo documento de identidad en este predio.', this.messageService, this.snackBar);
         return;
       }
 
       await interesado.insert();
       this.id = interesado.id;
-      this.router.navigate(['/main-screen/menu-predio/list-interesados/interesado'], {queryParams: {mode: 'editar', baunit_id: this.paramBaunitId, id: this.id}});
+      this.router.navigate(['/main-screen/menu-predio/list-interesados'], {queryParams: {mode: 'editar', baunit_id: this.paramBaunitId, id: this.id}});
     } else {
       interesado.id = this.id;
       await interesado.update();
+      this.router.navigate(['/main-screen/menu-predio/list-interesados'], {queryParams: {mode: 'editar', baunit_id: this.paramBaunitId, id: this.id}});
     }
-
-    console.log("control group: ", this.controlsGroup);
-    console.log("control group 2: ", this.controlsGroup.errors)
   }
 
 
@@ -370,7 +368,7 @@ export class InteresadoComponent  implements OnInit {
 
 
   navigateToMenu() {
-    //let baunit_id = this.controlsGroup.get('baunit_id')!.value;
-    this.router.navigate(['/main-screen/menu-predio'], { queryParams: {mode: 'editar', baunit_id: this.paramBaunitId}});
+    //this.router.navigate(['/main-screen/menu-predio'], { queryParams: {mode: 'editar', baunit_id: this.paramBaunitId}});
+    this.router.navigate(['/main-screen/menu-predio/list-interesados'], { queryParams: {mode: 'añadir', baunit_id: this.paramBaunitId}});
   }
 }

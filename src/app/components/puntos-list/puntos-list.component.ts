@@ -3,6 +3,8 @@ import {CrPuntoLindero} from "../../models/crPuntoLindero";
 import {ActivatedRoute, Router} from "@angular/router";
 import {SqliteService} from "../../services/sqlite/sqlite.service";
 import { CommonModule } from '@angular/common';
+import { Baunit } from '../../models/baunit';
+import { MessageService } from '../../services/message.service';
 
 @Component({
   selector: 'app-puntos-list',
@@ -18,13 +20,18 @@ export class PuntosListComponent  implements OnInit {
   points: CrPuntoLindero[] = [];
   baunitId: string = '';
   unidadEspacialId: string = '';
-  constructor(private route: ActivatedRoute, private sqliteService: SqliteService, public router: Router) {}
+  baunit!: Baunit;
+  constructor(private route: ActivatedRoute, 
+    private sqliteService: SqliteService, 
+    public router: Router, private messageService: MessageService) {}
 
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
       this.unidadEspacialId = params['unidadEspacial_id'];
       this.baunitId = params['baunit_id'];
       this.loadPoints(this.unidadEspacialId, this.baunitId);
+      this.baunit = new Baunit(this.sqliteService, this.messageService);
+      this.baunit.setFromId(this.baunitId!)
     });
   }
 

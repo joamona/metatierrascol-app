@@ -1,6 +1,12 @@
 <div class="container2">
-
-    @if (getUnidadEspacialForCurrentBaunit().length > 0) {
+    <div class="header">
+        <p class="titulo">Editando predio: {{baunit.nombre}}</p>
+    </div>
+    @if (getUnidadEspacialForCurrentBaunit().length > 0) {.
+        <div class="header">
+            <p class="titulo">Lista de geometrías</p>
+            <p>Click sobre la fila de la geometría para editar</p>
+        </div>
         <table>
             <thead>
             <tr>
@@ -20,7 +26,9 @@
             </tbody>
         </table>
     } @else {
-        <h2>Lista de interesados vacía</h2>
+        <div class="header">
+            <p class="titulo">No hay geometrías todavía</p>
+        </div>
     }
 
     <button mat-raised-button [routerLink]="['./medir-gps']" [queryParams]="{mode: 'añadir', baunit_id: this.baunitId}">Comenzar medición</button>

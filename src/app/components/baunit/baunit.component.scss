@@ -14,6 +14,11 @@
     width: 100%;
   }
   
-  .custom-input {
+.custom-input {
     width: 80%;
+  }
+
+.max-width-350px{
+    width: 350px;
+    overflow: hidden;
   }

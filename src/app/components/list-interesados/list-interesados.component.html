@@ -1,26 +1,36 @@
 <div class="container2">
 
+    <div class="header">
+        <p class="titulo">Editando predio: {{baunit.nombre}}</p>
+    </div>
+
     @if (getInteresadosForCurrentBaunit().length > 0) {
+        <div class="header">
+            <p class="titulo">Lista de interesados</p>
+            <p>Click sobre la fila del interesado para editar</p>
+        </div>
         <table>
             <thead>
             <tr>
                 <th>Documento</th>
                 <th>Nombre Completo</th>
-                <th>Correo Electrónico</th>
             </tr>
             </thead>
             <tbody>
                 @for (interesado of getInteresadosForCurrentBaunit(); track interesado) {
                     <tr (click)="editInteresado(interesado.id, interesado.baunit_id)">
                         <td>{{interesado.documento_identidad}}</td>
-                        <td>{{interesado.primer_nombre}} {{interesado.primer_apellido}}</td>
-                        <td>{{interesado.correo_electronico}}</td>
+                        <td>
+                            <div class="max-width-350px">{{interesado.primer_nombre}} {{interesado.primer_apellido}}</div>
+                        </td>
                     </tr>
                 }
             </tbody>
         </table>
     } @else {
-        <h2>Lista de interesados vacía</h2>
+        <div class="header">
+            <p class="titulo">No hay interesados todavía</p>
+        </div>
     }
 
     <button mat-raised-button [routerLink]="['./interesado']" [queryParams]="{mode: 'añadir', baunit_id: this.baunitId}">Añadir Interesado</button>

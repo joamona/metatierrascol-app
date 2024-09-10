@@ -153,12 +153,15 @@ export class BaunitComponent  implements OnInit, AfterViewInit{
     if (this.mode == 'añadir'){
       await baunit.insert();
       this.id = baunit.id;
-      this.router.navigate(['/main-screen/menu-predio/baunit'], {queryParams: {mode: 'editar', baunit_id: this.id}});
+      //this.router.navigate(['/main-screen/menu-predio/baunit'], {queryParams: {mode: 'editar', baunit_id: this.id}});
+      this.router.navigate(['/main-screen'], {queryParams: {mode: 'editar', baunit_id: this.id}});
     }else{
       //baunit al ser creado no tiene id.
       //para poder actualizar el existente hay que establecer el id
       baunit.id = this.id;
       await baunit.update();
+      this.router.navigate(['/main-screen'], {queryParams: {mode: 'editar', baunit_id: this.id}});
+
     }
   }
   onDepartamentoChange(){
@@ -195,7 +198,8 @@ export class BaunitComponent  implements OnInit, AfterViewInit{
   // }
 
   navigateToMenu() {
-    this.router.navigate(['/main-screen/menu-predio'], { queryParams: {mode: 'editar', baunit_id: this.id} });
+    //this.router.navigate(['/main-screen/menu-predio'], { queryParams: {mode: 'editar', baunit_id: this.id} });
+    this.router.navigate(['/main-screen']);
   }
   ngAfterViewInit(): void {
     if (this.mode=="añadir"){
