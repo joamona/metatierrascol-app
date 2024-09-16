@@ -7,13 +7,17 @@ import {AuthService} from "./auth.service";
 import {ServerService} from "./server.service";
 import { GeoJsonCRS, GeoJsonElement,GeoJsonGeometry,GeoJsonFeatureCollection, GeometryType } from "../utilities/createGeoJson";
 import {GenerateOlGeoms} from "../utilities/crearGeoms";
+import { AppGlobalVarsService } from './app-global-vars.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class EnviarPredioService {
 
-  constructor(private sqliteService: SqliteService, public httpClient: HttpClient, public authService: AuthService, private serverService: ServerService,) { }
+  constructor(private sqliteService: SqliteService, public httpClient: HttpClient, 
+    public authService: AuthService, private serverService: ServerService,
+    public appGlobalVarsService: AppGlobalVarsService
+  ) { }
 
   async prepararDatosPredio(baunitId: string | null): Promise<any> {
     console.log('Inicio de prepararDatosPredio con baunitId:', baunitId);
@@ -32,7 +36,7 @@ export class EnviarPredioService {
     formData.append('tipo', datosPredio?.tipo || 'no especificado');
     formData.append('complemento', datosPredio?.complemento || 'no especificado');
 
-    const crsCode = 25830;
+    const crsCode = this.appGlobalVarsService.EPSG_CODE;
     const zip = new JSZip();
     zip.file("datosPredio.json", JSON.stringify(this.limpiarObjetoParaEnvio(datosPredio)));
     console.log("llega a limpiar datos predio")
@@ -68,7 +72,7 @@ export class EnviarPredioService {
     });
 
     // Paso 1: Crear el sistema de referencia de coordenadas (CRS)
-    var crs = new GeoJsonCRS(25830);
+    var crs = new GeoJsonCRS(this.appGlobalVarsService.EPSG_CODE);
 
     // Paso 2: Crear una clase para ver los tipos de geometría disponibles
     var gt = new GeometryType();
@@ -91,7 +95,6 @@ export class EnviarPredioService {
 
       listaGeoJsonElements.push(pge);
     });
-
 
     // Paso 5: Crear la colección de elementos (FeatureCollection) pasando un array de elementos GeoJSON y el CRS
     var fc = new GeoJsonFeatureCollection(crs, listaGeoJsonElements);

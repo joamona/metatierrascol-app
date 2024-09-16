@@ -17,7 +17,8 @@ export class AppGlobalVarsService {
   public web_url:string=''; //url donde está la web metatierrascol.
   public showMessagesInConsole: boolean = false;
   public appMode = appMode;
-  public appVersion = 2.6;
+  public appVersion = 2.9;
+  public EPSG_CODE = 4326;
   
   constructor() { 
     console.log('Is devmode',isDevMode())

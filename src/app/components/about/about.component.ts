@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {MatButtonModule} from "@angular/material/button";
 import {RouterLink} from "@angular/router";
+import { AppGlobalVarsService } from '../../services/app-global-vars.service';
 
 @Component({
   selector: 'app-about',
@@ -14,8 +15,12 @@ import {RouterLink} from "@angular/router";
 })
 export class AboutComponent  implements OnInit {
 
-  constructor() { }
+  constructor(public appGlobalVarsService: AppGlobalVarsService) { }
 
   ngOnInit() {}
+  
+  getAppVersion():Number{
+    return this.appGlobalVarsService.appVersion;
+  }
 
 }
