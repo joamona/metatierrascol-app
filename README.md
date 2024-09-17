@@ -54,6 +54,9 @@ Para complilar la app, la versión de Andrid Studio ha sido 2023.1.1, Gradle 8.2
     compileSdkVersion = 34
     targetSdkVersion = 34
 
+* Para depurar con el dispositivo conectado a un cable:
+    google-chrome --disable-web-security --user-data-dir="[/home/joamona/chrome]" --remote-debugging-port=8000
+
 ## Esquema de autenticación
 
 ![Esquema de autenticación](docs/images/esquemaAutorizacion.rotated.jpeg)  

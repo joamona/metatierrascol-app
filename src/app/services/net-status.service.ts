@@ -19,7 +19,7 @@ export class NetStatusService {
       }else{
         m="NO disponible"
       }
-      sendMessages('Cambio en la conexion: ' + m, this.messageService);
+      //ngsendMessages('Cambio en la conexion: ' + m, this.messageService);
     });
     this.getNetworkStatus();
   }

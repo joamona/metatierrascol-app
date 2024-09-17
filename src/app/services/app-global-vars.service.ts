@@ -6,7 +6,7 @@ import { isDevMode } from '@angular/core';
  * Mode 2. Producción upvusig
  */
 
-export var appMode: number = 2;  
+export var appMode: number = 1;  
 
 @Injectable({
   providedIn: 'root'
